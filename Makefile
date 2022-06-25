@@ -26,6 +26,5 @@ stop:
 	@docker compose down
 
 clean: stop |
-	@echo "Cleaning up container artifacts..."
-	@docker rmi $(docker images -a -q)
-	@docker volume prune -f
+	@echo "Cleaning up all container artifacts..."
+	@docker system prune -f -a --volumes

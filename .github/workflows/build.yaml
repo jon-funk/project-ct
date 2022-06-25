@@ -6,7 +6,7 @@ on:
 env:
   IMAGE: fastapi-example
   TAG: dev
-  SERVICE_CONTEXT: app/
+  SERVICE_CONTEXT: app/api/
 
 jobs:
   build:
