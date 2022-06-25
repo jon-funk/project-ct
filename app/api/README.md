@@ -1,5 +1,3 @@
-
-
 # FastAPI Example
 
 Example template to demonstrate FastAPI, has a basic local dev and CI for OpenShift
@@ -43,13 +41,3 @@ While your `api` container is running, you can open: http://localhost:5000/docs 
 `POSTGRES_HOST`
 
 `POSTGRES_DB`
-
-## Deployment Keys:
-### Defines build credentials
-`REGISTRY_USER`
-
-`REGISTRY_TOKEN`
-
-`REGISTRY_HOST`
-
-`IS_NAMESPACE`
