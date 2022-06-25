@@ -56,4 +56,4 @@ jobs:
           POSTGRES_HOST: ${{ env.POSTGRES_HOST }}
           POSTGRES_DB: ${{ env.POSTGRES_DB }}
         run: |
-            cd ${{ env.APP_DIR }} && python -m pytest tests/
+            cd ${{ env.APP_DIR }} && python -m pytest api/tests/
