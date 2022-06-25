@@ -17,7 +17,7 @@ services:
     command: uvicorn api:example_api --reload --host=0.0.0.0 --port=5000
     volumes:
       # Mount local codebase to reflect changes for local dev
-      - ./app:/app
+      - ./app/api:/app
     healthcheck:
       test: [ "CMD", "curl", "localhost:5000/health" ]
       interval: 5s
@@ -38,7 +38,7 @@ services:
     command: alembic upgrade head
     volumes:
       # Mount local codebase to reflect changes for local dev
-      - ./app:/app
+      - ./app/api:/app
     depends_on:
       db:
         condition: service_healthy
@@ -58,8 +58,8 @@ services:
       timeout: 5s
       retries: 5
 
-  tests:
-    container_name: tests
+  testapi:
+    container_name: testapi
     user: 1000:1000
     build:
       context: app/api/
@@ -70,7 +70,7 @@ services:
     # run as module so basedir (root) is added to python path
     command: python -m pytest tests/
     volumes:
-      - ./app/:/app/
+      - ./app/api/:/app/
     depends_on:
       - migrations
 
