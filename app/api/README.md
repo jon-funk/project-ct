@@ -30,8 +30,6 @@ This performs a diff between the previous migrations, your database schema, and 
 
 While your `api` container is running, you can open: http://localhost:5000/docs to view OpenAPI swagger docs and interact with your API.
 
-## CI / CD
-
 ## Environment Variables:
 ### Defines database connection details
 `POSTGRES_USER`
