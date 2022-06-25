@@ -70,7 +70,7 @@ services:
     # run as module so basedir (root) is added to python path
     command: python -m pytest tests/
     volumes:
-      - ./app/api/:/app/
+      - ./app/api/:/app
     depends_on:
       - migrations
 
