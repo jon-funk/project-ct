@@ -21,6 +21,10 @@ prune:
 	@echo "Pruning docker artifacts..."
 	@docker system prune -a
 
+env:
+	@echo "Setting up default env"
+	@cp app/api/.env-example app/api/.env
+
 stop:
 	@echo "Stopping containers..."
 	@docker compose down
