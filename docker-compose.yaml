@@ -7,9 +7,9 @@ services:
     container_name: api
     user: 1000:1000
     build:
-      context: app/
+      context: app/api/
       dockerfile: Dockerfile
-    env_file: app/.env
+    env_file: app/api/.env
     environment:
       - POSTGRES_HOST=db
     ports:
@@ -30,9 +30,9 @@ services:
   migrations:
     container_name: migs
     build:
-      context: app/
+      context: app/api/
       dockerfile: Dockerfile
-    env_file: app/.env
+    env_file: app/api/.env
     environment:
       - POSTGRES_HOST=db
     command: alembic upgrade head
@@ -47,7 +47,7 @@ services:
     container_name: db
     image: postgres:13.2-alpine
     restart: always
-    env_file: app/.env
+    env_file: app/api/.env
     environment:
       - POSTGRES_HOST=db
     ports:
@@ -62,9 +62,9 @@ services:
     container_name: tests
     user: 1000:1000
     build:
-      context: app/
+      context: app/api/
       dockerfile: Dockerfile
-    env_file: app/.env
+    env_file: app/api/.env
     environment:
       - POSTGRES_HOST=db
     # run as module so basedir (root) is added to python path
