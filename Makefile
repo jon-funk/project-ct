@@ -1,6 +1,10 @@
 SHELL := /bin/bash
 # requires Docker Compose version v2.2.1+
 
+all:
+	@echo "Starting project application..."
+	@docker compose up -d api
+
 api:
 	@echo "Starting api..."
 	@docker compose up -d api
