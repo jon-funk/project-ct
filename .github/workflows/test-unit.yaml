@@ -4,56 +4,17 @@ on:
   push:
 
 env:
-  APP_DIR: app/
-  REQ_PATH: api/requirements.txt
-  POSTGRES_USER: postgres
-  POSTGRES_PASSWORD: testing
-  POSTGRES_HOST: localhost
-  POSTGRES_DB: example
+  API_ENV_FILE: app/api/
 
 jobs:
-  backend-tests:
+  unit-tests-api:
     runs-on: ubuntu-latest
-    services:
-      db:
-        ports:
-          - 5432:5432
-        env:
-          POSTGRES_USER: ${{ env.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
-          POSTGRES_DB: ${{ env.POSTGRES_DB }}
-        image: postgres:13.2-alpine
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
-
-      - name: Install python3
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.9'
-          architecture: 'x64'
-
-      - name: Install deps
+      - name: Setup mock env
         run: |
-          cd ${{ env.APP_DIR }} && pip install --no-cache-dir -r ${{ env.REQ_PATH }}
-      - name: Run database migrations
-        env:
-          POSTGRES_USER: ${{ env.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
-          POSTGRES_HOST: ${{ env.POSTGRES_HOST }}
-          POSTGRES_DB: ${{ env.POSTGRES_DB }}
+            make env
+      - name: Run tests
         run: |
-            cd ${{ env.APP_DIR }}api/ && alembic upgrade head
-      - name: Unit tests
-        env:
-          POSTGRES_USER: ${{ env.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
-          POSTGRES_HOST: ${{ env.POSTGRES_HOST }}
-          POSTGRES_DB: ${{ env.POSTGRES_DB }}
-        run: |
-            cd ${{ env.APP_DIR }} && python -m pytest api/tests/
+            make testapi
