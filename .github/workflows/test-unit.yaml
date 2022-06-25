@@ -48,7 +48,7 @@ jobs:
           POSTGRES_HOST: ${{ env.POSTGRES_HOST }}
           POSTGRES_DB: ${{ env.POSTGRES_DB }}
         run: |
-            cd ${{ env.APP_DIR }} && alembic upgrade head
+            cd ${{ env.APP_DIR }}api/ && alembic upgrade head
       - name: Unit tests
         env:
           POSTGRES_USER: ${{ env.POSTGRES_USER }}
