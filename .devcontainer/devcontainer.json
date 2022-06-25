@@ -1,0 +1,10 @@
+{
+    "name": "api",
+    "dockerComposeFile": [
+        "../docker-compose.yaml"
+    ],
+    "service": "api",
+    "shutdownAction": "none",
+    "extensions": [],
+    "workspaceFolder": "/app/"
+}
