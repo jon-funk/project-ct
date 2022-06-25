@@ -5,6 +5,7 @@ on:
 
 env:
   APP_DIR: app/
+  REQ_PATH: api/requirements.txt
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: testing
   POSTGRES_HOST: localhost
@@ -39,7 +40,7 @@ jobs:
 
       - name: Install deps
         run: |
-          cd ${{ env.APP_DIR }} && pip install --no-cache-dir -r requirements.txt
+          cd ${{ env.APP_DIR }} && pip install --no-cache-dir -r ${{ env.REQ_PATH }}
       - name: Run database migrations
         env:
           POSTGRES_USER: ${{ env.POSTGRES_USER }}
