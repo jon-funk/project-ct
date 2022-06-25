@@ -1,0 +1,79 @@
+version: '3.9'
+
+# LOCAL DEV
+
+services:
+  api:
+    container_name: api
+    user: 1000:1000
+    build:
+      context: app/
+      dockerfile: Dockerfile
+    env_file: app/.env
+    environment:
+      - POSTGRES_HOST=db
+    ports:
+      - 5000:5000
+    command: uvicorn api:example_api --reload --host=0.0.0.0 --port=5000
+    volumes:
+      # Mount local codebase to reflect changes for local dev
+      - ./app:/app
+    healthcheck:
+      test: [ "CMD", "curl", "localhost:5000/health" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      - migrations
+      - tests
+
+  migrations:
+    container_name: migs
+    build:
+      context: app/
+      dockerfile: Dockerfile
+    env_file: app/.env
+    environment:
+      - POSTGRES_HOST=db
+    command: alembic upgrade head
+    volumes:
+      # Mount local codebase to reflect changes for local dev
+      - ./app:/app
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    container_name: db
+    image: postgres:13.2-alpine
+    restart: always
+    env_file: app/.env
+    environment:
+      - POSTGRES_HOST=db
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: [ "CMD", "pg_isready" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  tests:
+    container_name: tests
+    user: 1000:1000
+    build:
+      context: app/
+      dockerfile: Dockerfile
+    env_file: app/.env
+    environment:
+      - POSTGRES_HOST=db
+    # run as module so basedir (root) is added to python path
+    command: python -m pytest tests/
+    volumes:
+      - ./app/:/app/
+    depends_on:
+      - migrations
+
+networks:
+  default:
+    driver: "bridge"
