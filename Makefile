@@ -1,6 +1,14 @@
 SHELL := /bin/bash
 # requires Docker Compose version v2.2.1+
 
+api:
+	@echo "Starting api..."
+	@docker compose up -d api
+
+testapi:
+	@echo "Running api unit tests..."
+	@docker compose up testapi
+
 db:
 	@echo "Starting db..."
 	@docker compose up -d db
