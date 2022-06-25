@@ -4,7 +4,7 @@ on:
   push:
 
 env:
-  APP_DIR: app/
+  APP_DIR: app/api/
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: testing
   POSTGRES_HOST: localhost
