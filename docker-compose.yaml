@@ -74,6 +74,21 @@ services:
     depends_on:
       - migrations
 
+  web:
+    container_name: web
+    user: 1000:1000
+    build:
+      context: app/web/
+      dockerfile: Dockerfile    
+      target: development
+    volumes:
+      - ./app/web:/code
+    ports:
+      - 3000:3000
+    depends_on:
+      - api
+
+
 networks:
   default:
     driver: "bridge"
