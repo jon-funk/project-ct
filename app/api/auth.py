@@ -22,7 +22,6 @@ def load_current_user(token: str, db: Session = Depends(get_db)) -> T.Any:
         headers={"WWW-Authenticate": "Bearer"},
     )
 
-
     try:
         payload = jwt.decode(token, os.getenv("SECRET_KEY"), algorithms=["HS256"])
         email: str = payload.get("sub")
