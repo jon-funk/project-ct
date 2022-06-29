@@ -1,7 +1,7 @@
 import sqlalchemy as sa
 
-from database import Base, engine
-from models.mixins import BasicMetrics
+from api.database import Base, engine
+from api.models.mixins import BasicMetrics
 
 
 class Example(Base, BasicMetrics):

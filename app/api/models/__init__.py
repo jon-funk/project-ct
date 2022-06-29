@@ -1,3 +1,3 @@
-from database import Base, engine
+from api.database import Base, engine
 
-from models.example import example
+from api.models.example import example
