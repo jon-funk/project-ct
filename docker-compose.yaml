@@ -20,7 +20,7 @@ services:
       - SECRET_KEY=space-pantz
     ports:
       - 5000:5000
-    command: uvicorn api:example_api --reload --host=0.0.0.0 --port=5000
+    command: uvicorn app:api --reload --host=0.0.0.0 --port=5000
     volumes:
       # Mount local codebase to reflect changes for local dev
       - ./app/api:/app
