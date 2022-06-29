@@ -12,6 +12,6 @@ def load_env() -> None:
     to an environment file is not found, then use the env file
     found in the tests directory.
     """
-    env_file = os.getenv("CT_ENV_PATH", (PROJECT_ROOT / "tests/test.env").as_posix())
+    env_file = os.getenv("CT_ENV_PATH", (PROJECT_ROOT / ".env").as_posix())
     load_dotenv(dotenv_path=env_file)
 
