@@ -12,6 +12,12 @@ services:
     env_file: app/api/.env
     environment:
       - POSTGRES_HOST=db
+      - POSTGRES_PASSWORD=testpass
+      - POSTGRES_USER=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=example
+      - FRONTEND_ORIGIN=localhost:3000
+      - SECRET_KEY=space-pantz
     ports:
       - 5000:5000
     command: uvicorn api:example_api --reload --host=0.0.0.0 --port=5000

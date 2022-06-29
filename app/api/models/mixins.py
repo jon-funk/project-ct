@@ -1,6 +1,6 @@
 import sqlalchemy as sa
 
-from database import Base, engine
+from api.database import Base, engine
 
 
 class BasicMetrics():

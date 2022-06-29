@@ -39,3 +39,5 @@ While your `api` container is running, you can open: http://localhost:5000/docs 
 `POSTGRES_HOST`
 
 `POSTGRES_DB`
+
+`POSTGRES_PORT`
