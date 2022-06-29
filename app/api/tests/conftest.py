@@ -93,9 +93,9 @@ def auth_token(client: TestClient) -> Generator:
     """
     Create a user and return an authentication token for that user.
     """
-    user = get_user_by_email(DEFAULT_USER["email"])
+    user = get_user_by_email(next(database.get_db()), DEFAULT_USER["email"])
     if not user:
-        user = create_user(database.get_db(), email=DEFAULT_USER["email"], password=DEFAULT_USER["password"])
+        user = create_user(next(database.get_db()), email=DEFAULT_USER["email"], password=DEFAULT_USER["password"])
     
     token = "Bearer " + generate_auth_token(user.email)
     yield {"Authorization": token}

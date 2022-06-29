@@ -42,3 +42,5 @@ def create_user(db: Session, email: str, password: str) -> User:
     db.add(created_user)
     db.commit()
     db.refresh(created_user)
+
+    return created_user

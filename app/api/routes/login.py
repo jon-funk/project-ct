@@ -17,7 +17,7 @@ def login_user(user: UserLogin, db: Session = Depends(get_db)) -> Any:
     Login a user if they provide a matching email and password to one found in the database,
     otherwise return exceptions.
     """
-    found_user = get_user_by_email(db, user.email)
+    found_user = get_user_by_email(db, str(user.email))
     if found_user is None:
         raise HTTPException(
             status_code=401, detail="Unable to retrieve a user with those credentials."
@@ -27,6 +27,8 @@ def login_user(user: UserLogin, db: Session = Depends(get_db)) -> Any:
         raise HTTPException(
             status_code=401, detail="Username and password do not match."
         )
+
+    print(found_user.email)
 
     token = generate_auth_token(data={"sub": found_user.email})
 
