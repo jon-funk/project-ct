@@ -28,6 +28,7 @@ def get_db() -> Generator:
     finally:
         db.close()
 
+
 def create_all_tables() -> None:
     Base.metadata.create_all(engine, checkfirst=True)
 
