@@ -1,15 +1,19 @@
+import os
+
 from pydantic import BaseModel, EmailStr, validator
 
+MIN_PASSWORD_LEN = os.getenv("MIN_PASSWORD_LEN", 7)
+MAX_PASSWORD_LEN = os.getenv("MAX_PASSWORD_LEN", 79)
 
 def validate_password(password: str) -> str:
     """
-    Verify that a password is between 7 and 80 characters in length, and contains
+    Verify that a password is between min and max configured characters in length, and contains
     at least one non-alphanumeric character.
     """
     password_len = len(password)
-    if password_len < 7:
+    if password_len < MIN_PASSWORD_LEN:
         raise ValueError("Password must be at least 7 characters in length.")
-    elif 79 < password_len:
+    elif MAX_PASSWORD_LEN < password_len:
         raise ValueError("Password must be shorter than 80 characters.")
 
     found_upper, found_digit, found_non_alpha_num = False, False, False

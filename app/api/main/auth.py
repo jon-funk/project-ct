@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 
-from api.database import get_db
+from api.main.database import get_db
 from api.models.user import get_user_by_email
 
 

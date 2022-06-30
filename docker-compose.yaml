@@ -12,18 +12,12 @@ services:
     env_file: app/api/.env
     environment:
       - POSTGRES_HOST=db
-      - POSTGRES_PASSWORD=testpass
-      - POSTGRES_USER=postgres
-      - POSTGRES_PORT=5432
-      - POSTGRES_DB=example
-      - FRONTEND_ORIGIN=localhost:3000
-      - SECRET_KEY=space-pantz
     ports:
       - 5000:5000
-    command: uvicorn app:api --reload --host=0.0.0.0 --port=5000
+    command: uvicorn api.main.app:api --reload --host=0.0.0.0 --port=5000
     volumes:
       # Mount local codebase to reflect changes for local dev
-      - ./app/api:/app
+      - ./app/api:/app/api
     healthcheck:
       test: [ "CMD", "curl", "localhost:5000/health" ]
       interval: 5s
@@ -44,7 +38,7 @@ services:
     command: alembic upgrade head
     volumes:
       # Mount local codebase to reflect changes for local dev
-      - ./app/api:/app
+      - ./app/api:/app/api
     depends_on:
       db:
         condition: service_healthy
@@ -74,9 +68,9 @@ services:
     environment:
       - POSTGRES_HOST=db
     # run as module so basedir (root) is added to python path
-    command: python -m pytest tests/
+    command: python -m pytest api/tests/
     volumes:
-      - ./app/api/:/app
+      - ./app/api/:/app/api
     depends_on:
       - migrations
 

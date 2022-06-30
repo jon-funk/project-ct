@@ -1,7 +1,5 @@
 import sqlalchemy as sa
 
-from api.database import Base, engine
-
 
 class BasicMetrics():
     created_timestamp = sa.Column(sa.DateTime)
