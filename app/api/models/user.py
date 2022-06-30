@@ -7,7 +7,7 @@ from sqlalchemy import Column, DateTime, Integer, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Session
 
-from api.database import Base
+from api.main.database import Base
 
 
 class User(Base):
@@ -23,6 +23,7 @@ class User(Base):
 
 def get_user_by_email(db: Session, email: str) -> Union[User, None]:
     return db.query(User).filter(User.email == email).first()
+
 
 def create_user(db: Session, email: str, password: str) -> User:
     """Create a new user with the provided valid credentials.

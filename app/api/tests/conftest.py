@@ -7,9 +7,9 @@ import psycopg2
 import pytest
 from fastapi.testclient import TestClient
 
-from api.app import api
-from api import database
-from api.auth import generate_auth_token
+from api.main.app import api
+from api.main import database
+from api.main.auth import generate_auth_token
 from api.models.user import create_user, get_user_by_email
 
 DEFAULT_USER = {

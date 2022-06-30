@@ -5,8 +5,8 @@ from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
-from api.routes import login
-from api import constants
+from api import routes, constants
+
 
 fe_origin = os.environ.get("FRONTEND_ORIGIN")
 protocol = os.environ.get("PROTOCOL")
@@ -27,7 +27,7 @@ api.add_middleware(
 )
 
 
-api.include_router(login.router)
+api.include_router(routes.login.router)
 
 
 # TODO: Implement health model with intelligent checks

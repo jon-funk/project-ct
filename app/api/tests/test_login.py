@@ -2,7 +2,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from api.models.user import create_user
-from api.database import SessionLocal
+from api.main.database import SessionLocal
 
 @pytest.mark.needs(postgres=True)
 def test_valid_login(client: TestClient) -> None:
