@@ -11,7 +11,7 @@ api:
 
 testapi:
 	@echo "Running api unit tests..."
-	@docker compose up testapi
+	@docker compose up testapi --exit-code-from testapi
 
 db:
 	@echo "Starting db..."
