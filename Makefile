@@ -3,7 +3,7 @@ SHELL := /bin/bash
 
 all:
 	@echo "Starting project application..."
-	@docker compose up -d api
+	@docker compose up -d web
 
 api:
 	@echo "Starting api..."
@@ -11,11 +11,15 @@ api:
 
 testapi:
 	@echo "Running api unit tests..."
-	@docker compose up testapi
+	@docker compose up testapi --exit-code-from testapi
 
 db:
 	@echo "Starting db..."
 	@docker compose up -d db
+
+web:
+	@echo "Starting frontend and api..."
+	@docker compose up -d web
 
 automig:
 	@echo "Autogenerating migration in docker context"

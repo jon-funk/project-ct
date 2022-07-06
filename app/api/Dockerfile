@@ -1,10 +1,11 @@
 FROM python:3.9.1 as runtime
-RUN mkdir /app
-WORKDIR /app
+RUN mkdir -p /app/api
+WORKDIR /app/api
 
-COPY requirements.txt ./
+COPY requirements.txt /app/api
 RUN pip install --no-cache-dir -r requirements.txt
-COPY . .
+COPY . /api/api/
+WORKDIR /app
 
 # Setup user to represent developer permissions in container
 ARG USERNAME=python
