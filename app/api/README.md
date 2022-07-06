@@ -39,3 +39,14 @@ While your `api` container is running, you can open: http://localhost:5000/docs 
 `POSTGRES_HOST`
 
 `POSTGRES_DB`
+
+`POSTGRES_PORT`
+
+
+### Run Tests Locally
+To run API tests locally, run the following commands:
+
+```bash
+docker-compose up --detach db
+pytest
+```

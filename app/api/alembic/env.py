@@ -16,7 +16,7 @@ fileConfig(config.config_file_name)
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-from database import Base
+from api.main.database import Base
 # Populates Base.metadata by importing all models
 import models
 
