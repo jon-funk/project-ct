@@ -23,7 +23,7 @@ web:
 
 mig:
 	@echo "Creating database and applying migrations..."
-	@docker compose up migs --exit-code-from migs
+	@docker compose up migs
 
 automig:
 	@echo "Autogenerating migration in docker context"
