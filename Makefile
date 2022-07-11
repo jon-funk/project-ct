@@ -21,9 +21,13 @@ web:
 	@echo "Starting frontend and api..."
 	@docker compose up -d web
 
+mig:
+	@echo "Creating database and applying migrations..."
+	@docker compose up migs --exit-code-from migs
+
 automig:
 	@echo "Autogenerating migration in docker context"
-	@docker compose exec api bash -c "alembic revision --autogenerate -m 'CHANGEME'"
+	@docker compose exec api bash -c "cd /app/api && alembic revision --autogenerate -m 'CHANGEME'"
 
 prune:
 	@echo "Pruning docker artifacts..."
