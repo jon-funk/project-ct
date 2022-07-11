@@ -35,7 +35,7 @@ services:
     env_file: app/api/.env
     environment:
       - POSTGRES_HOST=db
-    command: cd app/api && alembic upgrade head
+    command: bash -c "cd app/api && alembic upgrade head"
     volumes:
       # Mount local codebase to reflect changes for local dev
       - ./app/api:/app/api
