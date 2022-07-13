@@ -27,6 +27,7 @@ mig:
 
 automig:
 	@echo "Autogenerating migration in docker context"
+	@docker compose up -d --no-recreate api
 	@docker compose exec api bash -c "cd /app/api && alembic revision --autogenerate -m 'CHANGEME'"
 
 prune:
