@@ -8,22 +8,19 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Session
 
 from api.main.database import Base
+from api.models.mixins import BasicMetrics
 
 
-class User(Base):
+class User(Base, BasicMetrics):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     user_uuid = Column(UUID(as_uuid=True), default=uuid.uuid4, unique=True)
     email = Column(String)
     hashed_password = Column(String)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, onupdate=datetime.utcnow)
-
 
 def get_user_by_email(db: Session, email: str) -> Union[User, None]:
     return db.query(User).filter(User.email == email).first()
-
 
 def create_user(db: Session, email: str, password: str) -> User:
     """Create a new user with the provided valid credentials.

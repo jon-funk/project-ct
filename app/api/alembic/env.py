@@ -18,7 +18,7 @@ fileConfig(config.config_file_name)
 # for 'autogenerate' support
 from api.main.database import Base
 # Populates Base.metadata by importing all models
-import models
+import api.models
 
 target_metadata = Base.metadata
 
