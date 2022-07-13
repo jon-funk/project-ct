@@ -1,6 +1,6 @@
 FROM node:18-alpine AS development
 
-ENV NODE_ENV development
+ENV NODE_ENV=development
 
 WORKDIR /code
 
@@ -28,7 +28,7 @@ COPY . .
 EXPOSE 3000
 
 # Start the app
-CMD [ "yarn", "start" ]
+CMD [ "yarn", "dev" ]
 
 
 FROM node:18-alpine AS builder
@@ -40,13 +40,10 @@ WORKDIR /code
 # Cache and Install dependencies
 COPY package.json .
 COPY yarn.lock .
-RUN yarn install --production
+RUN yarn build --production
 
 # Copy app files
 COPY . .
-
-RUN yarn build
-
 
 FROM nginx:1.23.0-alpine as production
 
