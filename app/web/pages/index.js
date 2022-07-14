@@ -5,21 +5,20 @@ import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
+import cookieCutter from "cookie-cutter";
+import { useRouter } from "next/router";
+import { useState } from "react";
+
 function Copyright(props) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
       {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{' '}
       {new Date().getFullYear()}
       {'.'}
     </Typography>
@@ -29,13 +28,45 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function SignIn() {
-  const handleSubmit = (event) => {
+  const router = useRouter()
+  const [errorMessage, setErrorMessage]  = useState("");
+  const [hasError, setError] = useState(false);
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
+    setError(true);
+    setErrorMessage("");
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+
+    // Make request to API to login
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_HOSTNAME}/login`, {
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json"
+        },
+        method: "POST",
+        body: JSON.stringify({
+          email: data.get("email"),
+          password: data.get("password")
+        })
+      })
+      const response_data = response.json()
+      if (response.ok) {
+        if (response_data.hasOwnProperty("access_token")) {
+          cookieCutter.set("access-token", response_data['access_token']);
+          router.push("/forms/form");
+        } else {
+          setErrorMessage({ errorMessage: response_data });
+          setError(true);
+          console.error("Expected access token, got: ", response_data);
+        }
+      }
+    } catch (error) {
+      setErrorMessage("Internal Server error, please try again later, or contact support.");
+      setError(true);
+      console.log("Error occurred while making API request", error);
+    }
   };
 
   return (
@@ -81,16 +112,17 @@ export default function SignIn() {
               control={<Checkbox value="remember" color="primary" />}
               label="Remember me"
             />
+            {hasError && <p>{errorMessage}</p>}
             <Button
               type="submit"
               fullWidth
               variant="contained"
-              href="/forms/form"
+              // href="/forms/form"
               sx={{ mt: 3, mb: 2 }}
             >
               Sign In
             </Button>
-            <Grid container>
+            {/* <Grid container>
               <Grid item xs>
                 <Link href="#" variant="body2">
                   Forgot password?
@@ -101,7 +133,7 @@ export default function SignIn() {
                   {"Don't have an account? Sign Up"}
                 </Link>
               </Grid>
-            </Grid>
+            </Grid> */}
           </Box>
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
