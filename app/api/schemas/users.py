@@ -26,7 +26,7 @@ def validate_password(password: str) -> str:
             found_non_alpha_num = True
 
 
-        if found_upper and found_digit:
+        if found_upper and found_digit and found_non_alpha_num:
             break
 
     if not found_digit:
@@ -44,7 +44,6 @@ def validate_password(password: str) -> str:
 class UserLoginResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
-
 
 class UserLogin(BaseModel):
     email: EmailStr

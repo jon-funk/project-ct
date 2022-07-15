@@ -2,19 +2,11 @@ FROM node:18-alpine AS development
 
 ENV NODE_ENV=development
 
+# user the default user the container comes with
+RUN mkdir /code && chown -R node:node /code
 WORKDIR /code
 
-ENV USER=diapers
-ENV UID=10001
-
-RUN adduser --disabled-password \
-    --gecos "" --home "/code" \
-    --shell "/sbin/nologin" \
-    --no-create-home --uid "${UID}" \
-    "${USER}"
-
-
-USER $USERNAME
+USER node
 
 # Cache and Install dependencies
 COPY package.json .
