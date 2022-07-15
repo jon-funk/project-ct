@@ -28,6 +28,8 @@ api.add_middleware(
 
 
 api.include_router(routes.login.router)
+api.include_router(routes.register.router)
+api.include_router(routes.refresh_token.router)
 
 
 # TODO: Implement health model with intelligent checks

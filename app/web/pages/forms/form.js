@@ -10,10 +10,13 @@ import { width } from '@mui/system';
 import { Script } from 'vm';
 
 
+import useAuth, { ProtectedRoute } from '../../contexts/auth';
 
-export default function SMFPEForm() {
+
+function SMFPEForm() {
   const [value, setValue] = React.useState(new Date());
-
+  const { user, loading } = useAuth();
+  const showSkeleton = !user || loading;
 
   const handleChange = (newValue) => {
     setValue(newValue);
@@ -188,3 +191,5 @@ const chiefComplaints = [
   { label: 'Allergic Reaction' , id: 15 },
   { label: 'Trauma' , id: 16 },
 ];
+
+export default ProtectedRoute(SMFPEForm);
