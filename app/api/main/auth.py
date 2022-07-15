@@ -50,7 +50,7 @@ def verify_password(password_hash: str, password: str) -> bool:
     return argon2.verify(password, password_hash)
 
 
-def generate_auth_token(data: dict, expires_minutes: int = 120) -> str:
+def generate_auth_token(data: dict, expires_minutes: int = 60 * 24) -> str:
     to_encode = data.copy()
     expire = datetime.utcnow() + timedelta(minutes=expires_minutes)
     to_encode.update({"exp": expire})
