@@ -12,9 +12,9 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 import { useRouter } from "next/router";
-import { hasCookie, setCookie } from "cookies-next";
+import Cookies from "js-cookie";
 
-import { SetAuthToken } from "./utils/auth"
+import { login } from "../utils/api";
 
 function Copyright(props) {
   return (
@@ -30,14 +30,15 @@ const theme = createTheme();
 
 export default function SignIn() {
   const router = useRouter();
-
+  
   // This should display quicker, but I suck at React, so we out here.
-  React.useLayoutEffect(() => {
-    if (hasCookie("auth-token")) {
-      console.log("User has valid authentication token, redirect to main forms page.")
-      router.push("/forms/form");
-    }
-  }, []);
+  React.useEffect(() => {
+      const token = Cookies.get("auth-token");
+      if (token) {
+          console.log("User has valid authentication token, redirect to main forms page.");
+          router.push("/forms/form");
+        }
+    }, []);
 
   const [errorMessage, setErrorMessage]  = React.useState("");
   const [hasError, setError] = React.useState(false);
@@ -47,42 +48,15 @@ export default function SignIn() {
     setError(false);
     setErrorMessage("");
     const data = new FormData(event.currentTarget);
+    const email = data.get("email");
+    const password = data.get("password");
 
-    // Make request to API to login
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_HOSTNAME}/login`, {
-        headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json"
-        },
-        method: "POST",
-        body: JSON.stringify({
-          email: data.get("email"),
-          password: data.get("password")
-        })
-      })
-      const response_data = await response.json()
-      if (response.ok) {
-        if (response_data.hasOwnProperty("access_token")) {
-          setCookie("access-token", response_data['access_token']);
-          router.push("/forms/form");
-        } else {
-          setErrorMessage("Malformed request from server, please try again and contact support if issue persists.");
-          setError(true);
-        }
-      } else {
-        console.error("Complete error received from server: ", response_data);
-        if (typeof response_data?.detail === "string") {
-          setErrorMessage(response_data?.detail);
-        } else {
-          setErrorMessage(response_data?.detail[0].msg);
-        }
-        setError(true);
-      }
-    } catch (error) {
-      setErrorMessage("Internal Server error, please try again later, or contact support.");
+    const errorMessage = await login(email, password);
+    if (!errorMessage) {
+      router.push("/forms/form");
+    } else {
+      setErrorMessage(errorMessage);
       setError(true);
-      console.log("Error occurred while making API request", error);
     }
   };
 
@@ -156,4 +130,5 @@ export default function SignIn() {
       </Container>
     </ThemeProvider>
   );
+
 }
