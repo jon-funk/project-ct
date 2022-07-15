@@ -11,9 +11,10 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
-import cookieCutter from "cookie-cutter";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { hasCookie, setCookie } from "cookies-next";
+
+import { SetAuthToken } from "./utils/auth"
 
 function Copyright(props) {
   return (
@@ -28,13 +29,22 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function SignIn() {
-  const router = useRouter()
-  const [errorMessage, setErrorMessage]  = useState("");
-  const [hasError, setError] = useState(false);
+  const router = useRouter();
+
+  // This should display quicker, but I suck at React, so we out here.
+  React.useLayoutEffect(() => {
+    if (hasCookie("auth-token")) {
+      console.log("User has valid authentication token, redirect to main forms page.")
+      router.push("/forms/form");
+    }
+  }, []);
+
+  const [errorMessage, setErrorMessage]  = React.useState("");
+  const [hasError, setError] = React.useState(false);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setError(true);
+    setError(false);
     setErrorMessage("");
     const data = new FormData(event.currentTarget);
 
@@ -51,16 +61,23 @@ export default function SignIn() {
           password: data.get("password")
         })
       })
-      const response_data = response.json()
+      const response_data = await response.json()
       if (response.ok) {
         if (response_data.hasOwnProperty("access_token")) {
-          cookieCutter.set("access-token", response_data['access_token']);
+          setCookie("access-token", response_data['access_token']);
           router.push("/forms/form");
         } else {
-          setErrorMessage({ errorMessage: response_data });
+          setErrorMessage("Malformed request from server, please try again and contact support if issue persists.");
           setError(true);
-          console.error("Expected access token, got: ", response_data);
         }
+      } else {
+        console.error("Complete error received from server: ", response_data);
+        if (typeof response_data?.detail === "string") {
+          setErrorMessage(response_data?.detail);
+        } else {
+          setErrorMessage(response_data?.detail[0].msg);
+        }
+        setError(true);
       }
     } catch (error) {
       setErrorMessage("Internal Server error, please try again later, or contact support.");
@@ -112,12 +129,11 @@ export default function SignIn() {
               control={<Checkbox value="remember" color="primary" />}
               label="Remember me"
             />
-            {hasError && <p>{errorMessage}</p>}
+            {hasError && <p style={{ color: "red" }}>{errorMessage}</p>}
             <Button
               type="submit"
               fullWidth
               variant="contained"
-              // href="/forms/form"
               sx={{ mt: 3, mb: 2 }}
             >
               Sign In
