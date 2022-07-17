@@ -6,8 +6,6 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { width } from '@mui/system';
-import { Script } from 'vm';
 
 
 import useAuth, { ProtectedRoute } from '../../contexts/auth';
@@ -15,8 +13,8 @@ import useAuth, { ProtectedRoute } from '../../contexts/auth';
 
 function SMFPEForm() {
   const [value, setValue] = React.useState(new Date());
-  const { user, loading } = useAuth();
-  const showSkeleton = !user || loading;
+  // const { user, loading } = useAuth();
+  console.log("Made it to the forms page");
 
   const handleChange = (newValue) => {
     setValue(newValue);

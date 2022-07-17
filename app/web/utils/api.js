@@ -46,6 +46,7 @@ export async function login(email, password) {
         
         if (response.ok) {
           if (response_data.hasOwnProperty("access_token")) {
+            console.log("Setting an authentication token")
             Cookies.set("auth-token", response_data['access_token'], { expires: 1, httpOnly: true })
             return "";
           } else {
