@@ -16,7 +16,6 @@ import useAuth, { ProtectedRoute } from '../../contexts/auth';
 function SMFPEForm() {
   const [value, setValue] = React.useState(new Date());
   const { user, loading } = useAuth();
-  const showSkeleton = !user || loading;
 
   const handleChange = (newValue) => {
     setValue(newValue);

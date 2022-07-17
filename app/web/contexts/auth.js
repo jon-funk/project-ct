@@ -1,5 +1,4 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
-import Cookies from "js-cookie";
 import { useRouter } from "next/router";
 import { HasRefreshedAuthToken } from "../utils/api.js";
 
@@ -14,24 +13,26 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        async function loadUserFromCookies() {
-            const token = Cookies.get("auth-token");
-            if (token) {
+        async function verifyAuthToken() {
+            if (window.localStorage.getItem("auth-token")) {
+                const token = `Bearer ${window.localStorage.getItem("auth-token")}`;
                 const authenticated = await HasRefreshedAuthToken(token);
                 if (authenticated) {
                     setUser(true);
                 }
+            } else {
+                console.log("auth token was not retrieved from local storage")
             }
             setLoading(false);
         }
 
-        loadUserFromCookies();
+        verifyAuthToken();
     }, [])
 
     const logout = () => {
-        Cookies.remove("auth-token");
+        window.localStorage.removeItem("auth-token");
         setUser(false);
-        router.push("/")
+        router.push("/");
     }
 
     return (
@@ -48,7 +49,9 @@ export function ProtectedRoute(Component) {
 
         useEffect(() => {
             if (!isAuthenticated && !loading) {
-                router.push("/")
+                // User is trying to access authenticated route without credentials
+                window.location.pathname = "/";
+                // router.push("/");
             }
         }, [loading, isAuthenticated]);
 
