@@ -12,7 +12,6 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 import { useRouter } from "next/router";
-import Cookies from "js-cookie";
 
 import { login } from "../utils/api";
 
@@ -30,14 +29,13 @@ const theme = createTheme();
 
 export default function SignIn() {
   const router = useRouter();
-  
+
   // This should display quicker, but I suck at React, so we out here.
   React.useEffect(() => {
-      const token = Cookies.get("auth-token");
-      if (token) {
-          console.log("User has valid authentication token, redirect to main forms page.");
-          router.push("/forms/form");
-        }
+    const token = window.localStorage.getItem("auth-token");
+    if (token) {
+        router.push("/forms/form");
+      }
     }, []);
 
   const [errorMessage, setErrorMessage]  = React.useState("");
@@ -53,7 +51,8 @@ export default function SignIn() {
 
     const errorMessage = await login(email, password);
     if (!errorMessage) {
-      router.push("/forms/form");
+      window.location.pathname = "/forms/form";
+      // router.push("/forms/form");
     } else {
       setErrorMessage(errorMessage);
       setError(true);
