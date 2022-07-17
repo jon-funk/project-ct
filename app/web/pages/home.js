@@ -21,7 +21,7 @@ function Home() {
             <> 
                 <Container>
                     <ProtectedNavbar/>
-                    <h1 >
+                    <h1>
                         Display of all entries should be shown here.
                     </h1>
                 </Container>
@@ -29,14 +29,5 @@ function Home() {
         )
     }
 }
-
-Home.getLayout = function getLayout(page) {
-    return (
-      <>
-        <ProtectedNavbar/>
-        {page}
-      </>
-    )
-  }
 
 export default ProtectedRoute(Home);
