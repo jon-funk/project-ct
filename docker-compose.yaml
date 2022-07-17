@@ -83,7 +83,11 @@ services:
       dockerfile: Dockerfile
       target: development
     volumes:
-      - ./app/web:/code
+      - ./app/web/contexts:/code/contexts
+      - ./app/web/pages:/code/pages
+      - ./app/web/public:/code/public
+      - ./app/web/styles:/code/styles
+      - ./app/web/utils:/code/utils
     ports:
       - 3000:3000
     depends_on:
