@@ -13,8 +13,6 @@ import useAuth, { ProtectedRoute } from '../../contexts/auth';
 
 function SMFPEForm() {
   const [value, setValue] = React.useState(new Date());
-  // const { user, loading } = useAuth();
-  console.log("Made it to the forms page");
 
   const handleChange = (newValue) => {
     setValue(newValue);

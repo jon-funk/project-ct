@@ -1,24 +1,24 @@
-import Cookies from 'js-cookie'
-
-
 // Try and get a refresh token to verify a user token is valid. If the server verifies that it's
 // valid, return true. Otherwise return false.
 export async function HasRefreshedAuthToken(token) {
     try {
         // Get a refresh token, otherwise redirect to login page.
         const response = await fetch(`${process.env.NEXT_PUBLIC_HOSTNAME}/refresh-token`, {
-          headers: {
-            "Authorization": `Bearer ${token}`,
-          },
           method: "GET",
+          headers: {
+            Authorization: token
+          },
+          mode: 'cors',
+          credentials: 'include'
+
         });
         const response_data = await response.json();
         if (response.ok) {
-            Cookies.set("auth-token", response_data['access_token'], { expires: 1, httpOnly: true });
-            return true;
+          window.localStorage.setItem("auth-token", response_data['access_token']);
+          return true;
         } else {
-            console.error("Failed to refresh user token. Received response: ", response_data);
-            Cookies.remove("auth-token");
+          console.error("Failed to refresh user token. Received response: ", response_data);
+          window.localStorage.removeItem("auth-token");
         }
       } catch (error) {
         console.error("Error while trying to request refresh token: ", error);
@@ -37,17 +37,18 @@ export async function login(email, password) {
             "Content-Type": "application/json"
           },
           method: "POST",
+          mode: 'cors',
+          credentials: 'include',
           body: JSON.stringify({
             email: email,
             password: password
           })
         })
-        const response_data = await response.json()
-        
+
+        const response_data = await response.json();        
         if (response.ok) {
           if (response_data.hasOwnProperty("access_token")) {
-            console.log("Setting an authentication token")
-            Cookies.set("auth-token", response_data['access_token'], { expires: 1, httpOnly: true })
+            window.localStorage.setItem("auth-token", response_data['access_token']);
             return "";
           } else {
             console.error("Malformed request from server: ", response_data);
