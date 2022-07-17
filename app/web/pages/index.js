@@ -49,7 +49,6 @@ export default function SignIn() {
     const email = data.get("email");
     const password = data.get("password");
 
-    console.log("About to make auth request...")
     const errorMessage = await login(email, password);
     if (!errorMessage) {
       window.location.pathname = "/forms/form";
