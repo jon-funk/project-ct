@@ -8,8 +8,8 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 
-import useAuth, { ProtectedRoute } from '../../contexts/auth';
-
+import { ProtectedRoute } from '../../contexts/auth';
+import ProtectedNavbar from "../../components/protected_navbar";
 
 function SMFPEForm() {
   const [value, setValue] = React.useState(new Date());
@@ -20,6 +20,7 @@ function SMFPEForm() {
 
   return (
     <>
+    <ProtectedNavbar/>
     <Container maxWidth="sm">
       <Grid item xs={8}>
         <h2>
@@ -160,7 +161,7 @@ function SMFPEForm() {
             </RadioGroup>
           </Grid>
           <Grid item xs={12}>
-            <Button fullWidth="true" variant="contained">Submit</Button>
+            <Button fullWidth variant="contained">Submit</Button>
           </Grid>
         </Grid>
       </FormGroup>

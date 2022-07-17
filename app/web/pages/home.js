@@ -1,8 +1,8 @@
-import React from "react";
 import { Container } from '@mui/material';
 
 import useAuth, { ProtectedRoute } from '../contexts/auth';
-import { ProtectedNavbar } from "../components/protected_navbar";
+import ProtectedNavbar from "../components/protected_navbar";
+
 
 function Home() {
     const { user, loading } = useAuth();
@@ -11,6 +11,7 @@ function Home() {
     if (notAuthenticated) {
         return (
             <>
+                <ProtectedNavbar/>
                 <Container maxWidth="md"></Container>
             </>
         )
@@ -18,9 +19,9 @@ function Home() {
         // Display your desired component here
         return (
             <> 
-                <ProtectedNavbar/>
                 <Container>
-                    <h1>
+                    <ProtectedNavbar/>
+                    <h1 >
                         Display of all entries should be shown here.
                     </h1>
                 </Container>
@@ -28,5 +29,14 @@ function Home() {
         )
     }
 }
+
+Home.getLayout = function getLayout(page) {
+    return (
+      <>
+        <ProtectedNavbar/>
+        {page}
+      </>
+    )
+  }
 
 export default ProtectedRoute(Home);
