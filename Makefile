@@ -37,6 +37,7 @@ prune:
 env:
 	@echo "Setting up default env"
 	@cp app/api/.env-example app/api/.env
+	@cp app/web/.env-example app/web/.env.local
 
 stop:
 	@echo "Stopping containers..."
