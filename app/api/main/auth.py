@@ -22,6 +22,9 @@ def load_current_user(request: Request, db: Session = Depends(get_db)) -> T.Any:
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
+    if not "Authorization" in request.headers:
+        raise credentials_exception
+
     token = request.headers["Authorization"]
     if not token:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization token not included in request.")

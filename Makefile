@@ -37,6 +37,7 @@ prune:
 env:
 	@echo "Setting up default env"
 	@cp app/api/.env-example app/api/.env
+	@cp app/web/.env-example app/web/.env.local
 
 stop:
 	@echo "Stopping containers..."
@@ -45,3 +46,7 @@ stop:
 clean: stop |
 	@echo "Cleaning up all container artifacts..."
 	@docker system prune -f -a --volumes
+	@echo "Deleting thicc node_modules"
+	@rm -rf app/web/node_modules
+	@echo "Deleting .next build artifacts"
+	@rm -rf app/web/.next
