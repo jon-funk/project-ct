@@ -1,0 +1,5 @@
+runtime: python3.9
+service: api
+entrypoint: /bin/sh -c "/startup.sh"
+runtime_config:
+  python_version: 3

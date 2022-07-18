@@ -1,0 +1,1 @@
+cd /app/api && alembic upgrade head && cd /app && uvicorn api.main.app:api --reload --host=0.0.0.0 --port=5000
