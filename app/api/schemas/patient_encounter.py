@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel
 
 
@@ -7,7 +7,7 @@ class PatientEncounterSchema(BaseModel):
     """
     An encounter with a given patient.
     """
-    patient_rfid: str
+    patient_rfid: Optional[str]
     document_num: str
     location: str
     handover_from: str
@@ -21,7 +21,7 @@ class PatientEncounterSchema(BaseModel):
     departure_time: datetime
     departure_dest: str
     comment: str
-    qr_code: str
+    qr_code: Optional[str]
     document_num: str
     
     class Config:
