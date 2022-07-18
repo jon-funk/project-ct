@@ -6,32 +6,47 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { width } from '@mui/system';
-import { Script } from 'vm';
 
 
 
 export default function SMFPEForm() {
   const [value, setValue] = React.useState(new Date());
-
+  const [arrivalTime, setArrivalTime] = React.useState(new Date());
+  const [departureTime, setDepartureTime] = React.useState(new Date());
 
   const handleChange = (newValue) => {
     setValue(newValue);
   };
 
+  const handleArrivalTimeChange = (newValue) => {
+    setArrivalTime(newValue);
+  };
+
+  const handleDepartureTimeChange = (newValue) => {
+    setDepartureTime(newValue);
+  };
+
   return (
     <>
     <Container maxWidth="sm">
-      <Grid item xs={8}>
-        <h2>
-          <Link href="/">
-            <a>Shambala Music Festival Patient Encounter Form</a>
-          </Link>
-        </h2>
-      </Grid>
       <FormGroup action="/send-data-here" method="post">
-        <Grid container spacing={2}>
+        <Grid container spacing={2} style={{padding: 1 + 'rem'}}>
           <Grid item xs={12}>
+            <h2>
+              <Link href="/">
+                <a>Music Festival Patient Encounter Form</a>
+              </Link>
+            </h2>
+          </Grid>
+          <Grid item xs={6}>
+            <InputLabel>Patient RFID: </InputLabel>
+            <TextField id="patient-rfid" label="Wristband RFID" variant="outlined" />
+            </Grid>
+          <Grid item xs={6}>
+            <InputLabel>Document #: </InputLabel>
+            <TextField id="document-number" label="eg. 1000" variant="outlined" />
+          </Grid>
+          <Grid item xs={6}>
             <InputLabel id="location-select-label">Location</InputLabel>
             <Select
               labelId="location-select-label"
@@ -39,9 +54,14 @@ export default function SMFPEForm() {
               defaultValue="Main Medical"
               label="Location"
               disabled
+              required
               onChange={handleChange}>
               <MenuItem value="Main Medical">Main Medical</MenuItem>
             </Select>
+          </Grid>
+          <Grid item xs={6}>
+            <InputLabel>Handover From: </InputLabel>
+            <TextField id="handover-from" label="Who brought the patient" variant="outlined" required />
           </Grid>
           <Grid item xs={6}>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -49,8 +69,8 @@ export default function SMFPEForm() {
               <MobileDatePicker
                 inputFormat="MM/dd/yyyy"
                 required
-                value={value}
-                onChange={handleChange}
+                value={arrivalTime}
+                onChange={handleArrivalTimeChange}
                 renderInput={(params) => <TextField {...params} />}
               />
             </LocalizationProvider>
@@ -61,8 +81,8 @@ export default function SMFPEForm() {
               <TimePicker
                 required
                 ampm={false}
-                value={value}
-                onChange={handleChange}
+                value={arrivalTime}
+                onChange={handleArrivalTimeChange}
                 renderInput={(params) => <TextField {...params} />}
               />
             </LocalizationProvider>
@@ -81,16 +101,14 @@ export default function SMFPEForm() {
             </RadioGroup>
           </Grid>
           <Grid item xs={12}>
-            <InputLabel>Patient Occupation: </InputLabel>
+            <InputLabel>Is the patient a worker who is on shift: </InputLabel>
             <RadioGroup
               aria-labelledby="patient-Occupation"
-              name="radio-buttons-group"
+              name="checkbox-group"
               row
               required>
-              <FormControlLabel value="event-staff" control={<Radio />} label="Event Staff" />
-              <FormControlLabel value="performer" control={<Radio />} label="Performer" />
-              <FormControlLabel value="spectator" control={<Radio />} label="Spectator" />
-              <FormControlLabel value="unknown" control={<Radio />} label="Unknown" />
+              <FormControlLabel value="staff-yes" control={<Radio />} label="Yes" />
+              <FormControlLabel value="staff-no" control={<Radio />} label="No" />
             </RadioGroup>
           </Grid>
           <Grid item xs={12}>
@@ -124,12 +142,12 @@ export default function SMFPEForm() {
               <FormControlLabel value="med-transport" control={<Radio />} label="Medical Transport" />
               <FormControlLabel value="security" control={<Radio />} label="Brought by Security" />
               <FormControlLabel value="harm-reduction" control={<Radio />} label="Brought by Harm Reduction" />
-              <FormControlLabel value="other" control={<Radio />} label="other"/>
+              <FormControlLabel value="other" control={<Radio />} label="Other"/>
             </RadioGroup>
           </Grid>
           <Grid item xs={6}>
-            <InputLabel>Handover From: </InputLabel>
-            <TextField id="handover-from" label="Please enter your name" variant="outlined" required />
+            <InputLabel>Handover To: </InputLabel>
+            <TextField id="handover-to" label="Patient is going with..." variant="outlined" />
           </Grid>
           <br/>
           <Grid item xs={6}>
@@ -138,8 +156,8 @@ export default function SMFPEForm() {
               <TimePicker
                 required
                 ampm={false}
-                value={value}
-                onChange={handleChange}
+                value={departureTime}
+                onChange={handleDepartureTimeChange}
                 renderInput={(params) => <TextField {...params} />}
               />
             </LocalizationProvider>
@@ -159,6 +177,10 @@ export default function SMFPEForm() {
               <FormControlLabel value="hostpital-ambulance" control={<Radio />} label="Hospital by ambulance" />
               <FormControlLabel value="other" control={<Radio />} label="Other" />
             </RadioGroup>
+          </Grid>
+          <Grid item xs={12}>
+            <InputLabel>Comments: </InputLabel>
+            <TextField id="comments" label="enter comments here..." variant="outlined" fullWidth  />
           </Grid>
           <Grid item xs={12}>
             <Button fullWidth="true" variant="contained">Submit</Button>
