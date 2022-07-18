@@ -1,4 +1,7 @@
 // Try and get a refresh token to verify a user token is valid. If the server verifies that it's
+
+import { responsiveFontSizes } from "@mui/material";
+
 // valid, return true. Otherwise return false.
 export async function HasRefreshedAuthToken(token) {
     try {
@@ -66,4 +69,30 @@ export async function login(email, password) {
         console.log("Error occurred while making API request", error);
         return "Internal Server error, please try again later, or contact support.";
       }
+}
+
+
+// Get 
+export async function getAllPatientEncounters() {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_HOSTNAME}/patient-encounters`, {
+      headers: {
+        "Accept": "application/json"
+      },
+      method: "GET",
+      mode: "cors",
+      credentials: "include"
+    });
+
+    const response_data = await response.json();
+    if (response.ok) {
+      return response_data;
+    } else {
+      console.error("Unable to retrieve data from API. Received error: ", response_data);
+      return response_data;
+    }
+  } catch(error) {
+    console.error("Request to retrieve patient encounters list failed. Received error: ", response_data);
+    return "";
+  }
 }
