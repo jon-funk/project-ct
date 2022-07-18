@@ -24,10 +24,10 @@ services:
       timeout: 5s
       retries: 5
     depends_on:
-      - migrations
+      - migs
       - testapi
 
-  migrations:
+  migs:
     container_name: migs
     build:
       context: app/api/
@@ -35,7 +35,7 @@ services:
     env_file: app/api/.env
     environment:
       - POSTGRES_HOST=db
-    command: alembic upgrade head
+    command: bash -c "cd /app/api && alembic upgrade head"
     volumes:
       # Mount local codebase to reflect changes for local dev
       - ./app/api:/app/api
@@ -45,6 +45,7 @@ services:
 
   db:
     container_name: db
+    user: postgres
     image: postgres:13.2-alpine
     restart: always
     env_file: app/api/.env
@@ -72,22 +73,25 @@ services:
     volumes:
       - ./app/api/:/app/api
     depends_on:
-      - migrations
+      - migs
 
   web:
     container_name: web
-    user: 1000:1000
+    user: node
     build:
       context: app/web/
-      dockerfile: Dockerfile    
+      dockerfile: Dockerfile
       target: development
     volumes:
-      - ./app/web:/code
+      - ./app/web/contexts:/code/contexts
+      - ./app/web/pages:/code/pages
+      - ./app/web/public:/code/public
+      - ./app/web/styles:/code/styles
+      - ./app/web/utils:/code/utils
     ports:
       - 3000:3000
     depends_on:
       - api
-
 
 networks:
   default:

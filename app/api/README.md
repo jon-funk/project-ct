@@ -3,15 +3,15 @@
 Example template to demonstrate FastAPI, has a basic local dev and CI for OpenShift
 
 ## Local dev
-* Start by setting up your `env` file via: `cp app/.env-example app/.env`
+* Start by setting up your `env` file via: `make env`
 
-* Start the api for local testing via: `docker-compose up -d api`
+* Start the api for local testing via: `make api`
 
 `Note`: starting the api container will bring up a database, run migrations to the latest revision, and then perform testing before the API starts.
 
-* Run tests in a docker context: `docker-compose up tests`
+* Run tests in a docker context: `make testapi`
 
-`Note`: the `POSTGRES_HOST` environment variable is overridden in a docker container context when running `docker-compose`
+`Note`: the `POSTGRES_HOST` environment variable is overridden in a docker container context when running `docker-compose` to account for the docker subnet.
 
 A [devcontainer](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) configuration is also supplied so that you can do container-native development with vscode if you wish via remote-containers. This will let you avoid installing dependencies locally and python virtual environments.
 
@@ -24,7 +24,9 @@ For ease of development, you can generate automatic migrations based your source
 
 `make automig`
 
-This performs a diff between the previous migrations, your database schema, and your current code.
+This performs a diff between the previous migrations, your database schema, and your current code. So all you need to do is write new models or change existing models, and then run `make automig` and your new migrations will be generated for you.
+
+After you've generated your migrations, you can apply them with `make mig`
 
 ## API Swagger Docs
 

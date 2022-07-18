@@ -28,8 +28,6 @@ def login_user(user: UserLogin, db: Session = Depends(get_db)) -> Any:
             status_code=401, detail="Username and password do not match."
         )
 
-    print(found_user.email)
-
     token = generate_auth_token(data={"sub": found_user.email})
 
     return UserLoginResponse(access_token=token)

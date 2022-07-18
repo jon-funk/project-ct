@@ -5,21 +5,20 @@ import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
+import { useRouter } from "next/router";
+
+import { login } from "../utils/api";
+
 function Copyright(props) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
       {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{' '}
       {new Date().getFullYear()}
       {'.'}
     </Typography>
@@ -29,13 +28,35 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function SignIn() {
-  const handleSubmit = (event) => {
+  const router = useRouter();
+
+  // This should display quicker, but I suck at React, so we out here.
+  React.useEffect(() => {
+    const token = window.localStorage.getItem("auth-token");
+    if (token) {
+        router.push("/forms/form");
+      }
+    }, []);
+
+  const [errorMessage, setErrorMessage]  = React.useState("");
+  const [hasError, setError] = React.useState(false);
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
+    setError(false);
+    setErrorMessage("");
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    const email = data.get("email");
+    const password = data.get("password");
+
+    const errorMessage = await login(email, password);
+    if (!errorMessage) {
+      window.location.pathname = "/forms/form";
+      // router.push("/forms/form");
+    } else {
+      setErrorMessage(errorMessage);
+      setError(true);
+    }
   };
 
   return (
@@ -81,16 +102,16 @@ export default function SignIn() {
               control={<Checkbox value="remember" color="primary" />}
               label="Remember me"
             />
+            {hasError && <p style={{ color: "red" }}>{errorMessage}</p>}
             <Button
               type="submit"
               fullWidth
               variant="contained"
-              href="/forms/form"
               sx={{ mt: 3, mb: 2 }}
             >
               Sign In
             </Button>
-            <Grid container>
+            {/* <Grid container>
               <Grid item xs>
                 <Link href="#" variant="body2">
                   Forgot password?
@@ -101,11 +122,12 @@ export default function SignIn() {
                   {"Don't have an account? Sign Up"}
                 </Link>
               </Grid>
-            </Grid>
+            </Grid> */}
           </Box>
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
       </Container>
     </ThemeProvider>
   );
+
 }

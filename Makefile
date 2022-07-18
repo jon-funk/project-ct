@@ -21,9 +21,14 @@ web:
 	@echo "Starting frontend and api..."
 	@docker compose up -d web
 
+mig:
+	@echo "Creating database and applying migrations..."
+	@docker compose up migs
+
 automig:
 	@echo "Autogenerating migration in docker context"
-	@docker compose exec api bash -c "alembic revision --autogenerate -m 'CHANGEME'"
+	@docker compose up -d --no-recreate api
+	@docker compose exec api bash -c "cd /app/api && alembic revision --autogenerate -m 'CHANGEME'"
 
 prune:
 	@echo "Pruning docker artifacts..."
@@ -32,6 +37,7 @@ prune:
 env:
 	@echo "Setting up default env"
 	@cp app/api/.env-example app/api/.env
+	@cp app/web/.env-example app/web/.env.local
 
 stop:
 	@echo "Stopping containers..."
@@ -40,3 +46,7 @@ stop:
 clean: stop |
 	@echo "Cleaning up all container artifacts..."
 	@docker system prune -f -a --volumes
+	@echo "Deleting thicc node_modules"
+	@rm -rf app/web/node_modules
+	@echo "Deleting .next build artifacts"
+	@rm -rf app/web/.next

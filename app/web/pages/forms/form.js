@@ -8,11 +8,13 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 
+import useAuth, { ProtectedRoute } from '../../contexts/auth';
 
 export default function SMFPEForm() {
   const [value, setValue] = React.useState(new Date());
   const [arrivalTime, setArrivalTime] = React.useState(new Date());
   const [departureTime, setDepartureTime] = React.useState(new Date());
+  const { user, loading } = useAuth();
 
   const handleChange = (newValue) => {
     setValue(newValue);
@@ -210,3 +212,5 @@ const chiefComplaints = [
   { label: 'Allergic Reaction' , id: 15 },
   { label: 'Trauma' , id: 16 },
 ];
+
+export default ProtectedRoute(SMFPEForm);
