@@ -48,6 +48,13 @@ prod:
 	@docker compose cp webprod:/code/.next app/web/.next
 	@echo "Deploying web to Google Cloud App Engine..."
 	@gcloud app deploy app/web/app.yaml --quiet
+	@echo "..."
+	@echo "Deploying API to Google Cloud App Engine..."
+	@gcloud app deploy app/api/api.yaml --quiet
+	@gcloud app deploy app/api/dispatch.yaml --quiet
+
+	@echo "REMINDER: Run make clean now to remove production artifacts that might be mounted by your dev containers!"
+
 
 stop:
 	@echo "Stopping containers..."
