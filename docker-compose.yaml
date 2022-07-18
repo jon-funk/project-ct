@@ -8,13 +8,13 @@ services:
     user: 1000:1000
     build:
       context: app/api/
-      dockerfile: Dockerfile
+      dockerfile: .Dockerfile
     env_file: app/api/.env
     environment:
       - POSTGRES_HOST=db
     ports:
       - 5000:5000
-    command: uvicorn api.main.app:api --reload --host=0.0.0.0 --port=5000
+    command: /bin/sh -c "/app/api/startup_dev.sh"
     volumes:
       # Mount local codebase to reflect changes for local dev
       - ./app/api:/app/api
@@ -31,7 +31,7 @@ services:
     container_name: migs
     build:
       context: app/api/
-      dockerfile: Dockerfile
+      dockerfile: .Dockerfile
     env_file: app/api/.env
     environment:
       - POSTGRES_HOST=db
@@ -64,7 +64,7 @@ services:
     user: 1000:1000
     build:
       context: app/api/
-      dockerfile: Dockerfile
+      dockerfile: .Dockerfile
     env_file: app/api/.env
     environment:
       - POSTGRES_HOST=db
