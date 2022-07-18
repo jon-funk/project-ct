@@ -39,6 +39,16 @@ env:
 	@cp app/api/.env-example app/api/.env
 	@cp app/web/.env-example app/web/.env.local
 
+prod:
+	@echo "..."
+	@echo "Standing up web to include .next build artifacts in web service..."
+	@docker compose up --build -d webprod
+	@mkdir app/web/.next/ || true
+	@echo "Extracting production build artifacts for upload..."
+	@docker compose cp webprod:/code/.next app/web/.next
+	@echo "Deploying web to Google Cloud App Engine..."
+	@gcloud app deploy app/web/app.yaml --quiet
+
 stop:
 	@echo "Stopping containers..."
 	@docker compose down

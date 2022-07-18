@@ -1,0 +1,4 @@
+# Next.js source code
+yarn.lock
+nginx.conf
+.gitignore
