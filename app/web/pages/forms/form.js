@@ -6,11 +6,9 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-
-
 import useAuth, { ProtectedRoute } from '../../contexts/auth';
 
-export default function SMFPEForm() {
+export function SMFPEForm() {
   const [value, setValue] = React.useState(new Date());
   const [arrivalTime, setArrivalTime] = React.useState(new Date());
   const [departureTime, setDepartureTime] = React.useState(new Date());
@@ -212,3 +210,5 @@ const chiefComplaints = [
   { label: 'Allergic Reaction' , id: 15 },
   { label: 'Trauma' , id: 16 },
 ];
+
+export default ProtectedRoute(SMFPEForm);
