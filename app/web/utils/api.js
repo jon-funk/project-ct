@@ -68,12 +68,13 @@ export async function login(email, password) {
       }
 }
 
-export async function submit_form(formData) {
+export async function submitPatientEncounterForm(formData, token) {
   try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_HOSTNAME}/create-patient-encounter`, {
         headers: {
           "Accept": "application/json",
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Authorization": token
         },
         method: "POST",
         mode: 'cors',
@@ -86,8 +87,9 @@ export async function submit_form(formData) {
           date: formData.date,
           arrival_time: formData.arrival_time,
           triage_acuity: formData.triage_acuity,
-          on_shift: formData.on_shift,
-          chief_complaints: formData.chief_complaints,
+          // Hack to convert on_shift to a boolean
+          on_shift: formData.on_shift === "Yes" ? true : false,
+          chief_complaints: formData.chief_complaints.join(" "),
           arrival_method: formData.arrival_method,
           handover_too: formData.handover_too,
           departure_time: formData.departure_time,
@@ -102,15 +104,15 @@ export async function submit_form(formData) {
           window.localStorage.setItem("auth-token", response_data['access_token']);
           return "";
         } else {
-          console.error("Malformed request from server: ", response_data);
-          return "Malformed request from server, please try again and contact support if issue persists.";
+          console.error("Malformed response from server: ", response_data);
+          return "Malformed response from server, please try again and contact support if issue persists.";
         }
       } else {
         console.error("Complete error received from server: ", response_data);
         if (typeof response_data?.detail === "string") {
           return response_data?.detail;
         } else {
-          return response_data?.detail[0].msg;
+          return `${response_data?.detail[0]?.loc[1]}: ${response_data?.detail[0].msg}`;
         }
       }
     } catch (error) {

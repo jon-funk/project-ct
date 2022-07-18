@@ -10,7 +10,7 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { useAuth, ProtectedRoute } from '../../contexts/auth';
 import ProtectedNavbar from "../../components/protected_navbar";
 
-import { submit_form } from "../../utils/api";
+import { submitPatientEncounterForm } from "../../utils/api";
 
  const MFPEFormData = {
   patient_rfid: '',
@@ -67,8 +67,9 @@ function MFPEForm() {
     setError(false);
     setErrorMessage("");
     const data = formValues;
+    const token = `Bearer ${window.localStorage.getItem("auth-token")}`;
 
-    const errorMessage = await submit_form(data);
+    const errorMessage = await submitPatientEncounterForm(data, token);
     if (!errorMessage) {
       window.location.pathname = "/forms/form";
     } else {
@@ -278,6 +279,7 @@ function MFPEForm() {
                 value={formValues.comment}
                 onChange={handleChange}  />
             </Grid>
+            {hasError && <p style={{ color: "red" }}>{errorMessage}</p>}
             <Grid item xs={12}>
             <Button type="submit" fullWidth={true} variant="contained">Submit</Button>
             </Grid>
