@@ -6,13 +6,15 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+
 import useAuth, { ProtectedRoute } from '../../contexts/auth';
+import { ProtectedRoute } from '../../contexts/auth';
+import ProtectedNavbar from "../../components/protected_navbar";
+
 
 function SMFPEForm() {
-  const [value, setValue] = React.useState(new Date());
   const [arrivalTime, setArrivalTime] = React.useState(new Date());
   const [departureTime, setDepartureTime] = React.useState(new Date());
-  const { user, loading } = useAuth();
 
   const handleChange = (newValue) => {
     setValue(newValue);
@@ -28,6 +30,7 @@ function SMFPEForm() {
 
   return (
     <>
+    <ProtectedNavbar/>
     <Container maxWidth="sm">
       <FormGroup action="/send-data-here" method="post">
         <Grid container spacing={2} style={{padding: 1 + 'rem'}}>
