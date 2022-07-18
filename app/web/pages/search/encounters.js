@@ -37,7 +37,6 @@ import useAuth, { ProtectedRoute } from '../../contexts/auth';
 function PESearch() {
     const [value, setValue] = React.useState(new Date());
     const { user, loading } = useAuth();
-
     const columns = [
         { field: 'id', headerName: 'UID', width: 50 },
         {
@@ -55,11 +54,11 @@ function PESearch() {
     ];
 
     const rows = [
-        { id: 1, view: "PH", doc_id: 1, triage_acuity: 'yellow', arrival_method: 'yee', arrival_time: 'haw', departure_time: 'meemaw' },
-        { id: 2, view: "PH", doc_id: 2, triage_acuity: 'green', arrival_method: 'yee', arrival_time: 'haw', departure_time: 'meemaw' },
-        { id: 3, view: "PH", doc_id: 3, triage_acuity: 'green', arrival_method: 'yee', arrival_time: 'haw', departure_time: 'meemaw' },
-        { id: 4, view: "PH", doc_id: 4, triage_acuity: 'green', arrival_method: 'yee', arrival_time: 'haw', departure_time: 'meemaw' },
-        { id: 5, view: "PH", doc_id: 5, triage_acuity: 'red', arrival_method: 'yee', arrival_time: 'haw', departure_time: 'meemaw' },
+        { uid: 1, view: "PH", doc_id: 1, triage_acuity: 'yellow', arrival_method: 'yee', arrival_time: 'haw', departure_time: 'meemaw' },
+        { uid: 1, view: "PH", doc_id: 2, triage_acuity: 'green', arrival_method: 'yee', arrival_time: 'haw', departure_time: 'meemaw' },
+        { uid: 1, view: "PH", doc_id: 3, triage_acuity: 'green', arrival_method: 'yee', arrival_time: 'haw', departure_time: 'meemaw' },
+        { uid: 1, view: "PH", doc_id: 4, triage_acuity: 'green', arrival_method: 'yee', arrival_time: 'haw', departure_time: 'meemaw' },
+        { uid: 1, view: "PH", doc_id: 5, triage_acuity: 'red', arrival_method: 'yee', arrival_time: 'haw', departure_time: 'meemaw' },
     ];
 
 
@@ -74,11 +73,12 @@ function PESearch() {
                     <a>Patient Encounter Search</a>
                 </Box>
             </Container>
-            <Container><Box sx={{ height: 800, width: '100%' }}>
+            <Container><Box sx={{ height: 600, width: '100%' }}>
                 <DataGrid
                     rows={rows}
                     columns={columns}
                     pageSize={5}
+                    getRowId={(row) => row.uid}
                     rowsPerPageOptions={[20]}
                     checkboxSelection={false}
                     disableSelectionOnClick={true}
