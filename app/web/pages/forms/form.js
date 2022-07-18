@@ -212,5 +212,3 @@ const chiefComplaints = [
   { label: 'Allergic Reaction' , id: 15 },
   { label: 'Trauma' , id: 16 },
 ];
-
-export default ProtectedRoute(SMFPEForm);
