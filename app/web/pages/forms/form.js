@@ -7,7 +7,6 @@ import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
-import useAuth, { ProtectedRoute } from '../../contexts/auth';
 import { ProtectedRoute } from '../../contexts/auth';
 import ProtectedNavbar from "../../components/protected_navbar";
 
@@ -186,7 +185,7 @@ function SMFPEForm() {
             <TextField id="comments" label="enter comments here..." variant="outlined" fullWidth  />
           </Grid>
           <Grid item xs={12}>
-            <Button fullWidth="true" variant="contained">Submit</Button>
+            <Button fullWidth variant="contained">Submit</Button>
           </Grid>
         </Grid>
       </FormGroup>

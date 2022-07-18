@@ -1,6 +1,7 @@
+from importlib.abc import PathEntryFinder
 import uuid
 from datetime import datetime
-from typing import Union
+from typing import Union, List
 
 from passlib.hash import argon2
 from sqlalchemy import Column, DateTime, Integer, String, Boolean
@@ -27,11 +28,16 @@ class PatientEncounter(Base, BasicMetrics):
     arrival_timestamp = Column(DateTime)
     departure_timestamp = Column(DateTime)
 
+
 def get_patient_encounter_by_id(db: Session, id: int) -> Union[PatientEncounter, None]:
     return db.query(PatientEncounter).filter(PatientEncounter.id == id).first()
 
+
 def get_patient_encounter_by_document_number(db: Session, document_number: str) -> Union[PatientEncounter, None]:
     return db.query(PatientEncounter).filter(PatientEncounter.document_number == document_number).first()
+
+def get_all_patient_encounters(db: Session) -> Union[List[PatientEncounter], None]:
+    return db.query(PatientEncounter).all()
 
 def create_patient_encounter(db: Session) -> PatientEncounter:
     """Create a blank patient encounter with only a unique ID.
