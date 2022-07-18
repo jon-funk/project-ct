@@ -8,7 +8,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import useAuth, { ProtectedRoute } from '../../contexts/auth';
 
-export function SMFPEForm() {
+function SMFPEForm() {
   const [value, setValue] = React.useState(new Date());
   const [arrivalTime, setArrivalTime] = React.useState(new Date());
   const [departureTime, setDepartureTime] = React.useState(new Date());
