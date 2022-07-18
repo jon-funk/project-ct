@@ -11,10 +11,11 @@ import Container from "@mui/material/Container";
 
 import useAuth, { ProtectedRoute } from '../../contexts/auth';
 import ProtectedNavbar from "../../components/protected_navbar";
-
+import { getAllPatientEncounters } from "../../utils/api";
 
 function PESearch() {
-    const [value, setValue] = React.useState(new Date());
+    const [encounters, setPatientEncounters] = React.useState(new Array());
+
     const { user, loading } = useAuth();
     const columns = [
         { field: 'id', headerName: 'UID', width: 50 },
@@ -50,10 +51,18 @@ function PESearch() {
         { uid: 1, view: "PH", doc_id: 5, triage_acuity: 'red', arrival_method: 'yee', arrival_time: 'haw', departure_time: 'meemaw' },
     ];
 
+    React.useEffect(() => {
+        const fetchPatientEncounters = async () => {
+            const patientEncounters = await getAllPatientEncounters();
+            if (Array.isArray(patientEncounters)) {
+                setPatientEncounters(patientEncounters);
+            } else {
+                // Internal server error has been observed that should be displayed to users
+            }
+        }
 
-    const handleChange = (newValue) => {
-        setValue(newValue);
-    };
+        fetchPatientEncounters();
+    });
 
     return (
         <>
