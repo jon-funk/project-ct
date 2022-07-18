@@ -1,3 +1,5 @@
+from typing import Any
+
 from fastapi import Depends
 
 from sqlalchemy.orm import Session
@@ -17,4 +19,4 @@ def get_patient_encounters(loaded_user: User = Depends(load_current_user), db: S
     Retrieve all patient encounters from the database and return a list of patient encounters.
     """
     encounters = get_all_patient_encounters(db)
-    return PatientEncounterList.from_orm(encounters)    
+    return PatientEncounterList.from_orm(encounters)
