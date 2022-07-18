@@ -66,15 +66,18 @@ export default function ProtectedNavbar() {
             <Typography
               variant="h6"
               component="div"
-              sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
+              sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block', fontWeight: "bold" } }}
             >
               <Link href="/home">Home</Link>
             </Typography>
             <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-              <Button href="/forms/form" sx={{ color: '#fff' }}>
+              <Button href="/search/encounters" sx={{ color: "#fff", fontWeight: "bold" }}>
+                List Entries
+              </Button>
+              <Button href="/forms/form" sx={{ color: '#fff', fontWeight: "bold" }}>
                   New Entry
               </Button>
-              <Button key="logout" sx={{ color: '#fff' }}
+              <Button key="logout" sx={{ color: '#fff', fontWeight: "bold" }}
                 onClick={logout}>
                 Logout
               </Button>
