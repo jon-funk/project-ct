@@ -80,7 +80,7 @@ services:
     user: node
     build:
       context: app/web/
-      dockerfile: Dockerfile
+      dockerfile: .Dockerfile
       target: development
     volumes:
       - ./app/web/contexts:/code/contexts
@@ -92,6 +92,15 @@ services:
       - 3000:3000
     depends_on:
       - api
+
+  webprod:
+    container_name: webprod
+    user: node
+    command: yarn build && tail -f /dev/null
+    build:
+      context: app/web/
+      dockerfile: .Dockerfile
+      target: development
 
 networks:
   default:
