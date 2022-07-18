@@ -10,7 +10,7 @@ class PatientEncounterSchema(BaseModel):
     patient_rfid: Optional[str]
     document_num: str
     location: str
-    handover_from: str
+    handover_from: Optional[str]
     date: datetime
     arrival_time: datetime
     triage_acuity: str

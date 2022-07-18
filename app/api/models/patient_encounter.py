@@ -29,7 +29,7 @@ class PatientEncounter(Base, BasicMetrics):
     arrival_time = Column(DateTime)
     departure_time = Column(DateTime)
     departure_dest = Column(String)
-    handover_from = Column(String)
+    handover_from = Column(String, nullable=True)
     date = Column(DateTime)
     handover_too = Column(String)
     comment = Column(String, nullable=True)
