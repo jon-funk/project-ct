@@ -1,9 +1,6 @@
-from importlib.abc import PathEntryFinder
 import uuid
-from datetime import datetime
-from typing import Union, List
+from typing import Optional, List, Dict, Any
 
-from passlib.hash import argon2
 from sqlalchemy import Column, DateTime, Integer, String, Boolean
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Session
@@ -16,8 +13,8 @@ class PatientEncounter(Base, BasicMetrics):
     __tablename__ = "patient_encounters"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    patient_incident_uuid = Column(UUID(as_uuid=True), default=uuid.uuid4, unique=True)
-    user_uuid = Column(UUID(as_uuid=True), default=uuid.uuid4, unique=True)
+    patient_encounter_uuid = Column(UUID(as_uuid=True), default=uuid.uuid4, unique=True)
+    user_uuid = Column(UUID(as_uuid=True), default=uuid.uuid4)
     document_num = Column(String)
     patient_rfid = Column(String, nullable=True)
     location = Column(String)
@@ -35,15 +32,43 @@ class PatientEncounter(Base, BasicMetrics):
     comment = Column(String, nullable=True)
 
 
-def get_patient_encounter_by_id(db: Session, id: int) -> Union[PatientEncounter, None]:
-    return db.query(PatientEncounter).filter(PatientEncounter.id == id).first()
+def get_patient_encounter_by_id(db: Session, id: int) -> Optional[PatientEncounter]:
+    return (
+        db.query(PatientEncounter)
+        .filter(PatientEncounter.id == id, PatientEncounter.deleted == False)
+        .first()
+    )
 
 
-def get_patient_encounter_by_document_number(db: Session, document_number: str) -> Union[PatientEncounter, None]:
-    return db.query(PatientEncounter).filter(PatientEncounter.document_number == document_number).first()
+def get_patient_encounter_by_uuid(
+    db: Session, uuid: uuid.UUID
+) -> Optional[PatientEncounter]:
+    return (
+        db.query(PatientEncounter)
+        .filter(
+            PatientEncounter.patient_encounter_uuid == uuid,
+            PatientEncounter.deleted == False,
+        )
+        .first()
+    )
 
-def get_all_patient_encounters(db: Session) -> Union[List[PatientEncounter], None]:
-    return db.query(PatientEncounter).all()
+
+def get_patient_encounter_by_document_number(
+    db: Session, document_number: str
+) -> Optional[PatientEncounter]:
+    return (
+        db.query(PatientEncounter)
+        .filter(
+            PatientEncounter.document_number == document_number,
+            PatientEncounter.deleted == False,
+        )
+        .first()
+    )
+
+
+def get_all_patient_encounters(db: Session) -> Optional[List[PatientEncounter]]:
+    return db.query(PatientEncounter).filter(PatientEncounter.deleted == False)
+
 
 def create_patient_encounter(db: Session, data: PatientEncounter) -> PatientEncounter:
     """Create a patient encounter with a unique ID.
@@ -57,3 +82,29 @@ def create_patient_encounter(db: Session, data: PatientEncounter) -> PatientEnco
     db.refresh(created_patient_encounter)
 
     return created_patient_encounter
+
+
+def update_patient_encounter(
+    db: Session, encounter: PatientEncounter, updated_values: Dict[str, Any]
+) -> PatientEncounter:
+    """
+    Update an existing patient encounter document. Returns the updated patient encounter.
+    """
+    updated_encounter = encounter
+    db.query(PatientEncounter).filter(PatientEncounter.deleted == True).update(
+        values=updated_values
+    )
+    db.commit()
+    db.refresh(updated_encounter)
+
+    return updated_encounter
+
+
+def soft_delete_patient_encounter(db: Session, uuid: uuid.UUID) -> None:
+    """
+    Update patient encounter property to set deleted to True.
+    """
+    db.query(PatientEncounter).filter(
+        PatientEncounter.patient_encounter_uuid == uuid
+    ).update(values={"deleted": True})
+    db.commit()
