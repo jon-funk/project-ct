@@ -1,7 +1,25 @@
+// Parse an error object and return a string.
+// If an array of errors is returned, only return the first error in the array.
+// TODO: Allow for returning multiple error messages
+function setErrorMessage(error) {
+  if (typeof error?.detail === "string") {
+    return error?.detail;
+  } else if (Array.isArray(error?.detail)) {
+    console.error("Complete list of errors received in server response: ", error);
+    return `${error?.detail[0]?.loc[1]}: ${error?.detail[0].msg}`;
+  } else {
+    console.error("Unable to parse error: ", error);
+    return "Received unknown server error. Consult console, or contact development team if problem persists."
+  }
+}
+
+// Output the server error to the console and return a generic 5xx error text message.
+function setServerErrorMessage(error) {
+  console.error("Error while trying to execute request to the API: ", error);
+  return "Internal Server error, please try again later, or contact support.";
+}
+
 // Try and get a refresh token to verify a user token is valid. If the server verifies that it's
-
-import { responsiveFontSizes } from "@mui/material";
-
 // valid, return true. Otherwise return false.
 export async function HasRefreshedAuthToken(token) {
     try {
@@ -54,20 +72,14 @@ export async function login(email, password) {
             window.localStorage.setItem("auth-token", response_data['access_token']);
             return "";
           } else {
-            console.error("Malformed request from server: ", response_data);
-            return "Malformed request from server, please try again and contact support if issue persists.";
+            console.error("Malformed response from server: ", response_data);
+            return "";
           }
         } else {
-          console.error("Complete error received from server: ", response_data);
-          if (typeof response_data?.detail === "string") {
-            return response_data?.detail;
-          } else {
-            return response_data?.detail[0].msg;
-          }
+          return setErrorMessage(response_data);
         }
       } catch (error) {
-        console.log("Error occurred while making API request", error);
-        return "Internal Server error, please try again later, or contact support.";
+        return setServerErrorMessage(error);
       }
 }
 
@@ -86,15 +98,14 @@ export async function getAllPatientEncounters(token) {
     });
 
     const response_data = await response.json();
-    console.log(response_data);
     if (response.ok) {
       return response_data;
     } else {
       console.error("Unable to retrieve data from API. Received error: ", response_data);
-      return response_data;
+      return "";
     }
   } catch(error) {
-    console.error("Request to retrieve patient encounters list failed. Received error: ", response_data);
+    console.error("Error while trying to retrieve patient encounter forms: ", error);
     return "";
   }
 }
@@ -134,23 +145,84 @@ export async function submitPatientEncounterForm(formData, token) {
 
       const response_data = await response.json();
       if (response.ok) {
-        if (response_data.hasOwnProperty("access_token")) {
-          window.localStorage.setItem("auth-token", response_data['access_token']);
-          return "";
-        } else {
-          console.error("Malformed response from server: ", response_data);
-          return "Malformed response from server, please try again and contact support if issue persists.";
-        }
+        // Response currently returns the full object. But we have no use for it on this page.
+        return "";
       } else {
-        console.error("Complete error received from server: ", response_data);
-        if (typeof response_data?.detail === "string") {
-          return response_data?.detail;
-        } else {
-          return `${response_data?.detail[0]?.loc[1]}: ${response_data?.detail[0].msg}`;
-        }
+        return setErrorMessage(response_data);
       }
     } catch (error) {
-      console.log("Error occurred while making API request", error);
-      return "Internal Server error, please try again later, or contact support.";
+      return setServerErrorMessage(error);
     }
+}
+
+// Delete Patient Encounter Form
+export async function deletePatientEncounterForm(uuid, token) {
+  try {
+    const url = `${process.env.NEXT_PUBLIC_HOSTNAME}/patient-encounter?uuid=` + encodeURIComponent(uuid);
+    const response = await fetch(url, {
+      headers: {
+        "Accept": "application/json",
+        "Authorization": token
+      },
+      method: "DELETE",
+      mode: "cors",
+      credentials: "include"
+    });
+
+    if (response.ok) {
+      // Delete response doesn't have any content
+      return "";
+    } else {
+      const error_data = await response.json();
+      return setErrorMessage(error_data);
+    }
+  } catch(error) {
+    return setServerErrorMessage(error);
+  }
+}
+
+// Update patient encounter form
+export async function updatePatientEncounterForm(uuid, formData, token) {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_HOSTNAME}/patient-encounter`, {
+      headers: {
+        "Accept": "application/json",
+        "Authorization": token,
+        "Content-Type": "application/json"
+      },
+      method: "PUT",
+      mode: "cors",
+      credentials: "include",
+      body: JSON.stringify({
+        patient_rfid: formData.patient_rfid,
+        document_num: formData.document_num,
+        location: formData.location,
+        handover_from: formData.handover_from,
+        date: formData.date,
+        arrival_time: formData.arrival_time,
+        triage_acuity: formData.triage_acuity,
+        // Hack to convert on_shift to a boolean
+        on_shift: formData.on_shift === "Yes" ? true : false,
+        chief_complaints: formData.chief_complaints.join(" "),
+        arrival_method: formData.arrival_method,
+        handover_too: formData.handover_too,
+        departure_time: formData.departure_time,
+        departure_dest: formData.departure_dest,
+        comment: formData.comment,
+        age: formData.age,
+        gender: formData.gender,
+        // The only addition to the original submission form as of yet..
+        patient_encounter_uuid: uuid
+      })
+    });
+    
+    const response_data = await response.json();
+    if (response.ok) {
+      return "";
+    } else {
+      return setErrorMessage(response_data)
+    }
+  } catch (error) {
+    return setServerErrorMessage(error);
+  }
 }
