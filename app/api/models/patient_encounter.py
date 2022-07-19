@@ -59,7 +59,7 @@ def get_patient_encounter_by_document_number(
     return (
         db.query(PatientEncounter)
         .filter(
-            PatientEncounter.document_number == document_number,
+            PatientEncounter.document_num == document_number,
             PatientEncounter.deleted == False,
         )
         .first()
@@ -91,7 +91,7 @@ def update_patient_encounter(
     Update an existing patient encounter document. Returns the updated patient encounter.
     """
     updated_encounter = encounter
-    db.query(PatientEncounter).filter(PatientEncounter.deleted == True).update(
+    db.query(PatientEncounter).filter(PatientEncounter.deleted == False).update(
         values=updated_values
     )
     db.commit()
