@@ -39,7 +39,7 @@ env:
 	@cp app/api/.env-example app/api/.env
 	@cp app/web/.env-example app/web/.env.local
 
-prod:
+deployweb:
 	@echo "..."
 	@echo "Standing up web to include .next build artifacts in web service..."
 	@docker compose up --build -d webprod
@@ -48,13 +48,21 @@ prod:
 	@docker compose cp webprod:/code/.next app/web/.next
 	@echo "Deploying web to Google Cloud App Engine..."
 	@gcloud app deploy app/web/app.yaml --quiet
-	@echo "..."
-	@echo "Deploying API to Google Cloud App Engine..."
-	@gcloud app deploy app/api/api.yaml --quiet
-	@gcloud app deploy app/api/dispatch.yaml --quiet
-
 	@echo "REMINDER: Run make clean now to remove production artifacts that might be mounted by your dev containers!"
 
+deployapi:
+	@echo "..."
+	@echo "Deploying API to Google Cloud App Engine..."
+	@gcloud app deploy app/api.yaml --quiet
+	@gcloud app deploy app/dispatch.yaml --quiet
+
+deploymig:
+	@echo "..."
+	@echo "Applying migrations to CloudSQL database..."
+	@cp app/api/.env app/api/.env.bkup
+	@cp app/api/.env.prod app/api/.env
+	@docker compose up --build migsprod
+	@cp app/api/.env.bkup app/api/.env
 
 stop:
 	@echo "Stopping containers..."
