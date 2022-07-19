@@ -1,37 +1,38 @@
 from datetime import datetime
+from uuid import UUID
 from typing import List, Optional
 from pydantic import BaseModel
-
+ 
 
 class PatientEncounterSchema(BaseModel):
     """
     An encounter with a given patient.
     """
-    patient_rfid: Optional[str]
-    document_num: str
-    location: str
-    handover_from: Optional[str]
-    date: datetime
-    arrival_time: datetime
-    triage_acuity: str
-    on_shift: bool
-    chief_complaints: str
     arrival_method: str
-    handover_too: str
+    arrival_time: datetime
+    chief_complaints: str
+    comment: str
+    date: datetime
     departure_time: datetime
     departure_dest: str
-    comment: str
-    qr_code: Optional[str]
     document_num: str
+    handover_from: Optional[str]
+    handover_too: str
+    location: str
+    on_shift: bool
+    patient_rfid: Optional[str]
+    qr_code: Optional[str]
+    triage_acuity: str
     
     class Config:
         orm_mode = True
 
-class PatientEncounterList(BaseModel):
+class PatientEncounterResponseSchema(PatientEncounterSchema):
     """
-    A list of patient encounters.
+    The patient encounter response schema.
     """
-    patient_encounters: List[PatientEncounterSchema]
+    # document uuid is created server-side when a document is created
+    patient_encounter_uuid: Optional[UUID]
 
     class Config:
         orm_mode = True

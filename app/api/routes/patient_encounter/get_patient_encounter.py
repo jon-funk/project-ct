@@ -1,5 +1,6 @@
-from pydoc import doc
-from typing import Any, Optional
+import logging
+from uuid import UUID
+from typing import Any
 
 from fastapi import Depends, HTTPException
 
@@ -10,17 +11,40 @@ from . import router
 from api.main.auth import load_current_user
 from api.main.database import get_db
 from api.models.user import User
-from api.models.patient_encounter import get_patient_encounter_by_document_number
-from api.schemas.patient_encounter import PatientEncounterList, PatientEncounterSchema
+from api.models.patient_encounter import get_patient_encounter_by_uuid
+from api.schemas.patient_encounter import PatientEncounterResponseSchema
+
+LOGGER = logging.getLogger(__name__)
 
 
-@router.get("/patient-encounter", status_code=200, response_model=PatientEncounterList, name="get-patient-encounter")
-def get_patient_encounter(document_number: int, loaded_user: User = Depends(load_current_user), db: Session = Depends(get_db)) -> Any:
+@router.get(
+    "/patient-encounter",
+    status_code=200,
+    response_model=PatientEncounterResponseSchema,
+    name="get-patient-encounter",
+)
+def get_patient_encounter(
+    uuid: UUID,
+    loaded_user: User = Depends(load_current_user),
+    db: Session = Depends(get_db),
+) -> Any:
     """
-    Retrieve all patient encounters from the database and return a list of patient encounters.
+    Retrieve a patient encounter from the database with the provided UUID.
     """
-    encounter = get_patient_encounter_by_document_number(db=db, document_number=document_number)
+    try:
+        encounter = get_patient_encounter_by_uuid(db, uuid)
+    except Exception as err:
+        LOGGER.error(
+            f"Server error while trying to get patient encounters: {err}",
+        )
+        return HTTPException(
+            status_code=500,
+            detail="Unable to get patient encounters at this time. Please try again later or contact support.",
+        )
+
     if not encounter:
-        raise HTTPException(status_code=404, detail="Unable to find an entry with that document id.")
+        raise HTTPException(
+            status_code=404, detail="Unable to find an entry with that document id."
+        )
 
-    return PatientEncounterSchema.from_orm(encounter)
+    return PatientEncounterResponseSchema.from_orm(encounter)
