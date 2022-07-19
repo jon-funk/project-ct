@@ -53,8 +53,23 @@ deployweb:
 deployapi:
 	@echo "..."
 	@echo "Deploying API to Google Cloud App Engine..."
+	@echo "Applying prod env..."
+	@cp app/api/.env app/api/.env.bkup
+	@cp app/api/.env.prod app/api/.env
+	@echo "Creating temp build context..."
+	@cp app/api/api.yaml app/
+	@cp app/api/dispatch.yaml app/
+	@cp app/api/.gcloudignore app/
+	@cp app/api/requirements.txt app/
+	@echo "Deploying..."
 	@gcloud app deploy app/api.yaml --quiet
 	@gcloud app deploy app/dispatch.yaml --quiet
+	@echo "Cleaning up build context..."
+	@cp app/api.yaml
+	@cp app/dispatch.yaml
+	@cp app/.gcloudignore
+	@cp app/requirements.txt
+	@cp app/api/.env.bkup app/api/.env
 
 deploymig:
 	@echo "..."

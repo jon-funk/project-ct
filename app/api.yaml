@@ -1,5 +1,0 @@
-runtime: python39
-service: api
-# entrypoint: /bin/sh -c "api/startup_prod.sh"
-entrypoint: uvicorn api.main.app:api --reload --host=0.0.0.0 --port=8080
-# entrypoint: gunicorn -w 4 -k uvicorn.workers.UvicornWorker api.main.app:api --bind 0.0.0.0:8080
