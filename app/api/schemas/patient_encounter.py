@@ -1,3 +1,4 @@
+from ast import Num
 from datetime import datetime
 from typing import List, Optional
 from pydantic import BaseModel
@@ -23,7 +24,9 @@ class PatientEncounterSchema(BaseModel):
     comment: str
     qr_code: Optional[str]
     document_num: str
-    
+    age: Num
+    gender: str
+
     class Config:
         orm_mode = True
 

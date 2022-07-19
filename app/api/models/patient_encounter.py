@@ -1,3 +1,4 @@
+from ast import Num
 from importlib.abc import PathEntryFinder
 import uuid
 from datetime import datetime
@@ -33,6 +34,8 @@ class PatientEncounter(Base, BasicMetrics):
     date = Column(DateTime)
     handover_too = Column(String)
     comment = Column(String, nullable=True)
+    age = Column(Num, nullable=True)
+    gender = Column(String, nullable=True)
 
 
 def get_patient_encounter_by_id(db: Session, id: int) -> Union[PatientEncounter, None]:
