@@ -14,12 +14,12 @@ services:
       - POSTGRES_HOST=db
     ports:
       - 5000:5000
-    command: /bin/sh -c "/app/api/startup_dev.sh"
+    command: uvicorn api.main.app:api --reload --host=0.0.0.0 --port=5000
     volumes:
       # Mount local codebase to reflect changes for local dev
       - ./app/api:/app/api
     healthcheck:
-      test: [ "CMD", "curl", "localhost:5000/health" ]
+      test: [ "CMD", "curl", "localhost:5000/api/health" ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -93,6 +93,7 @@ services:
     depends_on:
       - api
 
+  # Used for deploying artifacts or data to Google Cloud
   webprod:
     container_name: webprod
     user: node
@@ -101,6 +102,16 @@ services:
       context: app/web/
       dockerfile: .Dockerfile
       target: development
+  migsprod:
+    container_name: migsprod
+    build:
+      context: app/api/
+      dockerfile: .Dockerfile
+    env_file: app/api/.env
+    volumes:
+      # Mount local codebase to reflect changes for local dev
+      - ./app/api:/app/api
+    command: bash -c "cd /app/api && alembic upgrade head"
 
 networks:
   default:
