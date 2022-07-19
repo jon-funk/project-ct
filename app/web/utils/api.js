@@ -125,6 +125,8 @@ export async function submitPatientEncounterForm(formData, token) {
           departure_time: formData.departure_time,
           departure_dest: formData.departure_dest,
           comment: formData.comment,
+          age: formData.age,
+          gender: formData.gender,
         })
       })
 
