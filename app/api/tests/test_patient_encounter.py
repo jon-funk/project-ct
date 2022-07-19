@@ -66,7 +66,10 @@ def test_get_multiple_entries(client: TestClient, auth_header: str) -> None:
     )
 
     # Can only run the below line when we are actually dropping all data from the database after each run
-    # assert len(resp_data) == 4, ("Did not retrieve all entries from the database. Received: ", resp_data)
+    assert len(resp_data) >= 4, (
+        "Did not retrieve all entries from the database. Received: ",
+        resp_data,
+    )
 
 
 @pytest.mark.needs(postgres=True)
@@ -77,34 +80,37 @@ def test_update_entry(client: TestClient, auth_header: str) -> None:
     response = client.post(
         "/create-patient-encounter", headers=auth_header, json=SAMPLE_DATA
     )
-    resp_data = response.json()
+    update_req_data = response.json()
     assert (
         response.status_code == 200
     ), "Unable to submit a valid patient encounter form. Received error: " + str(
-        resp_data
+        update_req_data
     )
 
     # Perform update
-    resp_data.update({"document_num": "6.5"})
+    update_req_data.update({"document_num": "6.5"})
     response = client.put(
-        "/update-patient-encounter", headers=auth_header, json=resp_data
+        "/patient-encounter", headers=auth_header, json=update_req_data
     )
     resp_data = response.json()
-    assert (
-        response.status_code == 200
-    ), "Unable to update patient encounter form. Received error: " + str(resp_data)
+    assert response.status_code == 200, (
+        "Unable to update patient encounter form. Received error: "
+        + str(resp_data)
+        + "\n\nSent: "
+        + str(update_req_data)
+    )
     assert (
         "patient_encounter_uuid" in resp_data
     ), "UUID not found in response data after update. Received: " + str(resp_data)
-    doc_uuid = resp_data["patient_encounter_uuid"]
 
     # Get updated entry
+    doc_uuid = resp_data["patient_encounter_uuid"]
     get_url = "/patient-encounter?" + urlencode({"uuid": doc_uuid})
     response = client.get(get_url, headers=auth_header)
     resp_data = response.json()
-    assert response.status == 200, "Unable to retrieve updated entry. Received: " + str(
-        resp_data
-    )
+    assert (
+        response.status_code == 200
+    ), "Unable to retrieve updated entry. Received: " + str(resp_data)
 
     # Ensure that returned data matches and that one original field value is the same.
     assert (

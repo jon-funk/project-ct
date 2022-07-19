@@ -15,9 +15,11 @@ origins = [
     f"{protocol}://{fe_origin}",
 ]
 
-api = FastAPI(title=constants.API_TITLE,
-                      description=constants.API_DESCRIPTION,
-                      version=constants.API_VERSION)
+api = FastAPI(
+    title=constants.API_TITLE,
+    description=constants.API_DESCRIPTION,
+    version=constants.API_VERSION,
+)
 api.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
