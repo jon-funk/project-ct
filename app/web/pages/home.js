@@ -1,4 +1,5 @@
-import { Container } from '@mui/material';
+import Typography from '@mui/material/Typography';
+import Container from "@mui/material/Container";
 
 import useAuth, { ProtectedRoute } from '../contexts/auth';
 import ProtectedNavbar from "../components/protected_navbar";
@@ -19,11 +20,15 @@ function Home() {
         // Display your desired component here
         return (
             <> 
+
                 <Container>
                     <ProtectedNavbar/>
-                    <h1>
-                        Display of all entries should be shown here.
-                    </h1>
+                    <Typography variant="h4" component="h4" sx={{ margin: "2rem", textAlign: "center", fontWeight: "bold" }}>
+                        Data Entry Service
+                    </Typography>
+                    <Typography variant="p" component="p" sx={{ margin: "2rem", textAlign: "center"}}>
+                        This is a service for saving patient encounter information.
+                    </Typography>
                 </Container>
             </>
         )
