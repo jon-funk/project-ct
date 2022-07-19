@@ -30,6 +30,8 @@ class PatientEncounter(Base, BasicMetrics):
     date = Column(DateTime)
     handover_too = Column(String)
     comment = Column(String, nullable=True)
+    age = Column(Integer, nullable=True)
+    gender = Column(String, nullable=True)
 
 
 def get_patient_encounter_by_id(db: Session, id: int) -> Optional[PatientEncounter]:
