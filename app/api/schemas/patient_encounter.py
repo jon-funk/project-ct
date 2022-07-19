@@ -8,6 +8,7 @@ class PatientEncounterSchema(BaseModel):
     """
     An encounter with a given patient.
     """
+    age: Optional[int]
     arrival_method: str
     arrival_time: datetime
     chief_complaints: str
@@ -16,6 +17,7 @@ class PatientEncounterSchema(BaseModel):
     departure_time: datetime
     departure_dest: str
     document_num: str
+    gender: Optional[str]
     handover_from: Optional[str]
     handover_too: str
     location: str
@@ -23,7 +25,7 @@ class PatientEncounterSchema(BaseModel):
     patient_rfid: Optional[str]
     qr_code: Optional[str]
     triage_acuity: str
-    
+
     class Config:
         orm_mode = True
 
