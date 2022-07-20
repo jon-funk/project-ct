@@ -16,7 +16,7 @@ def load_current_user(request: Request, db: Session = Depends(get_db)) -> T.Any:
     Try and decrypt a JSON token and return the corresponding
     user from the database. Raise validation exceptions otherwise.
     """
-    
+
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -27,11 +27,17 @@ def load_current_user(request: Request, db: Session = Depends(get_db)) -> T.Any:
 
     token = request.headers["Authorization"]
     if not token:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization token not included in request.")
-    
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Authorization token not included in request.",
+        )
+
     words = token.split(" ")
     if len(words) < 2:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Improperly formatted bearer token")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Improperly formatted bearer token",
+        )
 
     token = words[1]
 
