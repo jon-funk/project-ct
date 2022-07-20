@@ -3,9 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "dev": "NODE_ENV=development next dev",
+    "dev-build": "next build",
+    "dev-start": "next start",
+    "build": "rm -rf ./next && NODE_ENV=production next build",
+    "start": "next start -p 8080",
     "lint": "next lint"
   },
   "dependencies": {

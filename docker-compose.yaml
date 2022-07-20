@@ -8,7 +8,7 @@ services:
     user: 1000:1000
     build:
       context: app/api/
-      dockerfile: Dockerfile
+      dockerfile: .Dockerfile
     env_file: app/api/.env
     environment:
       - POSTGRES_HOST=db
@@ -19,7 +19,7 @@ services:
       # Mount local codebase to reflect changes for local dev
       - ./app/api:/app/api
     healthcheck:
-      test: [ "CMD", "curl", "localhost:5000/health" ]
+      test: [ "CMD", "curl", "localhost:5000/api/health" ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -31,7 +31,7 @@ services:
     container_name: migs
     build:
       context: app/api/
-      dockerfile: Dockerfile
+      dockerfile: .Dockerfile
     env_file: app/api/.env
     environment:
       - POSTGRES_HOST=db
@@ -64,7 +64,7 @@ services:
     user: 1000:1000
     build:
       context: app/api/
-      dockerfile: Dockerfile
+      dockerfile: .Dockerfile
     env_file: app/api/.env
     environment:
       - POSTGRES_HOST=db
@@ -80,7 +80,7 @@ services:
     user: node
     build:
       context: app/web/
-      dockerfile: Dockerfile
+      dockerfile: .Dockerfile
       target: development
     volumes:
       - ./app/web/contexts:/code/contexts
@@ -92,6 +92,33 @@ services:
       - 3000:3000
     depends_on:
       - api
+
+  # Used for deploying artifacts or data to Google Cloud
+  webprod:
+    container_name: webprod
+    user: node
+    command: yarn build && tail -f /dev/null
+    build:
+      context: app/web/
+      dockerfile: .Dockerfile
+      target: development
+    volumes:
+      - ./app/web/contexts:/code/contexts
+      - ./app/web/pages:/code/pages
+      - ./app/web/public:/code/public
+      - ./app/web/styles:/code/styles
+      - ./app/web/utils:/code/utils
+
+  migsprod:
+    container_name: migsprod
+    build:
+      context: app/api/
+      dockerfile: .Dockerfile
+    env_file: app/api/.env
+    volumes:
+      # Mount local codebase to reflect changes for local dev
+      - ./app/api:/app/api
+    command: bash -c "cd /app/api && alembic upgrade head"
 
 networks:
   default:
