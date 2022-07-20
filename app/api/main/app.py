@@ -21,6 +21,8 @@ origins = [
 api = FastAPI(
     title=constants.API_TITLE,
     docs_url=f"{API_PREFIX}/docs",
+    redoc_url=f"{API_PREFIX}/redoc",
+    openapi_url=f"{API_PREFIX}/openapi.json",
     description=constants.API_DESCRIPTION,
     version=constants.API_VERSION
 )
