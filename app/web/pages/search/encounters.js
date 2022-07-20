@@ -33,7 +33,6 @@ function PESearch() {
     const [openDialog, setOpenDialog] = React.useState(false);
     const [selectedRow, setSelectedRow] = React.useState(new Object());
     const [formUUID, setFormUUID] = React.useState("");
-    const { user, loading } = useAuth();
 
     const openDialogWindow = (rowData) => {
         setOpenDialog(true);
@@ -69,13 +68,14 @@ function PESearch() {
         { field: 'document_num', headerName: 'Document ID', width: 150 },
         { field: 'age', headerName: "Age", width: 100 },
         { field: 'gender', headerName: "Gender", width: 150 },
-        { field: 'date', headerName: "Date", width: 150 },
-        { field: 'arrival_method', headerName: 'Arrival Method', width: 200 },
+        { field: 'arrival_date', headerName: "Arrival Date", width: 150 },
         { field: 'arrival_time', headerName: 'Arrival Time', width: 200 },
+        { field: 'arrival_method', headerName: 'Arrival Method', width: 200 },
         { field: 'location', headerName: "Location", width: 200 },
         { field: 'on_shift', headerName: "On Shift", width: 150 },
         { field: 'triage_acuity', headerName: "Triage Acuity", width: 250 },
         { field: 'chief_complaints', headerName: "Chief Complaints", width: 250 },
+        { field: 'departure_date', headerName: "Departure Date", width: 150 },
         { field: 'departure_time', headerName: 'Departure Time', width: 200 },
         { field: 'departure_dest', headerName: "Departure Destination", width: 250 },
         { field: 'handover_from', headerName: "Handover From", width: 250 },
@@ -127,7 +127,7 @@ function PESearch() {
                         open={openDialog} 
                         TransitionComponent={Transition}
                     >
-                        <AppBar sx={{ position: 'relative' }}>
+                        <AppBar sx={{ position: 'fixed' }}>
                             <Toolbar>
                                 <Typography sx={{ ml: 2, flex: 1, fontWeight: "bold" }} variant="h6" component="div">
                                     UUID: {formUUID}

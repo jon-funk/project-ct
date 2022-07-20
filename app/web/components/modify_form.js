@@ -10,13 +10,20 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import Typography from '@mui/material/Typography';
 
 import { deletePatientEncounterForm, updatePatientEncounterForm } from "../utils/api";
-import { chiefComplaints, MFPEFormData } from "../utils/constants";
+import { chiefComplaints } from "../utils/constants";
 
 
 function MFPEModifyForm({ formUUID, rowData }) {
+  if (typeof rowData.on_shift === "boolean") {
+    rowData.on_shift = rowData.on_shift === true ? "Yes" : "No";
+  }
+  if (typeof rowData.chief_complaints === "string") {
+    rowData.chief_complaints = rowData.chief_complaints.split(", ");
+  }
+
   const [formValues, setFormValues] = React.useState(rowData);
   const [uuid, setFormUUID] = React.useState(formUUID);
-  const [complaints, setComplaints] = React.useState([]);
+  const [complaints, setComplaints] = React.useState(Array.isArray(rowData.chief_complaints) ? rowData.chief_complaints: []);
   const [errorMessage, setErrorMessage]  = React.useState("");
   const [hasError, setError] = React.useState(false);
 
@@ -28,10 +35,8 @@ function MFPEModifyForm({ formUUID, rowData }) {
     });
   };
 
+
   const handleChiefComplaintsFieldChange = (event) => {
-    const {
-      target: { value },
-    } = event;
     setComplaints(
       typeof value === 'string' ? value.split(',') : value,
     );
@@ -39,7 +44,22 @@ function MFPEModifyForm({ formUUID, rowData }) {
       ...formValues,
       ["chief_complaints"]: value,
     });
-  }
+  };
+
+  const handleArrivalDateChange = (event) => {
+    setFormValues({
+      ...formValues,
+      ["arrival_date"]: event
+    });
+  };
+
+  const handleDepartureDateChange = (event) => {
+    setFormValues({
+      ...formValues,
+      ["departure_date"]: event
+    });
+  };
+
 
   const handleArrivalTimeChange = (event) => {
     setFormValues({
@@ -49,6 +69,10 @@ function MFPEModifyForm({ formUUID, rowData }) {
   };
 
   const handleDepartureTimeChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+
     setFormValues({
       ...formValues,
       ["departure_time"]: event,
@@ -62,9 +86,9 @@ function MFPEModifyForm({ formUUID, rowData }) {
     const data = formValues;
     const token = `Bearer ${window.localStorage.getItem("auth-token")}`;
 
-    const errorMessage = await updatePatientEncounterForm(token, data, token);
+    const errorMessage = await updatePatientEncounterForm(uuid, data, token);
     if (!errorMessage) {
-      window.location.pathname = "/forms/form";
+      window.location.pathname = "/search/encounters";
     } else {
       setErrorMessage(errorMessage);
       setError(true);
@@ -105,7 +129,7 @@ function MFPEModifyForm({ formUUID, rowData }) {
                 name="patient_rfid"
                 label="Wristband RFID"
                 variant="outlined"
-                value={formValues.rfid}
+                value={formValues.patient_rfid}
                 onChange={handleChange} />
               </Grid>
             <Grid item xs={6}>
@@ -132,12 +156,12 @@ function MFPEModifyForm({ formUUID, rowData }) {
             </Grid>
             <Grid item xs={6}>
               <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <InputLabel>Date: </InputLabel>
+                <InputLabel>Arrival Date: </InputLabel>
                 <MobileDatePicker
                   inputFormat="MM/dd/yyyy"
-                  name="date"
-                  value={formValues.date}
-                  onChange={handleArrivalTimeChange}
+                  name="arrival_date"
+                  value={formValues.arrival_date}
+                  onChange={handleArrivalDateChange}
                   renderInput={(params) => <TextField {...params} required={true}/>}
                 />
               </LocalizationProvider>
@@ -199,8 +223,8 @@ function MFPEModifyForm({ formUUID, rowData }) {
                 row
                 value={formValues.on_shift}
                 onChange={handleChange}>
-                <FormControlLabel value="staff-yes" control={<Radio required={true}/>} label="Yes" />
-                <FormControlLabel value="staff-no" control={<Radio />} label="No" />
+                <FormControlLabel value="Yes" control={<Radio required={true}/>} label="Yes" />
+                <FormControlLabel value="No" control={<Radio />} label="No" />
               </RadioGroup>
             </Grid>
             <Grid item xs={12}>
@@ -214,7 +238,13 @@ function MFPEModifyForm({ formUUID, rowData }) {
                 value={complaints}
                 onChange={handleChiefComplaintsFieldChange}
                 input={<OutlinedInput label="Tag" />}
-                renderValue={(selected) => selected.join(', ')}
+                renderValue={(selected) => {
+                  if (Array.isArray(selected)) {
+                    return selected.join(', ')
+                  } else {
+                    return selected;
+                  }
+                }}                  
                 MenuProps={MenuProps}
                 >
                 {chiefComplaints.map((complaint) => (
@@ -266,6 +296,18 @@ function MFPEModifyForm({ formUUID, rowData }) {
                 <FormControlLabel value="hostpital-ambulance" control={<Radio />} label="Hospital by ambulance" />
                 <FormControlLabel value="other" control={<Radio />} label="Other (Please explain in the comment section)" />
               </RadioGroup>
+            </Grid>
+            <Grid item xs={6}>
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <InputLabel>Departure Date: </InputLabel>
+                <MobileDatePicker
+                  inputFormat="MM/dd/yyyy"
+                  name="departure_date"
+                  value={formValues.departure_date}
+                  onChange={handleDepartureDateChange}
+                  renderInput={(params) => <TextField {...params} required={true}/>}
+                />
+              </LocalizationProvider>
             </Grid>
             <Grid item xs={6}>
               <LocalizationProvider dateAdapter={AdapterDateFns}>
