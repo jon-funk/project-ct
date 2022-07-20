@@ -92,7 +92,7 @@ def client(request) -> Generator:
 
 @pytest.mark.usefixtures("client")
 @pytest.fixture(scope="module")
-def auth_token(client: TestClient) -> Generator:
+def auth_header(client: TestClient) -> Generator:
     """
     Create a user and return an authentication token for that user.
     """
@@ -100,5 +100,5 @@ def auth_token(client: TestClient) -> Generator:
     if not user:
         user = create_user(next(database.get_db()), email=DEFAULT_USER["email"], password=DEFAULT_USER["password"])
     
-    token = "Bearer " + generate_auth_token(user.email)
+    token = "Bearer " + generate_auth_token(data={"sub": user.email})
     yield {"Authorization": token}

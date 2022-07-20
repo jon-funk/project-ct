@@ -1,6 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { useRouter } from "next/router";
-import { HasRefreshedAuthToken } from "../utils/api.js";
+
+import { HasRefreshedAuthToken } from "../utils/api";
 
 const AuthContext = createContext({});
 
