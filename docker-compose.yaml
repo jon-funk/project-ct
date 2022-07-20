@@ -102,6 +102,13 @@ services:
       context: app/web/
       dockerfile: .Dockerfile
       target: development
+    volumes:
+      - ./app/web/contexts:/code/contexts
+      - ./app/web/pages:/code/pages
+      - ./app/web/public:/code/public
+      - ./app/web/styles:/code/styles
+      - ./app/web/utils:/code/utils
+
   migsprod:
     container_name: migsprod
     build:

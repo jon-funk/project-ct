@@ -48,11 +48,11 @@ deployweb:
 	@cp app/web/.env.local app/web/.env.bkup
 	@cp app/web/.env.prod app/web/.env.local
 	@echo "Standing up web to include .next build artifacts in web service..."
-	@docker compose up --build -d webprod
 	@rm -rf app/web/.next || true
+	@docker compose up --build -d webprod
 	@mkdir app/web/.next || true
 	@echo "Extracting production build artifacts for upload..."
-	@docker compose cp webprod:/code/.next app/web/.next
+	@docker compose cp webprod:/code/.next app/web/
 	@echo "Deploying web to Google Cloud App Engine..."
 	@gcloud app deploy app/web/app.yaml --quiet
 	@echo "REMINDER: Run make clean now to remove production artifacts that might be mounted by your dev containers!"
