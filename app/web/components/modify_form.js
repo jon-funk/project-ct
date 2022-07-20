@@ -37,6 +37,9 @@ function MFPEModifyForm({ formUUID, rowData }) {
 
 
   const handleChiefComplaintsFieldChange = (event) => {
+    const {
+      target: { value },
+    } = event;
     setComplaints(
       typeof value === 'string' ? value.split(',') : value,
     );
@@ -69,14 +72,11 @@ function MFPEModifyForm({ formUUID, rowData }) {
   };
 
   const handleDepartureTimeChange = (event) => {
-    const {
-      target: { value },
-    } = event;
-
     setFormValues({
       ...formValues,
       ["departure_time"]: event,
-    });  };
+    });  
+  };
 
 
   const handleUpdateSubmit = async (event) => {
