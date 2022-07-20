@@ -1,0 +1,9 @@
+env: standard
+runtime: nodejs16
+service: default
+vpc_access_connector:
+  name: projects/project-ct-356703/locations/us-central1/connectors/project-ct-connector
+handlers:
+  - url: /.*
+    secure: always
+    script: auto

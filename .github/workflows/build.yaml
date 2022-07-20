@@ -7,6 +7,7 @@ env:
   IMAGE: fastapi-example
   TAG: dev
   SERVICE_CONTEXT: app/api/
+  DOCKERFILE: .Dockerfile
 
 jobs:
   build:
@@ -18,4 +19,4 @@ jobs:
       - name: Build n Tag
         run: |
           cd ${{ env.SERVICE_CONTEXT }}
-          docker build -t ${{ env.IMAGE }}:${{ env.TAG }} .
+          docker build -f ${{ env.DOCKERFILE }} -t ${{ env.IMAGE }}:${{ env.TAG }} .
