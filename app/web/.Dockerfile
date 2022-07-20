@@ -1,7 +1,5 @@
 FROM node:18-alpine AS development
 
-ENV NODE_ENV=development
-
 # user the default user the container comes with
 RUN mkdir /code && chown -R node:node /code
 WORKDIR /code
@@ -25,8 +23,6 @@ CMD [ "yarn", "dev" ]
 
 FROM node:18-alpine AS builder
 
-ENV NODE_ENV production
-
 WORKDIR /code
 
 # Cache and Install dependencies
@@ -49,8 +45,6 @@ RUN adduser --disabled-password \
     "${USER}"
 
 USER $USERNAME
-
-ENV NODE_ENV production
 
 COPY --from=builder /code/build /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
