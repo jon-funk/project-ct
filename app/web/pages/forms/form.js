@@ -37,7 +37,6 @@ function MFPEForm() {
     const {
       target: { value },
     } = event;
-    console.log("Value == ", value, "Event == ", event);
     setComplaints(
       typeof value === 'string' ? value.split(',') : value,
     );
