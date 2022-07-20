@@ -73,11 +73,12 @@ export async function login(email, password) {
 
 
 // Get all patient encounter forms
-export async function getAllPatientEncounters() {
+export async function getAllPatientEncounters(token) {
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_HOSTNAME}/patient-encounters`, {
       headers: {
-        "Accept": "application/json"
+        "Accept": "application/json",
+        "Authorization": token
       },
       method: "GET",
       mode: "cors",
@@ -85,6 +86,7 @@ export async function getAllPatientEncounters() {
     });
 
     const response_data = await response.json();
+    console.log(response_data);
     if (response.ok) {
       return response_data;
     } else {
@@ -125,6 +127,8 @@ export async function submitPatientEncounterForm(formData, token) {
           departure_time: formData.departure_time,
           departure_dest: formData.departure_dest,
           comment: formData.comment,
+          age: formData.age,
+          gender: formData.gender,
         })
       })
 
