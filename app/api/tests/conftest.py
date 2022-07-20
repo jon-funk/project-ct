@@ -14,19 +14,21 @@ from api.models.user import create_user, get_user_by_email
 
 DEFAULT_USER = {
     "email": "justice_beaver@justforbeavers.ca",
-    "password": "You-st0le-my-purse"
+    "password": "You-st0le-my-purse",
 }
+
 
 def pytest_configure(config):
     """
     Registering a pytest marker that will only run tests that require data services
     if those services are ready to accept connections. See this pytest doc here:
         https://docs.pytest.org/en/stable/how-to/mark.html
-    
+
     and below function: 'pytest_runtest_setup' for more background on this.
     """
     config.addinivalue_line(
-        "markers", "needs(*): mark test to run only when dependencies are available.",
+        "markers",
+        "needs(*): mark test to run only when dependencies are available.",
     )
 
 
@@ -73,7 +75,7 @@ def setup_and_teardown_db(request) -> None:
     # TODO: Create a separate database only for testing. Otherwise
     # uncommenting the following will delete all migrations in the database.
     # database.drop_all_tables(check_first=True)
-    
+
     database.create_all_tables()
 
     # def teardown():
@@ -98,7 +100,11 @@ def auth_header(client: TestClient) -> Generator:
     """
     user = get_user_by_email(next(database.get_db()), DEFAULT_USER["email"])
     if not user:
-        user = create_user(next(database.get_db()), email=DEFAULT_USER["email"], password=DEFAULT_USER["password"])
-    
+        user = create_user(
+            next(database.get_db()),
+            email=DEFAULT_USER["email"],
+            password=DEFAULT_USER["password"],
+        )
+
     token = "Bearer " + generate_auth_token(data={"sub": user.email})
     yield {"Authorization": token}

@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { FormGroup, Container, Grid, Autocomplete, Checkbox, TextField,
+import { FormGroup, Container, Grid, ListItemText, Checkbox, TextField, OutlinedInput, MenuProps,
         RadioGroup, Radio, FormControlLabel, InputLabel, Select, MenuItem, Button } from '@mui/material';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
@@ -20,6 +20,8 @@ import { submitPatientEncounterForm } from "../../utils/api";
   date: new Date,
   arrival_time: new Date,
   triage_acuity: '',
+  age: new Number,
+  gender: '',
   on_shift: '',
   chief_complaints: [],
   arrival_method: '',
@@ -29,8 +31,29 @@ import { submitPatientEncounterForm } from "../../utils/api";
   comment: '',
 }
 
+const chiefComplaints = [
+    'Nausea/Vomiting',
+    'Dizziness/Presyncope/Lightheaded',
+    'Loss of Consciousness',
+    'Seizure',
+    'Adverse Drug Effect',
+    'Agitation' ,
+    'Bizarre Behaviour' ,
+    'Hallucinations' ,
+    'Anxiety' ,
+    'Abdominal Pain',
+    'Chest Pain' ,
+    'Headache' ,
+    'Other Pain' ,
+    'Shortness of Breath' ,
+    'Allergic Reaction' ,
+    'Trauma' ,
+  ];
+
 function MFPEForm() {
   const [formValues, setFormValues] = React.useState(MFPEFormData);
+  const [complaints, setComplaints] = React.useState([]);
+
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -40,7 +63,13 @@ function MFPEForm() {
     });
   };
 
-  const handleChiefComplaintsFieldChange = (event, value) => {
+  const handleChiefComplaintsFieldChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+    setComplaints(
+      typeof value === 'string' ? value.split(',') : value,
+    );
     setFormValues({
       ...formValues,
       ["chief_complaints"]: value,
@@ -110,7 +139,7 @@ function MFPEForm() {
                 value={formValues.document_num}
                 onChange={handleChange} />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12}>
               <InputLabel id="location-select-label">Location</InputLabel>
               <Select
                 labelId="location-select-label"
@@ -118,32 +147,20 @@ function MFPEForm() {
                 defaultValue="Main Medical"
                 label="Location"
                 disabled
-                required
                 value={formValues.location}
                 onChange={handleChange}>
-                <MenuItem value="Main Medical">Main Medical</MenuItem>
+                <MenuItem value="Main Medical" required={true}>Main Medical</MenuItem>
               </Select>
-            </Grid>
-            <Grid item xs={6}>
-              <InputLabel>Handover From: </InputLabel>
-              <TextField
-                name="handover_from"
-                label="Who brought the patient"
-                variant="outlined"
-                value={formValues.handover_from}
-                onChange={handleChange}
-              />
             </Grid>
             <Grid item xs={6}>
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <InputLabel>Date: </InputLabel>
                 <MobileDatePicker
                   inputFormat="MM/dd/yyyy"
-                  required
                   name="date"
                   value={formValues.date}
                   onChange={handleArrivalTimeChange}
-                  renderInput={(params) => <TextField {...params} />}
+                  renderInput={(params) => <TextField {...params} required={true}/>}
                 />
               </LocalizationProvider>
             </Grid>
@@ -151,14 +168,36 @@ function MFPEForm() {
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <InputLabel>Arrival Time: </InputLabel>
                 <TimePicker
-                  required
                   ampm={false}
                   name="arrival_time"
                   value={formValues.arrival_time}
                   onChange={handleArrivalTimeChange}
-                  renderInput={(params) => <TextField {...params} />}
+                  renderInput={(params) => <TextField {...params} required={true}/>}
                 />
               </LocalizationProvider>
+            </Grid>
+            <Grid item xs={7}>
+              <InputLabel>Gender: </InputLabel>
+              <RadioGroup
+                aria-labelledby="gender"
+                name="gender"
+                row
+                value={formValues.gender}
+                onChange={handleChange}>
+                <FormControlLabel value="male" control={<Radio />} label="Male" />
+                <FormControlLabel value="female" control={<Radio />} label="Female" />
+                <FormControlLabel value="other" control={<Radio />} label="Other" />
+              </RadioGroup>
+            </Grid>
+            <Grid item xs={5}>
+              <TextField
+              type="number"
+                name="age"
+                label="age"
+                variant="outlined"
+                value={formValues.age}
+                onChange={handleChange}
+              />
             </Grid>
             <Grid item xs={12}>
               <InputLabel>Triage Acuity: </InputLabel>
@@ -166,10 +205,9 @@ function MFPEForm() {
                 aria-labelledby="triage-acuity"
                 name="triage_acuity"
                 row
-                required
                 value={formValues.triage_acuity}
                 onChange={handleChange}>
-                <FormControlLabel value="white" control={<Radio />} label="White" />
+                <FormControlLabel value="white" control={<Radio required={true}/>} label="White" />
                 <FormControlLabel value="green" control={<Radio />} label="Green" />
                 <FormControlLabel value="yellow" control={<Radio />} label="Yellow" />
                 <FormControlLabel value="red" control={<Radio />} label="Red" />
@@ -181,36 +219,33 @@ function MFPEForm() {
                 aria-labelledby="patient-Occupation"
                 name="on_shift"
                 row
-                required
                 value={formValues.on_shift}
                 onChange={handleChange}>
-                <FormControlLabel value="staff-yes" control={<Radio />} label="Yes" />
+                <FormControlLabel value="staff-yes" control={<Radio required={true}/>} label="Yes" />
                 <FormControlLabel value="staff-no" control={<Radio />} label="No" />
               </RadioGroup>
             </Grid>
             <Grid item xs={12}>
               <InputLabel>Chief Complaint: </InputLabel>
-              <Autocomplete
-                multiple
-                required
-                options={chiefComplaints}
-                disableCloseOnSelect
-                getOptionLabel={(option) => option.label}
-                renderOption={(props, option, { selected }) => (
-                  <li {...props}>
-                    <Checkbox
-                      checked={selected}
-                    />
-                    {option.label}
-                  </li>
-                )}
-                renderInput={(params) => <TextField {...params}
-                  name="chief_complaints"
-                  label="Select Complaint(s)"
-                  value={formValues.chief_complaints}/>}
+              <Select
+                required={true}
+                fullWidth={true}
+                multiple={true}
+                name="chief_complaints"
+                label="Select Complaint(s)"
+                value={complaints}
                 onChange={handleChiefComplaintsFieldChange}
-
-              />
+                input={<OutlinedInput label="Tag" />}
+                renderValue={(selected) => selected.join(', ')}
+                MenuProps={MenuProps}
+                >
+                {chiefComplaints.map((complaint) => (
+                    <MenuItem key={complaint} value={complaint}>
+                    <Checkbox checked={complaints.indexOf(complaint) > -1} />
+                    <ListItemText primary={complaint} />
+                    </MenuItem>
+                ))}
+              </Select>
             </Grid>
             <Grid item xs={12}>
               <InputLabel>Arrival Method: </InputLabel>
@@ -218,15 +253,53 @@ function MFPEForm() {
                 aria-labelledby="arrival-method"
                 name="arrival_method"
                 row
-                required
                 value={formValues.arrival_method}
                 onChange={handleChange}>
-                <FormControlLabel value="self-presented" control={<Radio />} label="Self Presented" />
+                <FormControlLabel value="self-presented" control={<Radio required={true}/>} label="Self Presented" />
                 <FormControlLabel value="med-transport" control={<Radio />} label="Medical Transport" />
                 <FormControlLabel value="security" control={<Radio />} label="Brought by Security" />
                 <FormControlLabel value="harm-reduction" control={<Radio />} label="Brought by Harm Reduction" />
                 <FormControlLabel value="other" control={<Radio />} label="Other (Please explain in the comment section)"/>
               </RadioGroup>
+            </Grid>
+            <Grid item xs={6}>
+              <InputLabel>Handover From: </InputLabel>
+              <TextField
+                name="handover_from"
+                label="Who brought the patient"
+                variant="outlined"
+                value={formValues.handover_from}
+                onChange={handleChange}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <InputLabel>Departure Destination: </InputLabel>
+              <RadioGroup
+                aria-labelledby="departure-destination"
+                name="departure_dest"
+                row
+                value={formValues.departure_dest}
+                onChange={handleChange}>
+                <FormControlLabel value="lwbs" control={<Radio required={true}/>} label="LWBS" />
+                <FormControlLabel value="left-ama" control={<Radio />} label="Left AMA" />
+                <FormControlLabel value="return-to-event" control={<Radio />} label="Sanctuary" />
+                <FormControlLabel value="security" control={<Radio />} label="Security" />
+                <FormControlLabel value="hospital-private" control={<Radio />} label="Hospital by private car" />
+                <FormControlLabel value="hostpital-ambulance" control={<Radio />} label="Hospital by ambulance" />
+                <FormControlLabel value="other" control={<Radio />} label="Other (Please explain in the comment section)" />
+              </RadioGroup>
+            </Grid>
+            <Grid item xs={6}>
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <InputLabel>Departure Time: </InputLabel>
+                <TimePicker
+                  ampm={false}
+                  name="departure_time"
+                  value={formValues.departure_time}
+                  onChange={handleDepartureTimeChange}
+                  renderInput={(params) => <TextField {...params} />}
+                />
+              </LocalizationProvider>
             </Grid>
             <Grid item xs={6}>
               <InputLabel>Handover To: </InputLabel>
@@ -237,43 +310,11 @@ function MFPEForm() {
                value={formValues.handover_too}
                onChange={handleChange} />
             </Grid>
-            <br/>
-            <Grid item xs={6}>
-              <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <InputLabel>Departure Time: </InputLabel>
-                <TimePicker
-                  required
-                  ampm={false}
-                  name="departure_time"
-                  value={formValues.departure_time}
-                  onChange={handleDepartureTimeChange}
-                  renderInput={(params) => <TextField {...params} />}
-                />
-              </LocalizationProvider>
-            </Grid>
-            <Grid item xs={12}>
-              <InputLabel>Departure Destination: </InputLabel>
-              <RadioGroup
-                required
-                aria-labelledby="departure-destination"
-                name="departure_dest"
-                row
-                value={formValues.departure_dest}
-                onChange={handleChange}>
-                <FormControlLabel value="lwbs" control={<Radio />} label="LWBS" />
-                <FormControlLabel value="left-ama" control={<Radio />} label="Left AMA" />
-                <FormControlLabel value="return-to-event" control={<Radio />} label="Sanctuary" />
-                <FormControlLabel value="security" control={<Radio />} label="Security" />
-                <FormControlLabel value="hospital-private" control={<Radio />} label="Hospital by private car" />
-                <FormControlLabel value="hostpital-ambulance" control={<Radio />} label="Hospital by ambulance" />
-                <FormControlLabel value="other" control={<Radio />} label="Other (Please explain in the comment section)" />
-              </RadioGroup>
-            </Grid>
             <Grid item xs={12}>
               <InputLabel>Comments: </InputLabel>
               <TextField
                 name="comment"
-                label="enter comments here..."
+                label="Enter comments here..."
                 variant="outlined"
                 fullWidth={true}
                 value={formValues.comment}
@@ -290,24 +331,5 @@ function MFPEForm() {
   </>
   );
 }
-
-const chiefComplaints = [
-  { label: 'Nausea/Vomiting', id: 1 },
-  { label: 'Dizziness/Presyncope/Lightheaded', id: 2 },
-  { label: 'Loss of Consciousness', id: 3 },
-  { label: 'Seizure', id: 4 },
-  { label: 'Adverse Drug Effect', id: 5 },
-  { label: 'Agitation' , id: 6 },
-  { label: 'Bizarre Behaviour' , id: 7 },
-  { label: 'Hallucinations' , id: 8 },
-  { label: 'Anxiety' , id: 9 },
-  { label: 'Abdominal Pain' , id: 10 },
-  { label: 'Chest Pain' , id: 11 },
-  { label: 'Headache' , id: 12 },
-  { label: 'Other Pain' , id: 13 },
-  { label: 'Shortness of Breath' , id: 14 },
-  { label: 'Allergic Reaction' , id: 15 },
-  { label: 'Trauma' , id: 16 },
-];
 
 export default ProtectedRoute(MFPEForm);

@@ -15,7 +15,9 @@ hostname = os.environ.get("POSTGRES_HOST")
 port = str(os.environ.get("POSTGRES_PORT"))
 db = os.environ.get("POSTGRES_DB")
 
-SQLALCHEMY_DATABASE_URL = f"postgresql+psycopg2://{user}:{password}@{hostname}:{port}/{db}"
+SQLALCHEMY_DATABASE_URL = (
+    f"postgresql+psycopg2://{user}:{password}@{hostname}:{port}/{db}"
+)
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL, pool_pre_ping=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
