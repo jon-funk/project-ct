@@ -39,17 +39,28 @@ env:
 	@cp app/api/.env-example app/api/.env
 	@cp app/web/.env-example app/web/.env.local
 
+# uses a container to build the production nextjs artifacts and deploy them to app enginge
+# REQUIRES: .env.prod containing production credentials in web/ dir
+# REQUIRES: gcloud auth login
 deployweb:
 	@echo "..."
+	@echo "Applying prod env..."
+	@cp app/web/.env.local app/web/.env.bkup
+	@cp app/web/.env.prod app/web/.env.local
 	@echo "Standing up web to include .next build artifacts in web service..."
 	@docker compose up --build -d webprod
-	@mkdir app/web/.next/ || true
+	@rm -rf app/web/.next || true
+	@mkdir app/web/.next || true
 	@echo "Extracting production build artifacts for upload..."
 	@docker compose cp webprod:/code/.next app/web/.next
 	@echo "Deploying web to Google Cloud App Engine..."
 	@gcloud app deploy app/web/app.yaml --quiet
 	@echo "REMINDER: Run make clean now to remove production artifacts that might be mounted by your dev containers!"
+	@cp app/web/.env.bkup app/web/.env.local
 
+# performs voodoo magic to avoid butchering the python path in order to deploy to app engine
+# REQUIRES: .env.prod containing production credentials in api/ dir
+# REQUIRES: gcloud auth login
 deployapi:
 	@echo "..."
 	@echo "Deploying API to Google Cloud App Engine..."
@@ -65,10 +76,10 @@ deployapi:
 	@gcloud app deploy app/api.yaml --quiet
 	@gcloud app deploy app/dispatch.yaml --quiet
 	@echo "Cleaning up build context..."
-	@cp app/api.yaml
-	@cp app/dispatch.yaml
-	@cp app/.gcloudignore
-	@cp app/requirements.txt
+	@rm app/api.yaml
+	@rm app/dispatch.yaml
+	@rm app/.gcloudignore
+	@rm app/requirements.txt
 	@cp app/api/.env.bkup app/api/.env
 
 deploymig:
