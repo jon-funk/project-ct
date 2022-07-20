@@ -1,32 +1,27 @@
 import React from 'react';
 import Link from 'next/link';
 import { FormGroup, Container, Grid, ListItemText, Checkbox, TextField, OutlinedInput, MenuProps,
-        RadioGroup, Radio, FormControlLabel, InputLabel, Select, MenuItem, Button } from '@mui/material';
+        RadioGroup, Radio, FormControlLabel, InputLabel, Select, MenuItem, Button, Stack } from '@mui/material';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import DeleteIcon from '@mui/icons-material/Delete';
+import Typography from '@mui/material/Typography';
 
-import { ProtectedRoute } from '../../contexts/auth';
-import ProtectedNavbar from "../../components/protected_navbar";
-
-import { submitPatientEncounterForm } from "../../utils/api";
-import { chiefComplaints, MFPEFormData } from "../../utils/constants";
+import { deletePatientEncounterForm, updatePatientEncounterForm } from "../utils/api";
+import { chiefComplaints, MFPEFormData } from "../utils/constants";
 
 
-function MFPEForm() {
-  const [formValues, setFormValues] = React.useState(MFPEFormData);
+function MFPEModifyForm({ formUUID, rowData }) {
+  const [formValues, setFormValues] = React.useState(rowData);
+  const [uuid, setFormUUID] = React.useState(formUUID);
   const [complaints, setComplaints] = React.useState([]);
   const [errorMessage, setErrorMessage]  = React.useState("");
   const [hasError, setError] = React.useState(false);
-  const [hasSuccess, setSuccess] = React.useState(false);
-  const [successMessage, setSuccessMessage] = React.useState(false);
-
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setSuccess(false);
-    setSuccessMessage("");
     setFormValues({
       ...formValues,
       [name]: value,
@@ -50,7 +45,8 @@ function MFPEForm() {
     setFormValues({
       ...formValues,
       ["arrival_time"]: event,
-    });  };
+    });  
+  };
 
   const handleDepartureTimeChange = (event) => {
     setFormValues({
@@ -59,17 +55,31 @@ function MFPEForm() {
     });  };
 
 
-  const handleSubmit = async (event) => {
+  const handleUpdateSubmit = async (event) => {
     event.preventDefault();
     setError(false);
     setErrorMessage("");
     const data = formValues;
     const token = `Bearer ${window.localStorage.getItem("auth-token")}`;
 
-    const errorMessage = await submitPatientEncounterForm(data, token);
+    const errorMessage = await updatePatientEncounterForm(token, data, token);
     if (!errorMessage) {
-      setSuccessMessage("Patient encounter form was successfully created.")
-      setSuccess(true)
+      window.location.pathname = "/forms/form";
+    } else {
+      setErrorMessage(errorMessage);
+      setError(true);
+    }
+  }
+
+  const handleDelete = async (event) => {
+    event.preventDefault()
+    setError(false);
+    setErrorMessage("");
+
+    const token = `Bearer ${window.localStorage.getItem("auth-token")}`;
+    const errorMessage = await deletePatientEncounterForm(uuid, token);
+    if (!errorMessage) {
+      window.location.pathname = "/search/encounters";
     } else {
       setErrorMessage(errorMessage);
       setError(true);
@@ -77,10 +87,9 @@ function MFPEForm() {
   }
 
   return (
-    <>
-    <ProtectedNavbar/>
+    <React.Fragment>
     <Container maxWidth="sm">
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleUpdateSubmit}>
         <FormGroup>
           <Grid container spacing={2} style={{padding: 1 + 'rem'}}>
             <Grid item xs={12}>
@@ -289,17 +298,25 @@ function MFPEForm() {
                 value={formValues.comment}
                 onChange={handleChange}  />
             </Grid>
-            {hasError && <p style={{ color: "red" }}>{errorMessage}</p>}
-            {hasSuccess && <p style={{ color: "green" }}>{successMessage}</p>}
-            <Grid item xs={12}>
-            <Button type="submit" fullWidth={true} variant="contained">Submit</Button>
+            { 
+              hasError && 
+                <Typography variant="p" component="p" sx={{ pt: "1rem", color: "red", margin: "1rem", textAlign: "center" }}>
+                  {errorMessage}
+                </Typography>
+            }
+            <Grid item xs={12} alignItems="center" justifyContent="center" display="flex" sx={{ my: "1rem" }}>
+              <Button color="error" size="large" onClick={handleDelete} sx={{ mx: "1rem", fontWeight: "bold" }}>
+                <DeleteIcon />
+                  Delete
+              </Button>
+              <Button color="success" size="large" type="submit" variant="contained" sx={{ mx: "1rem", fontWeight: "bold" }}>Update</Button>
             </Grid>
           </Grid>
         </FormGroup>
       </form>
     </Container>
-  </>
+  </React.Fragment>
   );
 }
 
-export default ProtectedRoute(MFPEForm);
+export default MFPEModifyForm;
