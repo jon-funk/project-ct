@@ -16,11 +16,7 @@ def test_valid_login(client: TestClient) -> None:
     assert user, "User not created before trying to sign in a valid user."
 
     resp = client.post(
-<<<<<<< Updated upstream
-        "/login", json={"email": "test@gmail.com", "password": "Testing-123"}
-=======
         "/api/login", json={"email": "test@gmail.com", "password": "Testing-123"}
->>>>>>> Stashed changes
     )
     resp_data = resp.json()
     assert (
@@ -58,11 +54,7 @@ def test_invalid_password(client: TestClient) -> None:
     Test that a user with an invalid password is unable to sign in.
     """
     resp = client.post(
-<<<<<<< Updated upstream
-        "/login", json={"email": "test@gmail.com", "password": "Testing123"}
-=======
         "/api/login", json={"email": "test@gmail.com", "password": "Testing123"}
->>>>>>> Stashed changes
     )
     resp_data = resp.json()
     assert (
@@ -83,11 +75,7 @@ def test_user_not_found(client: TestClient) -> None:
     Test that a user that does not exist is not found.
     """
     resp = client.post(
-<<<<<<< Updated upstream
-        "/login", json={"email": "doesntexist@gmail.com", "password": "Testing-123"}
-=======
         "/api/login", json={"email": "doesntexist@gmail.com", "password": "Testing-123"}
->>>>>>> Stashed changes
     )
     resp_data = resp.json()
     assert (
