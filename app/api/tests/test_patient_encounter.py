@@ -29,7 +29,7 @@ def test_valid_submit_patient_encounter(client: TestClient, auth_header: str) ->
     Test that we are able to submit a valid patient encounter form with a signed in user.
     """
     response = client.post(
-        "/create-patient-encounter", headers=auth_header, json=SAMPLE_DATA
+        "/api/create-patient-encounter", headers=auth_header, json=SAMPLE_DATA
     )
 
     resp_data = response.json()
@@ -49,7 +49,7 @@ def test_get_multiple_entries(client: TestClient, auth_header: str) -> None:
     for i in range(4):
         SAMPLE_DATA.update({"document_num": str(i)})
         response = client.post(
-            "/create-patient-encounter", headers=auth_header, json=SAMPLE_DATA
+            "/api/create-patient-encounter", headers=auth_header, json=SAMPLE_DATA
         )
         resp_data = response.json()
         assert (
@@ -58,7 +58,7 @@ def test_get_multiple_entries(client: TestClient, auth_header: str) -> None:
             resp_data
         )
 
-    response = client.get("/patient-encounters", headers=auth_header)
+    response = client.get("/api/patient-encounters", headers=auth_header)
     resp_data = response.json()
     assert response.status_code == 200, (
         "Unable to retrieve all entries from db. Received error: ",
@@ -78,7 +78,7 @@ def test_update_entry(client: TestClient, auth_header: str) -> None:
     Test that we can create and then update a patient encounter
     """
     response = client.post(
-        "/create-patient-encounter", headers=auth_header, json=SAMPLE_DATA
+        "/api/create-patient-encounter", headers=auth_header, json=SAMPLE_DATA
     )
     update_req_data = response.json()
     assert (
@@ -90,7 +90,7 @@ def test_update_entry(client: TestClient, auth_header: str) -> None:
     # Perform update
     update_req_data.update({"document_num": "6.5"})
     response = client.put(
-        "/patient-encounter", headers=auth_header, json=update_req_data
+        "/api/patient-encounter", headers=auth_header, json=update_req_data
     )
     resp_data = response.json()
     assert response.status_code == 200, (
@@ -105,7 +105,7 @@ def test_update_entry(client: TestClient, auth_header: str) -> None:
 
     # Get updated entry
     doc_uuid = resp_data["patient_encounter_uuid"]
-    get_url = "/patient-encounter?" + urlencode({"uuid": doc_uuid})
+    get_url = "/api/patient-encounter?" + urlencode({"uuid": doc_uuid})
     response = client.get(get_url, headers=auth_header)
     resp_data = response.json()
     assert (
@@ -132,7 +132,7 @@ def test_soft_delete(client: TestClient, auth_header: str) -> None:
     it using an API get request afterwards.
     """
     response = client.post(
-        "/create-patient-encounter", headers=auth_header, json=SAMPLE_DATA
+        "/api/create-patient-encounter", headers=auth_header, json=SAMPLE_DATA
     )
     resp_data = response.json()
     assert (
@@ -146,7 +146,7 @@ def test_soft_delete(client: TestClient, auth_header: str) -> None:
         resp_data.keys()
     )
     doc_uuid = resp_data["patient_encounter_uuid"]
-    doc_url = "/patient-encounter?" + urlencode({"uuid": doc_uuid})
+    doc_url = "/api/patient-encounter?" + urlencode({"uuid": doc_uuid})
 
     response = client.delete(doc_url, headers=auth_header, json=SAMPLE_DATA)
     assert response.status_code == 204, "Should have deleted entry."
