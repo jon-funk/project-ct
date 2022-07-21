@@ -98,13 +98,27 @@ export async function getAllPatientEncounters(token) {
     });
 
     const response_data = await response.json();
+
+    for (let index = 0; index < response_data.length; ++index) {
+      const encounter = response_data[index];
+      encounter.arrival_date = new Date(`${encounter.arrival_date}Z`);
+      encounter.arrival_time = new Date(`${encounter.arrival_time}Z`);
+      if (encounter.departure_date !== null) {
+        encounter.departure_date = new Date(`${encounter.departure_date}Z`);
+      }
+      if (encounter.departure_time !== null) {
+        encounter.departure_time = new Date(`${encounter.departure_time}Z`);
+      }
+      response_data[index] = encounter;
+    }
+
     if (response.ok) {
       return response_data;
     } else {
       console.error("Unable to retrieve data from API. Received error: ", response_data);
       return "";
     }
-  } catch(error) {
+  } catch (error) {
     console.error("Error while trying to retrieve patient encounter forms: ", error);
     return "";
   }
