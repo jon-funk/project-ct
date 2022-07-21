@@ -280,7 +280,7 @@ function MFPEForm() {
                   name="departure_date"
                   value={formValues.departure_date}
                   onChange={handleDepartureDateChange}
-                  renderInput={(params) => <TextField {...params} required={true}/>}
+                  renderInput={(params) => <TextField {...params}/>}
                 />
               </LocalizationProvider>
             </Grid>
