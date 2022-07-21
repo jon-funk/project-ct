@@ -2,7 +2,7 @@ from datetime import datetime
 from uuid import UUID
 from typing import List, Optional
 from pydantic import BaseModel
- 
+
 
 class PatientEncounterSchema(BaseModel):
     """
@@ -14,9 +14,9 @@ class PatientEncounterSchema(BaseModel):
     arrival_time: datetime
     chief_complaints: str
     comment: str
-    departure_time: datetime
-    departure_date: datetime
-    departure_dest: str
+    departure_time: Optional[datetime]
+    departure_date: Optional[datetime]
+    departure_dest: Optional[str]
     document_num: str
     gender: Optional[str]
     handover_from: Optional[str]

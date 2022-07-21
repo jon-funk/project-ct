@@ -12,8 +12,8 @@ export const MFPEFormData = {
     chief_complaints: [],
     arrival_method: '',
     handover_too: '',
-    departure_time: new Date,
-    departure_date: new Date,
+    departure_time: null,
+    departure_date: null,
     departure_dest: '',
     comment: '',
 };

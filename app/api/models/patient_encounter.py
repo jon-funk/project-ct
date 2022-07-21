@@ -25,9 +25,9 @@ class PatientEncounter(Base, BasicMetrics):
     on_shift = Column(Boolean)
     triage_acuity = Column(String)
     chief_complaints = Column(String)
-    departure_date = Column(DateTime)
-    departure_time = Column(DateTime)
-    departure_dest = Column(String)
+    departure_date = Column(DateTime, nullable=True)
+    departure_time = Column(DateTime, nullable=True)
+    departure_dest = Column(String, nullable=True)
     handover_from = Column(String, nullable=True)
     handover_too = Column(String)
     comment = Column(String, nullable=True)
@@ -95,7 +95,7 @@ def update_patient_encounter(
     """
     updated_encounter = encounter
     db.query(PatientEncounter).filter(
-        PatientEncounter.deleted == False, 
+        PatientEncounter.deleted == False,
         PatientEncounter.patient_encounter_uuid == encounter.patient_encounter_uuid
     ).update(
         values=updated_values
