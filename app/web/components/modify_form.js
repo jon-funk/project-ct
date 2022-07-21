@@ -68,14 +68,14 @@ function MFPEModifyForm({ formUUID, rowData }) {
     setFormValues({
       ...formValues,
       ["arrival_time"]: event,
-    });  
+    });
   };
 
   const handleDepartureTimeChange = (event) => {
     setFormValues({
       ...formValues,
       ["departure_time"]: event,
-    });  
+    });
   };
 
 
@@ -244,7 +244,7 @@ function MFPEModifyForm({ formUUID, rowData }) {
                   } else {
                     return selected;
                   }
-                }}                  
+                }}
                 MenuProps={MenuProps}
                 >
                 {chiefComplaints.map((complaint) => (
@@ -288,7 +288,7 @@ function MFPEModifyForm({ formUUID, rowData }) {
                 row
                 value={formValues.departure_dest}
                 onChange={handleChange}>
-                <FormControlLabel value="lwbs" control={<Radio required={true}/>} label="LWBS" />
+                <FormControlLabel value="lwbs" control={<Radio />} label="LWBS" />
                 <FormControlLabel value="left-ama" control={<Radio />} label="Left AMA" />
                 <FormControlLabel value="return-to-event" control={<Radio />} label="Sanctuary" />
                 <FormControlLabel value="security" control={<Radio />} label="Security" />
@@ -340,8 +340,8 @@ function MFPEModifyForm({ formUUID, rowData }) {
                 value={formValues.comment}
                 onChange={handleChange}  />
             </Grid>
-            { 
-              hasError && 
+            {
+              hasError &&
                 <Typography variant="p" component="p" sx={{ pt: "1rem", color: "red", margin: "1rem", textAlign: "center" }}>
                   {errorMessage}
                 </Typography>
