@@ -3,7 +3,7 @@ export const MFPEFormData = {
     document_num: '',
     location: "Main Medical",
     handover_from: '',
-    date: new Date,
+    arrival_date: new Date,
     arrival_time: new Date,
     triage_acuity: '',
     age: new Number,
@@ -13,9 +13,10 @@ export const MFPEFormData = {
     arrival_method: '',
     handover_too: '',
     departure_time: new Date,
+    departure_date: new Date,
     departure_dest: '',
     comment: '',
-  }
+};
 
 export const chiefComplaints = [
     'Nausea/Vomiting',

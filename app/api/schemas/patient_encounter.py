@@ -10,11 +10,12 @@ class PatientEncounterSchema(BaseModel):
     """
     age: Optional[int]
     arrival_method: str
+    arrival_date: datetime
     arrival_time: datetime
     chief_complaints: str
     comment: str
-    date: datetime
     departure_time: datetime
+    departure_date: datetime
     departure_dest: str
     document_num: str
     gender: Optional[str]
