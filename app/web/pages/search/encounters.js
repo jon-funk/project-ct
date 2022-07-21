@@ -1,5 +1,4 @@
 import React from 'react';
-import Link from 'next/link';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Slide from '@mui/material/Slide';
@@ -7,11 +6,8 @@ import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
-import Button from '@mui/material/Button';
 
-
-import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
-import { TransitionProps } from '@mui/material/transitions';
+import { DataGrid } from '@mui/x-data-grid';
 import Dialog from '@mui/material/Dialog';
 
 import Container from "@mui/material/Container";
@@ -79,7 +75,7 @@ function PESearch() {
         { field: 'departure_time', headerName: 'Departure Time', width: 200 },
         { field: 'departure_dest', headerName: "Departure Destination", width: 250 },
         { field: 'handover_from', headerName: "Handover From", width: 250 },
-        { field: 'handover_too', headerName: "Handover Too", width: 250 },
+        { field: 'handover_too', headerName: "Handover To", width: 250 },
         { field: 'comment', headerName: "Comment", width: 250 },
 
         { field: 'patient_rfid', headerName: "Patient RFID", width: 150 },
