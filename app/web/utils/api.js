@@ -103,8 +103,12 @@ export async function getAllPatientEncounters(token) {
       const encounter = response_data[index];
       encounter.arrival_date = new Date(`${encounter.arrival_date}Z`);
       encounter.arrival_time = new Date(`${encounter.arrival_time}Z`);
-      encounter.departure_date = new Date(`${encounter.departure_date}Z`);
-      encounter.departure_time = new Date(`${encounter.departure_time}Z`);
+      if (encounter.departure_date !== null) {
+        encounter.departure_date = new Date(`${encounter.departure_date}Z`);
+      }
+      if (encounter.departure_time !== null) {
+        encounter.departure_time = new Date(`${encounter.departure_time}Z`);
+      }
       response_data[index] = encounter;
     }
 
