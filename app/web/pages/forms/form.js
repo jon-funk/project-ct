@@ -46,6 +46,20 @@ function MFPEForm() {
     });
   }
 
+  const handleArrivalDateChange = (event) => {
+    setFormValues({
+      ...formValues,
+      ["arrival_date"]: event
+    });
+  };
+
+  const handleDepartureDateChange = (event) => {
+    setFormValues({
+      ...formValues,
+      ["departure_date"]: event
+    });
+  };
+
   const handleArrivalTimeChange = (event) => {
     setFormValues({
       ...formValues,
@@ -96,7 +110,7 @@ function MFPEForm() {
                 name="patient_rfid"
                 label="Wristband RFID"
                 variant="outlined"
-                value={formValues.rfid}
+                value={formValues.patient_rfid}
                 onChange={handleChange} />
               </Grid>
             <Grid item xs={6}>
@@ -123,12 +137,12 @@ function MFPEForm() {
             </Grid>
             <Grid item xs={6}>
               <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <InputLabel>Date: </InputLabel>
+                <InputLabel>Arrival Date: </InputLabel>
                 <MobileDatePicker
                   inputFormat="MM/dd/yyyy"
-                  name="date"
-                  value={formValues.date}
-                  onChange={handleArrivalTimeChange}
+                  name="arrival_date"
+                  value={formValues.arrival_date}
+                  onChange={handleArrivalDateChange}
                   renderInput={(params) => <TextField {...params} required={true}/>}
                 />
               </LocalizationProvider>
@@ -190,8 +204,8 @@ function MFPEForm() {
                 row
                 value={formValues.on_shift}
                 onChange={handleChange}>
-                <FormControlLabel value="staff-yes" control={<Radio required={true}/>} label="Yes" />
-                <FormControlLabel value="staff-no" control={<Radio />} label="No" />
+                <FormControlLabel value="Yes" control={<Radio required={true}/>} label="Yes" />
+                <FormControlLabel value="No" control={<Radio />} label="No" />
               </RadioGroup>
             </Grid>
             <Grid item xs={12}>
@@ -257,6 +271,18 @@ function MFPEForm() {
                 <FormControlLabel value="hostpital-ambulance" control={<Radio />} label="Hospital by ambulance" />
                 <FormControlLabel value="other" control={<Radio />} label="Other (Please explain in the comment section)" />
               </RadioGroup>
+            </Grid>
+            <Grid item xs={6}>
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <InputLabel>Departure Date: </InputLabel>
+                <MobileDatePicker
+                  inputFormat="MM/dd/yyyy"
+                  name="departure_date"
+                  value={formValues.departure_date}
+                  onChange={handleDepartureDateChange}
+                  renderInput={(params) => <TextField {...params} required={true}/>}
+                />
+              </LocalizationProvider>
             </Grid>
             <Grid item xs={6}>
               <LocalizationProvider dateAdapter={AdapterDateFns}>

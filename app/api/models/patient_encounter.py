@@ -19,15 +19,16 @@ class PatientEncounter(Base, BasicMetrics):
     patient_rfid = Column(String, nullable=True)
     location = Column(String)
     qr_code = Column(String, nullable=True)
+    arrival_date = Column(DateTime)
     arrival_method = Column(String)
+    arrival_time = Column(DateTime)
     on_shift = Column(Boolean)
     triage_acuity = Column(String)
     chief_complaints = Column(String)
-    arrival_time = Column(DateTime)
+    departure_date = Column(DateTime)
     departure_time = Column(DateTime)
     departure_dest = Column(String)
     handover_from = Column(String, nullable=True)
-    date = Column(DateTime)
     handover_too = Column(String)
     comment = Column(String, nullable=True)
     age = Column(Integer, nullable=True)
@@ -90,10 +91,13 @@ def update_patient_encounter(
     db: Session, encounter: PatientEncounter, updated_values: Dict[str, Any]
 ) -> PatientEncounter:
     """
-    Update an existing patient encounter document. Returns the updated patient encounter.
+    Update an existing patient encounter document using its existing UUID. Returns the updated patient encounter.
     """
     updated_encounter = encounter
-    db.query(PatientEncounter).filter(PatientEncounter.deleted == False).update(
+    db.query(PatientEncounter).filter(
+        PatientEncounter.deleted == False, 
+        PatientEncounter.patient_encounter_uuid == encounter.patient_encounter_uuid
+    ).update(
         values=updated_values
     )
     db.commit()
