@@ -263,6 +263,7 @@ function MFPEForm() {
                 row
                 value={formValues.departure_dest}
                 onChange={handleChange}>
+                <FormControlLabel value="back-to-festival" control={<Radio />} label="Back to Festival" />
                 <FormControlLabel value="lwbs" control={<Radio />} label="LWBS" />
                 <FormControlLabel value="left-ama" control={<Radio />} label="Left AMA" />
                 <FormControlLabel value="return-to-event" control={<Radio />} label="Sanctuary" />
