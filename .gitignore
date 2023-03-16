@@ -8,3 +8,7 @@ __pycache__
 
 .env.local
 .env.bkup
+
+terraform.*
+.terraform*
+
