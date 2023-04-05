@@ -1,4 +1,6 @@
-FROM python:3.9.1 as runtime
+#Dockerfile for dev build, api
+
+FROM python:3.9.1
 RUN mkdir -p /app/api
 WORKDIR /app/api
 
