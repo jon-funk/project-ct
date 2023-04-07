@@ -6,8 +6,8 @@
     "dev": "NODE_ENV=development next dev",
     "dev-build": "next build",
     "dev-start": "next start",
-    "build": "rm -rf ./next && NODE_ENV=production next build",
-    "start": "next start -p 8080",
+    "build": "rm -rf ./next || 0 && NODE_ENV=production next build",
+    "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
