@@ -2,6 +2,10 @@ name: Unit Tests
 
 on:
   push:
+    #branches:
+    #  - main
+    paths:
+      - 'app/api/**'
 
 env:
   API_ENV_FILE: app/api/
@@ -17,4 +21,4 @@ jobs:
             make env
       - name: Run tests
         run: |
-            make testapi
+            make testapiprod
