@@ -79,3 +79,42 @@ webprod:
 migsprod:
 	@echo "Creating database and applying migrations..."
 	@docker compose up migstarget 
+
+#BUILD AND PUSH FUNCTIONALITY
+#REQUIRES USER TO AUTHENTICATED TO USE THE GCLOUD ARTIFACT RESPOSITORY
+#https://cloud.google.com/artifact-registry/docs/docker/store-docker-container-images
+
+build-push-api:
+ifeq ($(filter-out build-push-api, $(MAKECMDGOALS)),)
+	@echo "Please provide an image tag to push e.g. 'make build-push-api <imagetag>'"
+else
+ifeq ($(filter-out build-push-api, $(MAKECMDGOALS)), prod) #production image build and push
+	@docker build -f app/api/Dockerfile.prod app/api -t projectct-api:prod
+	@docker tag projectct-api:prod northamerica-northeast2-docker.pkg.dev/project-ct-sandbox/project-ct/api:prod
+	@docker push northamerica-northeast2-docker.pkg.dev/project-ct-sandbox/project-ct/api:prod
+else #any other tags, use dev build dockerfile image  
+	@docker build -f app/api/Dockerfile.dev app/api -t projectct-api:$(filter-out $@, $(MAKECMDGOALS))
+	@docker tag projectct-api:$(filter-out $@, $(MAKECMDGOALS)) northamerica-northeast2-docker.pkg.dev/project-ct-sandbox/project-ct/api:$(filter-out $@, $(MAKECMDGOALS))
+	@docker push northamerica-northeast2-docker.pkg.dev/project-ct-sandbox/project-ct/api:$(filter-out $@, $(MAKECMDGOALS))
+endif
+endif
+
+build-push-web:
+ifeq ($(filter-out build-push-web, $(MAKECMDGOALS)),)
+	@echo "Please provide an image tag to push: e.g. 'make build-push-web <imagetag>'"
+else
+ifeq ($(filter-out build-push-api, $(MAKECMDGOALS)), prod) #production image build and push
+	@docker build -f app/web/Dockerfile.prod app/web -t projectct-web:prod
+	@docker tag projectct-web:prod northamerica-northeast2-docker.pkg.dev/project-ct-sandbox/project-ct/web:prod
+	@docker push northamerica-northeast2-docker.pkg.dev/project-ct-sandbox/project-ct/web:prod
+else # any other tags, use dev build dockerfile image
+	@docker build -f app/web/Dockerfile.dev app/web -t projectct-web:$(filter-out $@, $(MAKECMDGOALS))
+	@docker tag projectct-web:$(filter-out $@, $(MAKECMDGOALS)) northamerica-northeast2-docker.pkg.dev/project-ct-sandbox/project-ct/web:$(filter-out $@, $(MAKECMDGOALS))
+	@docker push northamerica-northeast2-docker.pkg.dev/project-ct-sandbox/project-ct/web:$(filter-out $@, $(MAKECMDGOALS))
+endif
+endif
+
+%:
+	@:
+	
+	

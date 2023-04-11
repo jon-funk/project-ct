@@ -6,7 +6,7 @@ WORKDIR /app/api
 
 COPY requirements.txt /app/api
 RUN pip install --no-cache-dir -r requirements.txt
-COPY . /api/api/
+COPY . /app/api/
 WORKDIR /app
 
 # Setup user to represent developer permissions in container
