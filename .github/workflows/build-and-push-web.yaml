@@ -2,9 +2,15 @@ name: Build and Push Web
 
 on:
   push:
-    #commenting this out while testing workflows on terraform-dev branch
-    #branches: 
-    #  - main
+    branches: 
+      - main
+    paths:
+      - 'app/web/**'
+  pull_request:
+    types:
+      -opened
+    branches: 
+      - main
     paths:
       - 'app/web/**'
 

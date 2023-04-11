@@ -2,12 +2,19 @@ name: Build and Push API
 
 on:
   push:
-    #branches: 
-    #  - main
+    branches: 
+      - main
+    paths:
+      - 'app/api/**'
+  pull_request:
+    types:
+      -opened
+    branches: 
+      - main
     paths:
       - 'app/api/**'
   workflow_run:
-    workflows: ['Unit Tests']
+    workflows: [Production Unit Tests]
     types: 
       - completed
 

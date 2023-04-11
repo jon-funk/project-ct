@@ -1,11 +1,19 @@
-name: Unit Tests
+name: Production Unit Tests
 
 on:
   push:
-    #branches:
-    #  - main
+    branches:
+      - main
     paths:
       - 'app/api/**'
+  pull_request:
+    types:
+      -opened
+    branches: 
+      - main
+    paths:
+      - 'app/api/**'
+
 
 env:
   API_ENV_FILE: app/api/
