@@ -8,7 +8,7 @@ on:
       - 'app/api/**'
   pull_request:
     types:
-      -opened
+      - opened
     branches: 
       - main
     paths:
