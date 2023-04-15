@@ -20,6 +20,7 @@ on:
 
 env:
   TAG: prod
+  GAR: ${{ secrets.ARTIFACT_REGISTRY }}
 
 jobs:
   build-and-push-api:
@@ -53,4 +54,6 @@ jobs:
           password: ${{ steps.auth.outputs.access_token }}
 
       - name: build-tag-push
-        run: make build-push-api ${{ env.TAG }}
+        run: |
+              export GAR=${{ env.GAR }}
+              make build-push-web ${{ env.TAG }}

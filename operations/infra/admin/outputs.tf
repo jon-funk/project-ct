@@ -3,9 +3,9 @@ output "workload_identity_provider" {
 }
 
 output "service_account" {
-  value = google_service_account.pipeline_service_account.email
+  value = "${google_service_account.pipeline_service_account.email}"
 }
 
 output "registry" {
-   value = "${ var.region }-docker.pkg.dev"
+   value = "${local.GAR_location}${ local.GAR_name}/"
 }

@@ -1,4 +1,5 @@
 #terraform set up of providers, enable gcp apis, set up storage bucket 
+
 terraform {
   required_providers {
     google = {
@@ -36,7 +37,7 @@ resource "google_project_service" "apis" {
   disable_dependent_services = true
 }
 
-#
+#google storage bucket for terraform state files
 resource "google_storage_bucket" "admin_storage_bucket" {
   name          = local.storage_bucket
   force_destroy = false
@@ -47,6 +48,13 @@ resource "google_storage_bucket" "admin_storage_bucket" {
   }
 }
 
+#for first terraform provision run: comment this out
+#run "terraform init -backend-config=config.gcs.tfbackend
+#in this file provide the storage bucket name and the prefix
+#run "terraform apply". terraform will provision the bucket.
+#Once provisioned, uncomment and run "terraform apply" again,
+#so terraform will move the statefiles into the bucket.
+#See operations/README
 terraform {
    backend "gcs" {
  }
