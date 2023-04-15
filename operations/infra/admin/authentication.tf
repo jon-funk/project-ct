@@ -55,9 +55,25 @@ resource "github_actions_secret" "sa_secret" {
 #granting the service account required access to gcp project services
 resource "google_project_iam_member" "GAR_administrator" {
   project = var.project_id
-  role    = "roles/artifactregistry.admin"
+  role    = "roles/artifactregistry.repoAdmin"
   member  = "serviceAccount:${google_service_account.pipeline_service_account.email}"
 }
+resource "google_project_iam_member" "cloudrun_administrator" {
+  project = var.project_id
+  role    = "roles/run.admin"
+  member  = "serviceAccount:${google_service_account.pipeline_service_account.email}"
+}
+resource "google_project_iam_member" "sa_token_creator" {
+  project = var.project_id
+  role    = "roles/iam.serviceAccountTokenCreator"
+  member  = "serviceAccount:${google_service_account.pipeline_service_account.email}"
+}
+resource "google_project_iam_member" "storage_administrator" {
+  project = var.project_id
+  role    = "roles/storage.admin"
+  member  = "serviceAccount:${google_service_account.pipeline_service_account.email}"
+}
+
 
 #allow the pool access to the service account 
 resource "google_service_account_iam_member" "workload_identity_user" {

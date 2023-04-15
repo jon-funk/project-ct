@@ -25,7 +25,7 @@ jobs:
   build-and-push-api:
     name: build-and-push-api
     runs-on: ubuntu-20.04
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    #if: ${{ github.event.workflow_run.conclusion == 'success' }}
     
     permissions:
       contents: 'read'
@@ -48,7 +48,7 @@ jobs:
       - name: Login to Google Artifact Registry
         uses: docker/login-action@v2
         with:
-          registry: ${{ secrets.REGISTRY }}
+          registry: ${{ secrets.ARTIFACT_REGISTRY_TEST }}
           username: oauth2accesstoken
           password: ${{ steps.auth.outputs.access_token }}
 
