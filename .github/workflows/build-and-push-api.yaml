@@ -2,8 +2,8 @@ name: Build and Push API
 
 on:
   push:
-    #branches: 
-    #  - main
+    branches: 
+      - main
     paths:
       - 'app/api/**'
   pull_request:
@@ -13,10 +13,10 @@ on:
       - main
     paths:
       - 'app/api/**'
-  #workflow_run:
-  #  workflows: [Production Unit Tests]
-  #  types: 
-  #    - completed
+  workflow_run:
+    workflows: [Production Unit Tests]
+    types: 
+      - completed
 
 env:
   TAG: prod
@@ -26,7 +26,7 @@ jobs:
   build-and-push-api:
     name: build-and-push-api
     runs-on: ubuntu-20.04
-    #if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     
     permissions:
       contents: 'read'
