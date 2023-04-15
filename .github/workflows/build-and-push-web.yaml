@@ -16,6 +16,7 @@ on:
 
 env:
   TAG: prod
+  GAR: ${{ secrets.ARTIFACT_REGISTRY }}
 
 jobs:
   build-and-push-web:
@@ -36,16 +37,18 @@ jobs:
         uses: google-github-actions/auth@v1
         with: 
           token_format: access_token
-          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER_TEST }}
-          service_account: ${{ secrets.SERVICE_ACCOUNT_TEST }}
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.SERVICE_ACCOUNT }}
           access_token_lifetime: 300s
         
       - name: Login to Google Artifact Registry
         uses: docker/login-action@v2
         with:
-          registry: ${{ secrets.ARTIFACT_REGISTRY_TEST }}
+          registry: ${{ secrets.ARTIFACT_REGISTRY }}
           username: oauth2accesstoken
           password: ${{ steps.auth.outputs.access_token }}
 
       - name: build-tag-push
-        run: make build-push-web ${{ env.TAG }}
+        run: |
+              export GAR=${{ env.GAR }}
+              make build-push-web ${{ env.TAG }}

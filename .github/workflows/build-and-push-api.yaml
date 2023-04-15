@@ -48,7 +48,7 @@ jobs:
       - name: Login to Google Artifact Registry
         uses: docker/login-action@v2
         with:
-          registry: ${{ secrets.ARTIFACT_REGISTRY_TEST }}
+          registry: ${{ secrets.ARTIFACT_REGISTRY }}
           username: oauth2accesstoken
           password: ${{ steps.auth.outputs.access_token }}
 
