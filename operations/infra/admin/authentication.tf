@@ -31,12 +31,26 @@ resource "google_iam_workload_identity_pool_provider" "github_actions_pool_provi
   }
 }
 
+resource "github_actions_secret" "wp_secret" {
+  repository       = var.project_repo
+  secret_name      = "WORKLOAD_IDENTITY_PROVIDER"
+  plaintext_value  = "${google_iam_workload_identity_pool.github_actions_pool.name}/providers/${google_iam_workload_identity_pool_provider.github_actions_pool_provider.workload_identity_pool_provider_id}"
+}
+
 #creation of a service account which the pool will act as
 resource "google_service_account" "pipeline_service_account" {
   project      = var.project_id
   account_id   = local.pipeline_service_account
   display_name = "Service Account used for pipeline using GitHub Actions and Terraform"
 }
+
+
+resource "github_actions_secret" "sa_secret" {
+  repository       = var.project_repo
+  secret_name      = "SERVICE_ACCOUNT"
+  plaintext_value  = google_service_account.pipeline_service_account.email
+}
+
 
 #granting the service account required access to gcp project services
 resource "google_project_iam_member" "GAR_administrator" {

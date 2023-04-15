@@ -1,6 +1,12 @@
 variable "project_id" { }
 
+variable "project_repo_full" { }
+
 variable "project_repo" { }
+
+variable "GITHUB_TOKEN" { }
+
+variable "GITHUB_OWNER" { }
 
 variable "region" {
   default = "northamerica-northeast2"
