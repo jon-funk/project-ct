@@ -1,10 +1,10 @@
 #Dockerfile for production build, web
 FROM node:18-alpine
- 
+
 # user the default user the container comes with
 RUN mkdir /code && chown -R node:node /code
-WORKDIR /code
 
+WORKDIR /code
 USER node
 
 # Cache and Install dependencies
@@ -22,4 +22,7 @@ RUN yarn build
 EXPOSE 3000
 
 #Start the app
-CMD ["yarn", "start"]
+#CMD touch .env.local && cd .. && cat /testfolder/tempname > /code/.env.local && cd code && yarn start
+#CMD printenv > .env.local && yarn start
+#ENTRYPOINT ["/entrypoint.sh"]
+CMD yarn start
