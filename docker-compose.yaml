@@ -82,11 +82,7 @@ services:
       context: app/web/
       dockerfile: Dockerfile.dev
     volumes:
-      - ./app/web/contexts:/code/contexts
-      - ./app/web/pages:/code/pages
-      - ./app/web/public:/code/public
-      - ./app/web/styles:/code/styles
-      - ./app/web/utils:/code/utils
+      - ./app/web:/code
     ports:
       - 3000:3000
     depends_on:
