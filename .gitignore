@@ -13,3 +13,5 @@ terraform.*
 .terraform*
 
 app/web/yarn.lock
+app/web/.prettiererrc
+.vscode/settings.json
