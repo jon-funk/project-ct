@@ -12,3 +12,4 @@ __pycache__
 terraform.*
 .terraform*
 
+app/web/yarn.lock
