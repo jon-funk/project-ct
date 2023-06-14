@@ -205,6 +205,12 @@ function MFPEForm() {
                 <Controller
                   name="triage_acuity"
                   control={control}
+                  rules={{
+                    required: {
+                      value: true,
+                      message: "Please select an option",
+                    },
+                  }}
                   render={({ field }) => (
                     <RadioGroup
                       aria-labelledby="triage-acuity"
