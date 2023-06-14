@@ -1,3 +1,11 @@
+---
+name: Feature Request
+about: A new feature request for project CT
+title: "[Feature]"
+labels: Feature
+assignees: ''
+---
+
 ## Feature Request
     
 * Requested By: TBD
