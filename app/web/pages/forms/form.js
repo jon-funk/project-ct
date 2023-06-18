@@ -7,6 +7,7 @@ import {
   Container,
   FormControl,
   FormControlLabel,
+  FormHelperText,
   FormLabel,
   FormGroup,
   Grid,
@@ -48,6 +49,16 @@ function MFPEForm() {
     setValue,
     onChange,
   } = useForm({ defaultValues: MFPEFormData });
+
+  const formData = watch();
+
+  useEffect(() => {
+    console.log(formData);
+  }, [formData]);
+
+  const handleFormChange = (name, value) => {
+    setValue(name, value);
+  };
 
   const onSubmit = async (data) => {
     setError(false);
@@ -156,9 +167,7 @@ function MFPEForm() {
   );
 }
 
-export default ProtectedRoute(MFPEForm);
-
-function PatientRFIDField(control) {
+function PatientRFIDField(control, errors) {
   return (
     <FormControl>
       <FormLabel>Patient RFID: </FormLabel>
@@ -192,7 +201,6 @@ function DocumentNumberField(control, errors) {
             variant="outlined"
             helperText="eg. 1000"
             error={Boolean(errors?.document_num)}
-            helperText={errors?.document_num?.message || " "}
           />
         )}
       />
@@ -200,7 +208,7 @@ function DocumentNumberField(control, errors) {
   );
 }
 
-function LocationField(control) {
+function LocationField(control, errors) {
   return (
     <FormControl>
       <FormLabel id="location-select-label">Location</FormLabel>
@@ -328,7 +336,7 @@ function AgeField(control) {
 
 function TriageAcuityField(control, errors) {
   return (
-    <FormControl>
+    <FormControl error={Boolean(errors?.triage_acuity)}>
       <FormLabel>Triage Acuity: </FormLabel>
       <Controller
         name="triage_acuity"
@@ -339,14 +347,15 @@ function TriageAcuityField(control, errors) {
         render={({ field }) => (
           <Box>
             <RadioGroup
-              aria-labelledby="triage-acuity"
+              aria-labelledby="triage_acuity"
               row
               value={field.value}
               onChange={field.onChange}
+              error={Boolean(errors?.triage_acuity)}
             >
               <FormControlLabel
                 value="white"
-                control={<Radio required={true} />}
+                control={<Radio />}
                 label="White"
               />
               <FormControlLabel
@@ -361,6 +370,9 @@ function TriageAcuityField(control, errors) {
               />
               <FormControlLabel value="red" control={<Radio />} label="Red" />
             </RadioGroup>
+            {errors.triage_acuity && (
+              <FormHelperText>{errors.triage_acuity.message}</FormHelperText>
+            )}
           </Box>
         )}
       />
@@ -368,7 +380,7 @@ function TriageAcuityField(control, errors) {
   );
 }
 
-function PatientOnShiftWorkerField(control) {
+function PatientOnShiftWorkerField(control, errors) {
   return (
     <FormControl>
       <FormLabel>Is the patient a worker who is on shift: </FormLabel>
@@ -391,7 +403,7 @@ function PatientOnShiftWorkerField(control) {
   );
 }
 
-function ChiefComplaintField(control) {
+function ChiefComplaintField(control, errors) {
   return (
     <FormControl>
       <FormLabel>Chief Complaint: </FormLabel>
@@ -424,7 +436,7 @@ function ChiefComplaintField(control) {
   );
 }
 
-function ArrivalMethodField(control) {
+function ArrivalMethodField(control, errors) {
   return (
     <FormControl>
       <FormLabel>Arrival Method: </FormLabel>
@@ -471,7 +483,7 @@ function ArrivalMethodField(control) {
   );
 }
 
-function HandoverFromField(control) {
+function HandoverFromField(control, errors) {
   return (
     <FormControl>
       <FormLabel>Handover From: </FormLabel>
@@ -490,7 +502,7 @@ function HandoverFromField(control) {
   );
 }
 
-function DepartureDestinationField(control) {
+function DepartureDestinationField(control, errors) {
   return (
     <FormControl>
       <FormLabel>Departure Destination: </FormLabel>
@@ -542,7 +554,7 @@ function DepartureDestinationField(control) {
   );
 }
 
-function DepartureDateField(control) {
+function DepartureDateField(control, errors) {
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <FormControl>
@@ -563,7 +575,7 @@ function DepartureDateField(control) {
   );
 }
 
-function DepartureTimeField(control) {
+function DepartureTimeField(control, errors) {
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <FormControl>
@@ -584,7 +596,7 @@ function DepartureTimeField(control) {
   );
 }
 
-function HandoverToField(control) {
+function HandoverToField(control, errors) {
   return (
     <FormControl>
       <FormLabel>Handover To: </FormLabel>
@@ -604,7 +616,7 @@ function HandoverToField(control) {
   );
 }
 
-function CommentsField(control) {
+function CommentsField(control, errors) {
   return (
     <FormControl>
       <FormLabel>Comments: </FormLabel>
@@ -623,3 +635,5 @@ function CommentsField(control) {
     </FormControl>
   );
 }
+
+export default ProtectedRoute(MFPEForm);
