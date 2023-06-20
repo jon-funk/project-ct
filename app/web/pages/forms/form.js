@@ -28,7 +28,7 @@ import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { MobileDatePicker } from "@mui/x-date-pickers/MobileDatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, Form, useForm, useFormContext } from "react-hook-form";
 
 import { ProtectedRoute } from "../../contexts/auth";
 import ProtectedNavbar from "../../components/protected_navbar";
@@ -51,6 +51,10 @@ function MFPEForm() {
   } = useForm({ defaultValues: MFPEFormData });
 
   const formData = watch();
+
+  // Watch for changes in the chief complaints field
+  const complaints = watch("chief_complaints");
+  const enableOtherChiefComplaint = complaints?.includes("Other");
 
   useEffect(() => {
     console.log(formData);
@@ -91,55 +95,62 @@ function MFPEForm() {
                   </Typography>
                 </Grid>
                 <Grid item xs={6}>
-                  {PatientRFIDField(control)}
+                  {PatientRFIDField(control, errors)}
                 </Grid>
                 <Grid item xs={6}>
                   {DocumentNumberField(control, errors)}
                 </Grid>
                 <Grid item xs={12}>
-                  {LocationField(control)}
+                  {LocationField(control, errors)}
                 </Grid>
                 <Grid item xs={6}>
-                  {ArrivalDateField(control)}
+                  {ArrivalDateField(control, errors)}
                 </Grid>
                 <Grid item xs={6}>
-                  {ArrivalTimeField(control)}
+                  {ArrivalTimeField(control, errors)}
                 </Grid>
                 <Grid item xs={7}>
-                  {GenderField(control)}
+                  {GenderField(control, errors)}
                 </Grid>
                 <Grid item xs={5}>
-                  {AgeField(control)}
+                  {AgeField(control, errors)}
                 </Grid>
                 <Grid item xs={12}>
                   {TriageAcuityField(control, errors)}
                 </Grid>
                 <Grid item xs={12}>
-                  {PatientOnShiftWorkerField(control)}
+                  {PatientOnShiftWorkerField(control, errors)}
                 </Grid>
                 <Grid item xs={12}>
-                  {ChiefComplaintField(control)}
+                  {ChiefComplaintField(control, errors)}
                 </Grid>
                 <Grid item xs={12}>
-                  {ArrivalMethodField(control)}
-                </Grid>
-                <Grid item xs={6}>
-                  {HandoverFromField(control)}
-                </Grid>
-                <Grid item xs={12}>
-                  {DepartureDestinationField(control)}
-                </Grid>
-                <Grid item xs={6}>
-                  {DepartureDateField(control)}
-                </Grid>
-                <Grid item xs={6}>
-                  {DepartureTimeField(control)}
-                </Grid>
-                <Grid item xs={6}>
-                  {HandoverToField(control)}
+                  {OtherChiefComplaintField(
+                    control,
+                    errors,
+                    enableOtherChiefComplaint
+                  )}
                 </Grid>
                 <Grid item xs={12}>
-                  {CommentsField(control)}
+                  {ArrivalMethodField(control, errors)}
+                </Grid>
+                <Grid item xs={6}>
+                  {HandoverFromField(control, errors)}
+                </Grid>
+                <Grid item xs={12}>
+                  {DepartureDestinationField(control, errors)}
+                </Grid>
+                <Grid item xs={6}>
+                  {DepartureDateField(control, errors)}
+                </Grid>
+                <Grid item xs={6}>
+                  {DepartureTimeField(control, errors)}
+                </Grid>
+                <Grid item xs={6}>
+                  {HandoverToField(control, errors)}
+                </Grid>
+                <Grid item xs={12}>
+                  {CommentsField(control, errors)}
                 </Grid>
                 {errors && (
                   <List style={{ color: "red" }}>
@@ -170,14 +181,14 @@ function MFPEForm() {
 function PatientRFIDField(control, errors) {
   return (
     <FormControl>
-      <FormLabel>Patient RFID: </FormLabel>
       <Controller
         name="patient_rfid"
         control={control}
         render={({ field }) => (
           <TextField
             {...field}
-            label="RFID"
+            label="Patient RFID"
+            placeholder="04:FD:3E:2B:4F:5C:80"
             variant="outlined"
             helperText="Wristband RFID"
           />
@@ -190,7 +201,6 @@ function PatientRFIDField(control, errors) {
 function DocumentNumberField(control, errors) {
   return (
     <FormControl>
-      <FormLabel>Document #: </FormLabel>
       <Controller
         name="document_num"
         control={control}
@@ -198,7 +208,9 @@ function DocumentNumberField(control, errors) {
         render={({ field }) => (
           <TextField
             {...field}
+            label="Document Number"
             variant="outlined"
+            placeholder="1234"
             helperText="eg. 1000"
             error={Boolean(errors?.document_num)}
           />
@@ -234,11 +246,11 @@ function LocationField(control, errors) {
   );
 }
 
-function ArrivalDateField(control) {
+function ArrivalDateField(control, errors) {
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <FormControl>
-        <FormLabel>Arrival Date: </FormLabel>
+        <FormLabel>Arrival Date</FormLabel>
         <Controller
           name="arrival_date"
           control={control}
@@ -248,8 +260,13 @@ function ArrivalDateField(control) {
               inputFormat="MM/dd/yyyy"
               value={value}
               onChange={onChange}
+              error={Boolean(errors?.arrival_date)}
               renderInput={(params) => (
-                <TextField {...params} required={true} />
+                <TextField
+                  {...params}
+                  required={true}
+                  error={Boolean(errors?.arrival_date)}
+                />
               )}
             />
           )}
@@ -259,11 +276,11 @@ function ArrivalDateField(control) {
   );
 }
 
-function ArrivalTimeField(control) {
+function ArrivalTimeField(control, errors) {
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <FormControl>
-        <FormLabel>Arrival Time: </FormLabel>
+        <FormLabel>Arrival Time</FormLabel>
         <Controller
           name="arrival_time"
           control={control}
@@ -274,7 +291,11 @@ function ArrivalTimeField(control) {
               value={value}
               onChange={onChange}
               renderInput={(params) => (
-                <TextField {...params} required={true} />
+                <TextField
+                  {...params}
+                  required={true}
+                  error={Boolean(errors?.arrival_time)}
+                />
               )}
             />
           )}
@@ -284,49 +305,56 @@ function ArrivalTimeField(control) {
   );
 }
 
-function GenderField(control) {
+function GenderField(control, errors) {
   return (
     <FormControl>
-      <FormLabel>Gender: </FormLabel>
-      <Controller
-        name="gender"
-        control={control}
-        defaultValue=""
-        render={({ field }) => (
-          <RadioGroup
-            aria-labelledby="gender"
-            row
-            value={field.value}
-            onChange={field.onChange}
-          >
-            <FormControlLabel value="male" control={<Radio />} label="Male" />
-            <FormControlLabel
-              value="female"
-              control={<Radio />}
-              label="Female"
-            />
-            <FormControlLabel value="other" control={<Radio />} label="Other" />
-          </RadioGroup>
-        )}
-      />
+      <Box component="fieldset">
+        <FormLabel component="legend">Gender</FormLabel>
+        <Controller
+          name="gender"
+          control={control}
+          defaultValue=""
+          render={({ field }) => (
+            <RadioGroup
+              aria-labelledby="gender"
+              row
+              value={field.value}
+              onChange={field.onChange}
+              error={Boolean(errors?.gender)}
+            >
+              <FormControlLabel value="male" control={<Radio />} label="Male" />
+              <FormControlLabel
+                value="female"
+                control={<Radio />}
+                label="Female"
+              />
+              <FormControlLabel
+                value="other"
+                control={<Radio />}
+                label="Other"
+              />
+            </RadioGroup>
+          )}
+        />
+      </Box>
     </FormControl>
   );
 }
 
-function AgeField(control) {
+function AgeField(control, errors) {
   return (
     <FormControl>
-      <FormLabel>Age: </FormLabel>
+      <FormLabel>Age</FormLabel>
       <Controller
         name="age"
         control={control}
         render={({ field }) => (
           <TextField
             type="number"
-            label="age"
             variant="outlined"
             value={field.value}
             onChange={field.onChange}
+            error={Boolean(errors?.age)}
           />
         )}
       />
@@ -337,81 +365,94 @@ function AgeField(control) {
 function TriageAcuityField(control, errors) {
   return (
     <FormControl error={Boolean(errors?.triage_acuity)}>
-      <FormLabel>Triage Acuity: </FormLabel>
-      <Controller
-        name="triage_acuity"
-        control={control}
-        rules={{
-          required: "Please select triage acuity.",
-        }}
-        render={({ field }) => (
-          <Box>
-            <RadioGroup
-              aria-labelledby="triage_acuity"
-              row
-              value={field.value}
-              onChange={field.onChange}
-              error={Boolean(errors?.triage_acuity)}
-            >
-              <FormControlLabel
-                value="white"
-                control={<Radio />}
-                label="White"
-              />
-              <FormControlLabel
-                value="green"
-                control={<Radio />}
-                label="Green"
-              />
-              <FormControlLabel
-                value="yellow"
-                control={<Radio />}
-                label="Yellow"
-              />
-              <FormControlLabel value="red" control={<Radio />} label="Red" />
-            </RadioGroup>
-            {errors.triage_acuity && (
-              <FormHelperText>{errors.triage_acuity.message}</FormHelperText>
-            )}
-          </Box>
-        )}
-      />
+      <Box component="fieldset">
+        <FormLabel component="legend">Triage Acuity</FormLabel>
+        <Controller
+          name="triage_acuity"
+          control={control}
+          rules={{
+            required: "Please select triage acuity.",
+          }}
+          render={({ field }) => (
+            <Box>
+              <RadioGroup
+                aria-labelledby="triage_acuity"
+                row
+                value={field.value}
+                onChange={field.onChange}
+              >
+                <FormControlLabel
+                  value="white"
+                  control={<Radio />}
+                  label="White"
+                />
+                <FormControlLabel
+                  value="green"
+                  control={<Radio />}
+                  label="Green"
+                />
+                <FormControlLabel
+                  value="yellow"
+                  control={<Radio />}
+                  label="Yellow"
+                />
+                <FormControlLabel value="red" control={<Radio />} label="Red" />
+              </RadioGroup>
+              {errors.triage_acuity && (
+                <FormHelperText>{errors.triage_acuity.message}</FormHelperText>
+              )}
+            </Box>
+          )}
+        />
+      </Box>
     </FormControl>
   );
 }
 
 function PatientOnShiftWorkerField(control, errors) {
   return (
-    <FormControl>
-      <FormLabel>Is the patient a worker who is on shift: </FormLabel>
-      <Controller
-        name="on_shift"
-        control={control}
-        rules={{ required: "Is patient an on-shift worker is required" }}
-        render={({ field }) => (
-          <RadioGroup aria-labelledby="patient-Occupation" row {...field}>
-            <FormControlLabel
-              value="Yes"
-              control={<Radio required={true} />}
-              label="Yes"
-            />
-            <FormControlLabel value="No" control={<Radio />} label="No" />
-          </RadioGroup>
+    <FormControl error={Boolean(errors?.on_shift)}>
+      <Box component="fieldset">
+        <FormLabel component="legend">
+          Is the patient a worker who is on shift?
+        </FormLabel>
+        <Controller
+          name="on_shift"
+          control={control}
+          rules={{ required: "Is patient an on-shift worker is required." }}
+          render={({ field }) => (
+            <RadioGroup
+              aria-labelledby="patient-Occupation"
+              row
+              {...field}
+              error={Boolean(errors?.on_shift)}
+            >
+              <FormControlLabel
+                value="Yes"
+                control={<Radio required={true} />}
+                label="Yes"
+              />
+              <FormControlLabel value="No" control={<Radio />} label="No" />
+            </RadioGroup>
+          )}
+        />
+        {errors.on_shift && (
+          <FormHelperText error>{errors.on_shift.message}</FormHelperText>
         )}
-      />
+      </Box>
     </FormControl>
   );
 }
 
 function ChiefComplaintField(control, errors) {
   return (
-    <FormControl>
-      <FormLabel>Chief Complaint: </FormLabel>
+    <FormControl error={Boolean(errors?.chief_complaints)}>
+      <FormLabel>Chief Complaint</FormLabel>
       <Controller
         name="chief_complaints"
         control={control}
         rules={{
-          required: "Chief complaint is required",
+          required: "A chief complaint is required.",
         }}
         render={({ field }) => (
           <Select
@@ -432,6 +473,40 @@ function ChiefComplaintField(control, errors) {
           </Select>
         )}
       />
+      {errors.chief_complaints && (
+        <FormHelperText error>{errors.chief_complaints.message}</FormHelperText>
+      )}
+    </FormControl>
+  );
+}
+
+function OtherChiefComplaintField(control, errors, disabled) {
+  return (
+    <FormControl error={Boolean(errors?.chief_complaint_other)}>
+      <FormLabel> </FormLabel>
+      <Controller
+        name="chief_complaint_other"
+        control={control}
+        rules={{
+          required: !disabled ? false : "Other chief complaint is required.",
+        }}
+        render={({ field }) => (
+          <TextField
+            type="text"
+            variant="outlined"
+            value={field.value}
+            onChange={field.onChange}
+            label="Other chief complaint"
+            disabled={!disabled}
+            error={Boolean(errors?.chief_complaint_other)}
+          />
+        )}
+      />
+      {errors.chief_complaint_other && (
+        <FormHelperText error>
+          {errors.chief_complaint_other.message}
+        </FormHelperText>
+      )}
     </FormControl>
   );
 }
@@ -439,46 +514,48 @@ function ChiefComplaintField(control, errors) {
 function ArrivalMethodField(control, errors) {
   return (
     <FormControl>
-      <FormLabel>Arrival Method: </FormLabel>
-      <Controller
-        name="arrival_method"
-        control={control}
-        render={({ field }) => (
-          <RadioGroup
-            {...field}
-            aria-labelledby="arrival-method"
-            row
-            value={field.value}
-            onChange={field.onChange}
-          >
-            <FormControlLabel
-              value="self-presented"
-              control={<Radio required={true} />}
-              label="Self Presented"
-            />
-            <FormControlLabel
-              value="med-transport"
-              control={<Radio />}
-              label="Medical Transport"
-            />
-            <FormControlLabel
-              value="security"
-              control={<Radio />}
-              label="Brought by Security"
-            />
-            <FormControlLabel
-              value="harm-reduction"
-              control={<Radio />}
-              label="Brought by Harm Reduction"
-            />
-            <FormControlLabel
-              value="other"
-              control={<Radio />}
-              label="Other (Please explain in the comment section)"
-            />
-          </RadioGroup>
-        )}
-      />
+      <Box component="fieldset">
+        <FormLabel component="legend">Arrival Method</FormLabel>
+        <Controller
+          name="arrival_method"
+          control={control}
+          render={({ field }) => (
+            <RadioGroup
+              {...field}
+              aria-labelledby="arrival-method"
+              row
+              value={field.value}
+              onChange={field.onChange}
+            >
+              <FormControlLabel
+                value="self-presented"
+                control={<Radio required={true} />}
+                label="Self Presented"
+              />
+              <FormControlLabel
+                value="med-transport"
+                control={<Radio />}
+                label="Medical Transport"
+              />
+              <FormControlLabel
+                value="security"
+                control={<Radio />}
+                label="Brought by Security"
+              />
+              <FormControlLabel
+                value="harm-reduction"
+                control={<Radio />}
+                label="Brought by Harm Reduction"
+              />
+              <FormControlLabel
+                value="other"
+                control={<Radio />}
+                label="Other (Please explain in the comment section)"
+              />
+            </RadioGroup>
+          )}
+        />
+      </Box>
     </FormControl>
   );
 }
@@ -486,13 +563,13 @@ function ArrivalMethodField(control, errors) {
 function HandoverFromField(control, errors) {
   return (
     <FormControl>
-      <FormLabel>Handover From: </FormLabel>
       <Controller
         name="handover_from"
         control={control}
         render={({ field }) => (
           <TextField
-            label="Who brought the patient"
+            label="Handover From"
+            helperText="Please specify who the patient was handed over from."
             variant="outlined"
             {...field}
           />
@@ -505,51 +582,53 @@ function HandoverFromField(control, errors) {
 function DepartureDestinationField(control, errors) {
   return (
     <FormControl>
-      <FormLabel>Departure Destination: </FormLabel>
-      <Controller
-        name="departure_dest"
-        control={control}
-        render={({ field }) => (
-          <RadioGroup aria-labelledby="departure-destination" row {...field}>
-            <FormControlLabel
-              value="back-to-festival"
-              control={<Radio />}
-              label="Back to Festival"
-            />
-            <FormControlLabel value="lwbs" control={<Radio />} label="LWBS" />
-            <FormControlLabel
-              value="left-ama"
-              control={<Radio />}
-              label="Left AMA"
-            />
-            <FormControlLabel
-              value="return-to-event"
-              control={<Radio />}
-              label="Sanctuary"
-            />
-            <FormControlLabel
-              value="security"
-              control={<Radio />}
-              label="Security"
-            />
-            <FormControlLabel
-              value="hospital-private"
-              control={<Radio />}
-              label="Hospital by private car"
-            />
-            <FormControlLabel
-              value="hostpital-ambulance"
-              control={<Radio />}
-              label="Hospital by ambulance"
-            />
-            <FormControlLabel
-              value="other"
-              control={<Radio />}
-              label="Other (Please explain in the comment section)"
-            />
-          </RadioGroup>
-        )}
-      />
+      <Box component="fieldset">
+        <FormLabel component="legend">Departure Destination</FormLabel>
+        <Controller
+          name="departure_dest"
+          control={control}
+          render={({ field }) => (
+            <RadioGroup aria-labelledby="departure-destination" row {...field}>
+              <FormControlLabel
+                value="back-to-festival"
+                control={<Radio />}
+                label="Back to Festival"
+              />
+              <FormControlLabel value="lwbs" control={<Radio />} label="LWBS" />
+              <FormControlLabel
+                value="left-ama"
+                control={<Radio />}
+                label="Left AMA"
+              />
+              <FormControlLabel
+                value="return-to-event"
+                control={<Radio />}
+                label="Sanctuary"
+              />
+              <FormControlLabel
+                value="security"
+                control={<Radio />}
+                label="Security"
+              />
+              <FormControlLabel
+                value="hospital-private"
+                control={<Radio />}
+                label="Hospital by private car"
+              />
+              <FormControlLabel
+                value="hostpital-ambulance"
+                control={<Radio />}
+                label="Hospital by ambulance"
+              />
+              <FormControlLabel
+                value="other"
+                control={<Radio />}
+                label="Other (Please explain in the comment section)"
+              />
+            </RadioGroup>
+          )}
+        />
+      </Box>
     </FormControl>
   );
 }
@@ -558,7 +637,7 @@ function DepartureDateField(control, errors) {
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <FormControl>
-        <FormLabel>Departure Date: </FormLabel>
+        <FormLabel>Departure Date</FormLabel>
         <Controller
           name="departure_date"
           control={control}
@@ -579,7 +658,7 @@ function DepartureTimeField(control, errors) {
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <FormControl>
-        <FormLabel>Departure Time: </FormLabel>
+        <FormLabel>Departure Time</FormLabel>
         <Controller
           name="departure_time"
           control={control}
@@ -598,41 +677,47 @@ function DepartureTimeField(control, errors) {
 
 function HandoverToField(control, errors) {
   return (
-    <FormControl>
-      <FormLabel>Handover To: </FormLabel>
+    <FormControl error={Boolean(errors?.handover_too)}>
       <Controller
         name="handover_too"
         control={control}
-        rules={{ required: "Please enter who handover to" }}
+        rules={{ required: "Please enter who patient is handed over to." }}
         render={({ field }) => (
           <TextField
+            label="Handover To"
             helperText="Patient is going with..."
             variant="outlined"
             {...field}
           />
         )}
       />
+      {errors.handover_too && (
+        <FormHelperText error>{errors.handover_too.message}</FormHelperText>
+      )}
     </FormControl>
   );
 }
 
 function CommentsField(control, errors) {
   return (
-    <FormControl>
-      <FormLabel>Comments: </FormLabel>
-      <Controller
-        name="comment"
-        control={control}
-        render={({ field }) => (
-          <TextField
-            helperText="Enter comments here..."
-            variant="outlined"
-            fullWidth={true}
-            {...field}
-          />
-        )}
-      />
-    </FormControl>
+    <Box>
+      <FormControl fullWidth>
+        <Controller
+          name="comment"
+          control={control}
+          render={({ field }) => (
+            <TextField
+              placeholder="Enter additional comments here"
+              variant="outlined"
+              label="Comments"
+              multiline={true}
+              rows={3}
+              {...field}
+            />
+          )}
+        />
+      </FormControl>
+    </Box>
   );
 }
 
