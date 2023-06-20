@@ -65,8 +65,6 @@ function MFPEForm() {
   };
 
   const onSubmit = async (data) => {
-    setError(false);
-    setErrorMessage("");
     const token = `Bearer ${window.localStorage.getItem("auth-token")}`;
 
     const errorMessage = await submitPatientEncounterForm(data, token);
@@ -344,13 +342,13 @@ function GenderField(control, errors) {
 function AgeField(control, errors) {
   return (
     <FormControl>
-      <FormLabel>Age</FormLabel>
       <Controller
         name="age"
         control={control}
         render={({ field }) => (
           <TextField
             type="number"
+            label="Age"
             variant="outlined"
             value={field.value}
             onChange={field.onChange}
@@ -481,6 +479,7 @@ function ChiefComplaintField(control, errors) {
 }
 
 function OtherChiefComplaintField(control, errors, disabled) {
+  // TODO: Clear field when Other is not selected
   return (
     <FormControl error={Boolean(errors?.chief_complaint_other)}>
       <FormLabel> </FormLabel>
