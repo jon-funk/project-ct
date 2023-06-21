@@ -17,6 +17,7 @@ export function ArrivalMethodField(control, errors) {
         <Controller
           name="arrival_method"
           control={control}
+          rules={{ required: "An arrival method is required." }}
           render={({ field }) => (
             <RadioGroup
               {...field}

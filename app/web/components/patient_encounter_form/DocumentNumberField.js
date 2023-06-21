@@ -8,7 +8,6 @@ export function DocumentNumberField(control, errors) {
       <Controller
         name="document_num"
         control={control}
-        rules={{ required: "Document number is required" }}
         render={({ field }) => (
           <TextField
             {...field}

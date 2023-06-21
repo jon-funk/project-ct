@@ -8,11 +8,12 @@ import { Controller } from "react-hook-form";
 export function DepartureTimeField(control, errors) {
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <FormControl>
+      <FormControl error={Boolean(errors?.departure_time)}>
         <FormLabel>Departure Time</FormLabel>
         <Controller
           name="departure_time"
           control={control}
+          rules={{ required: "A departure time is required." }}
           render={({ field }) => (
             <TimePicker
               ampm={false}

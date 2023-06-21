@@ -11,12 +11,13 @@ import { Controller } from "react-hook-form";
 
 export function DepartureDestinationField(control, errors) {
   return (
-    <FormControl>
+    <FormControl error={Boolean(errors?.departure_dest)}>
       <Box component="fieldset">
         <FormLabel component="legend">Departure Destination</FormLabel>
         <Controller
           name="departure_dest"
           control={control}
+          rules={{ required: "A departure destination is required." }}
           render={({ field }) => (
             <RadioGroup aria-labelledby="departure-destination" row {...field}>
               <FormControlLabel

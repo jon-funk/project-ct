@@ -8,11 +8,12 @@ import { Controller } from "react-hook-form";
 export function DepartureDateField(control, errors) {
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <FormControl>
+      <FormControl error={Boolean(errors?.departure_date)}>
         <FormLabel>Departure Date</FormLabel>
         <Controller
           name="departure_date"
           control={control}
+          rules={{ required: "A departure date is required." }}
           render={({ field }) => (
             <MobileDatePicker
               inputFormat="MM/dd/yyyy"

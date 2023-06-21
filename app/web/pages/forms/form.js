@@ -74,6 +74,16 @@ function MFPEForm() {
   const onSubmit = async (data) => {
     const token = `Bearer ${window.localStorage.getItem("auth-token")}`;
 
+    if (data.chief_complaints.includes("Other")) {
+      data.chief_complaints = data.chief_complaints.filter(
+        (complaint) => complaint !== "Other"
+      );
+      data.chief_complaints.push(`Other: ${data.chief_complaint_other}`);
+      delete data.chief_complaint_other;
+    }
+
+    console.log("Submitting complaints: ", data.chief_complaints);
+
     const errorMessage = await submitPatientEncounterForm(data, token);
     if (!errorMessage) {
       setSuccessMessage("Patient encounter form was successfully created.");

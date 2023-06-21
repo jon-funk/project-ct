@@ -8,7 +8,6 @@ export function HandoverToField(control, errors) {
       <Controller
         name="handover_too"
         control={control}
-        rules={{ required: "Please enter who patient is handed over to." }}
         render={({ field }) => (
           <TextField
             label="Handover To"
