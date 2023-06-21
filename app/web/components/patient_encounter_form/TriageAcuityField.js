@@ -13,7 +13,7 @@ import { Controller } from "react-hook-form";
 export function TriageAcuityField(control, errors) {
   return (
     <FormControl error={Boolean(errors?.triage_acuity)}>
-      <Box component="fieldset">
+      <Box component="fieldset" sx={{ borderColor: "grey.100" }}>
         <FormLabel component="legend">Triage Acuity</FormLabel>
         <Controller
           name="triage_acuity"

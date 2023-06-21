@@ -63,10 +63,6 @@ function MFPEForm() {
     }
   }, [chiefComplaints]);
 
-  useEffect(() => {
-    console.log(formData);
-  }, [formData]);
-
   const handleFormChange = (name, value) => {
     setValue(name, value);
   };

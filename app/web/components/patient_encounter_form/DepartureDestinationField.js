@@ -12,7 +12,7 @@ import { Controller } from "react-hook-form";
 export function DepartureDestinationField(control, errors) {
   return (
     <FormControl error={Boolean(errors?.departure_dest)}>
-      <Box component="fieldset">
+      <Box component="fieldset" sx={{ borderColor: "grey.100" }}>
         <FormLabel component="legend">Departure Destination</FormLabel>
         <Controller
           name="departure_dest"

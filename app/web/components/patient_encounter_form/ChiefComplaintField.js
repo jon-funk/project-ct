@@ -15,7 +15,7 @@ import { chiefComplaints } from "../../utils/constants";
 
 export function ChiefComplaintField(control, errors) {
   return (
-    <FormControl error={Boolean(errors?.chief_complaints)}>
+    <FormControl error={Boolean(errors?.chief_complaints)} fullWidth>
       <FormLabel>Chief Complaint</FormLabel>
       <Controller
         name="chief_complaints"

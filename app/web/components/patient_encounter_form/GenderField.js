@@ -12,7 +12,7 @@ import { Controller } from "react-hook-form";
 export function GenderField(control, errors) {
   return (
     <FormControl>
-      <Box component="fieldset">
+      <Box component="fieldset" sx={{ borderColor: "grey.100" }}>
         <FormLabel component="legend">Gender</FormLabel>
         <Controller
           name="gender"

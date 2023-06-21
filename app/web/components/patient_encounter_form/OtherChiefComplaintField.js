@@ -9,8 +9,7 @@ import { Controller } from "react-hook-form";
 
 export function OtherChiefComplaintField(control, errors, disabled) {
   return (
-    <FormControl error={Boolean(errors?.chief_complaint_other)}>
-      <FormLabel> </FormLabel>
+    <FormControl error={Boolean(errors?.chief_complaint_other)} fullWidth>
       <Controller
         name="chief_complaint_other"
         control={control}

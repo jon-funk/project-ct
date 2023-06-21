@@ -12,7 +12,7 @@ import { Controller } from "react-hook-form";
 export function ArrivalMethodField(control, errors) {
   return (
     <FormControl>
-      <Box component="fieldset">
+      <Box component="fieldset" sx={{ borderColor: "grey.100" }}>
         <FormLabel component="legend">Arrival Method</FormLabel>
         <Controller
           name="arrival_method"

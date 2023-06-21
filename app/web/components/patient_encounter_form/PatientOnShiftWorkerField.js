@@ -13,7 +13,7 @@ import { Controller } from "react-hook-form";
 export function PatientOnShiftWorkerField(control, errors) {
   return (
     <FormControl error={Boolean(errors?.on_shift)}>
-      <Box component="fieldset">
+      <Box component="fieldset" sx={{ borderColor: "grey.100" }}>
         <FormLabel component="legend">
           Is the patient a worker who is on shift?
         </FormLabel>
