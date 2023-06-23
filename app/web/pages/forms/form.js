@@ -6,11 +6,9 @@ import {
   FormControl,
   FormGroup,
   Grid,
-  InputLabel,
   ListItemText,
   ListItem,
   List,
-  MenuProps,
   Typography,
 } from "@mui/material";
 import { Form, useForm, useFormContext, FormProvider } from "react-hook-form";
@@ -77,8 +75,6 @@ function MFPEForm() {
       data.chief_complaints.push(`Other: ${data.chief_complaint_other}`);
       delete data.chief_complaint_other;
     }
-
-    console.log("Submitting complaints: ", data.chief_complaints);
 
     const errorMessage = await submitPatientEncounterForm(data, token);
     if (!errorMessage) {
