@@ -5,6 +5,14 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { Controller } from "react-hook-form";
 
+/**
+ * Renders a departure time selection field controlled by React Hook Form.
+ *
+ * @param {object} control - React Hook Form control object.
+ * @param {object} errors - Object containing form errors.
+ *
+ * @returns {JSX.Element} - DepartureTimeField component.
+ */
 export function DepartureTimeField(control, errors) {
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -18,7 +26,13 @@ export function DepartureTimeField(control, errors) {
             <TimePicker
               ampm={false}
               {...field}
-              renderInput={(params) => <TextField {...params} />}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  required={true}
+                  error={Boolean(errors?.departure_time)}
+                />
+              )}
             />
           )}
         />

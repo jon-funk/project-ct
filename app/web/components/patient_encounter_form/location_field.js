@@ -2,6 +2,15 @@ import React from "react";
 import { FormControl, FormLabel, MenuItem, Select } from "@mui/material";
 import { Controller } from "react-hook-form";
 
+/**
+ * Renders a location field controlled by React Hook Form.
+ *
+ * @param {object} control - React Hook Form control object.
+ * @param {object} errors - Object containing form errors.
+ *
+ * @returns {JSX.Element} - LocationField component.
+ */
+
 export function LocationField(control, errors) {
   return (
     <FormControl>

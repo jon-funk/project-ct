@@ -9,10 +9,22 @@ import {
 } from "@mui/material";
 import { Controller } from "react-hook-form";
 
+/**
+ * Renders a gender selection field controlled by React Hook Form.
+ *
+ * @param {object} control - React Hook Form control object.
+ * @param {object} errors - Object containing form errors.
+ *
+ * @returns {JSX.Element} - GenderField component.
+ */
 export function GenderField(control, errors) {
+  const hasError = Boolean(errors?.arrival_method);
   return (
     <FormControl>
-      <Box component="fieldset" sx={{ borderColor: "grey.100" }}>
+      <Box
+        component="fieldset"
+        sx={{ borderColor: hasError ? "error.main" : "grey.100" }}
+      >
         <FormLabel component="legend">Gender</FormLabel>
         <Controller
           name="gender"

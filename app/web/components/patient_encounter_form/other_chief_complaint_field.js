@@ -7,6 +7,16 @@ import {
 } from "@mui/material";
 import { Controller } from "react-hook-form";
 
+/**
+ * Renders a field for entering the "Other" chief complaint in the Music Festival Patient Encounter form.
+ *
+ * @param {object} control - The control object from react-hook-form.
+ * @param {object} errors - The form errors object.
+ * @param {boolean} disabled - Indicates if the field should be disabled.
+ *
+ * @returns {JSX.Element} - OtherChiefComplaintField component.
+ */
+
 export function OtherChiefComplaintField(control, errors, disabled) {
   return (
     <FormControl error={Boolean(errors?.chief_complaint_other)} fullWidth>

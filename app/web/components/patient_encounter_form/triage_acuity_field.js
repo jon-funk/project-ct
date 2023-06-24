@@ -10,10 +10,23 @@ import {
 } from "@mui/material";
 import { Controller } from "react-hook-form";
 
+/**
+ * Renders the field for selecting the triage acuity.
+ *
+ * @param {object} control - The control object from react-hook-form.
+ * @param {object} errors - The form errors object.
+ *
+ * @returns {JSX.Element} - TriageAcuityField component.
+ */
+
 export function TriageAcuityField(control, errors) {
+  const hasError = Boolean(errors?.arrival_method);
   return (
     <FormControl error={Boolean(errors?.triage_acuity)}>
-      <Box component="fieldset" sx={{ borderColor: "grey.100" }}>
+      <Box
+        component="fieldset"
+        sx={{ borderColor: hasError ? "error.main" : "grey.100" }}
+      >
         <FormLabel component="legend">Triage Acuity</FormLabel>
         <Controller
           name="triage_acuity"

@@ -2,6 +2,14 @@ import React from "react";
 import { FormControl, TextField } from "@mui/material";
 import { Controller } from "react-hook-form";
 
+/**
+ * Renders a document number input field controlled by React Hook Form.
+ *
+ * @param {object} control - React Hook Form control object.
+ * @param {object} errors - Object containing form errors.
+ *
+ * @returns {JSX.Element} - DocumentNumberField component.
+ */
 export function DocumentNumberField(control, errors) {
   return (
     <FormControl>

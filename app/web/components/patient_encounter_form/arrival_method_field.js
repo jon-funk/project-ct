@@ -9,10 +9,22 @@ import {
 } from "@mui/material";
 import { Controller } from "react-hook-form";
 
+/**
+ * Renders an arrival method radio group controlled by React Hook Form.
+ *
+ * @param {object} control - React Hook Form control object.
+ * @param {object} errors - Object containing form errors.
+ *
+ * @returns {JSX.Element} - ArrivalMethodField component.
+ */
 export function ArrivalMethodField(control, errors) {
+  const hasError = Boolean(errors?.arrival_method);
   return (
-    <FormControl>
-      <Box component="fieldset" sx={{ borderColor: "grey.100" }}>
+    <FormControl error={Boolean(errors?.arrival_method)}>
+      <Box
+        component="fieldset"
+        sx={{ borderColor: hasError ? "error.main" : "grey.100" }}
+      >
         <FormLabel component="legend">Arrival Method</FormLabel>
         <Controller
           name="arrival_method"

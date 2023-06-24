@@ -2,6 +2,14 @@ import React from "react";
 import { Box, FormControl, TextField } from "@mui/material";
 import { Controller } from "react-hook-form";
 
+/**
+ * Renders a comments input field controlled by React Hook Form.
+ *
+ * @param {object} control - React Hook Form control object.
+ * @param {object} errors - Object containing form errors.
+ *
+ * @returns {JSX.Element} - CommentsField component.
+ */
 export function CommentsField(control, errors) {
   return (
     <Box>

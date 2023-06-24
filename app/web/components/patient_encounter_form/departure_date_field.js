@@ -5,26 +5,32 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { Controller } from "react-hook-form";
 
-export function ArrivalDateField(control, errors) {
+/**
+ * Renders a departure date input field controlled by React Hook Form.
+ *
+ * @param {object} control - React Hook Form control object.
+ * @param {object} errors - Object containing form errors.
+ *
+ * @returns {JSX.Element} - DepartureDateField component.
+ */
+export function DepartureDateField(control, errors) {
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <FormControl>
-        <FormLabel>Arrival Date</FormLabel>
+      <FormControl error={Boolean(errors?.departure_date)}>
+        <FormLabel>Departure Date</FormLabel>
         <Controller
-          name="arrival_date"
+          name="departure_date"
           control={control}
-          rules={{ required: "Arrival date is required" }}
-          render={({ field: { onChange, value } }) => (
+          rules={{ required: "A departure date is required." }}
+          render={({ field }) => (
             <MobileDatePicker
               inputFormat="MM/dd/yyyy"
-              value={value}
-              onChange={onChange}
-              error={Boolean(errors?.arrival_date)}
+              {...field}
               renderInput={(params) => (
                 <TextField
                   {...params}
                   required={true}
-                  error={Boolean(errors?.arrival_date)}
+                  error={Boolean(errors?.departure_date)}
                 />
               )}
             />
