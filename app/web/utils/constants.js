@@ -10,6 +10,7 @@ export const MFPEFormData = {
     gender: '',
     on_shift: '',
     chief_complaints: [],
+    chief_complaint_other: '',
     arrival_method: '',
     handover_too: '',
     departure_time: null,
