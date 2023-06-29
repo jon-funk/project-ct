@@ -96,13 +96,82 @@ def create_patient_encounter(db: Session, data: PatientEncounter) -> PatientEnco
     return created_patient_encounter
 
 
+# def update_patient_encounter(
+#     db: Session, encounter: PatientEncounter, updated_values: Dict[str, Any]
+# ) -> PatientEncounter:
+#     """
+#     Update an existing patient encounter document using its existing UUID. Returns the updated patient encounter.
+
+#     If provided, the patient RFID is hashed before being stored in the database; otherwise, it is stored as null.
+
+#     """
+#     updated_encounter = encounter
+
+#     # Check if the patient RFID has been updated
+#     if "patient_rfid" in updated_values:
+#         updated_rfid = updated_values["patient_rfid"]
+
+#         # Check if the patient encounter already exists
+#         existing_encounter = (
+#             db.query(PatientEncounter).filter(
+#                 PatientEncounter.patient_encounter_uuid
+#                 == updated_encounter.patient_encounter_uuid,
+#                 PatientEncounter.deleted == False).first())
+        
+#         # Check if the patient encounter already has an RFID
+#         if existing_encounter and existing_encounter.patient_rfid:
+#             existing_rfid = existing_encounter.patient_rfid
+
+#             # Verify the updated RFID against the existing RFID
+#             if argon2.verify(updated_rfid, existing_rfid):
+#                 updated_values["patient_rfid"] = existing_rfid
+#             else:
+#                 hashed_rfid = argon2.hash(updated_rfid)
+#                 updated_values["patient_rfid"] = hashed_rfid
+#         else:
+#             hashed_rfid = argon2.hash(updated_rfid)
+#             updated_values["patient_rfid"] = hashed_rfid
+
+#     db.query(PatientEncounter).filter(
+#         PatientEncounter.deleted == False,
+#         PatientEncounter.patient_encounter_uuid == encounter.patient_encounter_uuid
+#     ).update(
+#         values=updated_values
+#     )
+#     db.commit()
+#     db.refresh(updated_encounter)
+
+#     return updated_encounter
+
 def update_patient_encounter(
     db: Session, encounter: PatientEncounter, updated_values: Dict[str, Any]
 ) -> PatientEncounter:
     """
     Update an existing patient encounter document using its existing UUID. Returns the updated patient encounter.
+
+    If provided, the patient RFID is hashed before being stored in the database; otherwise, it is stored as null.
+
     """
     updated_encounter = encounter
+
+    # Check if the patient RFID has been updated
+    if "patient_rfid" in updated_values:
+        updated_rfid = updated_values["patient_rfid"]
+       
+        # Check if the patient encounter already has an RFID
+        if updated_encounter and updated_encounter.patient_rfid:
+            existing_rfid = updated_encounter.patient_rfid
+
+            # Verify the updated RFID against the existing RFID
+            if argon2.verify(updated_rfid, existing_rfid):
+                updated_values["patient_rfid"] = existing_rfid
+            else:
+                hashed_rfid = argon2.hash(updated_rfid)
+                updated_values["patient_rfid"] = hashed_rfid
+        else:
+            hashed_rfid = argon2.hash(updated_rfid)
+            updated_values["patient_rfid"] = hashed_rfid
+
     db.query(PatientEncounter).filter(
         PatientEncounter.deleted == False,
         PatientEncounter.patient_encounter_uuid == encounter.patient_encounter_uuid
