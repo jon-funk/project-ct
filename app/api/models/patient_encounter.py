@@ -1,6 +1,7 @@
 import uuid
 from typing import Optional, List, Dict, Any
 
+from passlib.hash import argon2
 from sqlalchemy import Column, DateTime, Integer, String, Boolean
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Session
@@ -76,10 +77,18 @@ def get_all_patient_encounters(db: Session) -> Optional[List[PatientEncounter]]:
 def create_patient_encounter(db: Session, data: PatientEncounter) -> PatientEncounter:
     """Create a patient encounter with a unique ID.
 
+    If provided, the patient RFID is hashed before being stored in the database; otherwise, it is stored as null.
+
     Returns:
         A PatientEncounter.
     """
+
     created_patient_encounter = data
+
+    if created_patient_encounter.patient_rfid and created_patient_encounter.patient_rfid != "":
+        hashed_rfid = argon2.hash(created_patient_encounter.patient_rfid)
+        created_patient_encounter.patient_rfid = hashed_rfid
+
     db.add(created_patient_encounter)
     db.commit()
     db.refresh(created_patient_encounter)
