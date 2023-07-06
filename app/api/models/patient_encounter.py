@@ -1,6 +1,7 @@
 import uuid
 from typing import Optional, List, Dict, Any
 
+from passlib.hash import argon2
 from sqlalchemy import Column, DateTime, Integer, String, Boolean
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Session
@@ -76,10 +77,21 @@ def get_all_patient_encounters(db: Session) -> Optional[List[PatientEncounter]]:
 def create_patient_encounter(db: Session, data: PatientEncounter) -> PatientEncounter:
     """Create a patient encounter with a unique ID.
 
+    If provided, the patient RFID is hashed before being stored in the database; otherwise, it is stored as null.
+
     Returns:
         A PatientEncounter.
     """
+
     created_patient_encounter = data
+
+    if (
+        created_patient_encounter.patient_rfid
+        and created_patient_encounter.patient_rfid != ""
+    ):
+        hashed_rfid = argon2.hash(created_patient_encounter.patient_rfid)
+        created_patient_encounter.patient_rfid = hashed_rfid
+
     db.add(created_patient_encounter)
     db.commit()
     db.refresh(created_patient_encounter)
@@ -92,14 +104,23 @@ def update_patient_encounter(
 ) -> PatientEncounter:
     """
     Update an existing patient encounter document using its existing UUID. Returns the updated patient encounter.
+
+    If provided, the patient RFID is hashed before being stored in the database; otherwise, it is stored as null.
+
     """
     updated_encounter = encounter
+
+    # Check if the patient RFID has been updated
+    if "patient_rfid" in updated_values:
+        updated_rfid = updated_values["patient_rfid"]
+
+        hashed_rfid = argon2.hash(updated_rfid)
+        updated_values["patient_rfid"] = hashed_rfid
+
     db.query(PatientEncounter).filter(
         PatientEncounter.deleted == False,
-        PatientEncounter.patient_encounter_uuid == encounter.patient_encounter_uuid
-    ).update(
-        values=updated_values
-    )
+        PatientEncounter.patient_encounter_uuid == encounter.patient_encounter_uuid,
+    ).update(values=updated_values)
     db.commit()
     db.refresh(updated_encounter)
 
