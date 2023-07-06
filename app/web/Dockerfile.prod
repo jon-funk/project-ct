@@ -1,10 +1,10 @@
 #Dockerfile for production build, web
 FROM node:18-alpine
- 
+
 # user the default user the container comes with
 RUN mkdir /code && chown -R node:node /code
-WORKDIR /code
 
+WORKDIR /code
 USER node
 
 # Cache and Install dependencies
