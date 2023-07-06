@@ -31,7 +31,7 @@ resource "google_iam_workload_identity_pool_provider" "github_actions_pool_provi
   }
 }
 
-#saving saving workload identity provider name to github repo as a secret for use in github action workflow
+#saving workload identity provider name to github repo as a secret for use in github action workflow
 resource "github_actions_secret" "wp_secret" {
   repository       = var.project_repo
   secret_name      = "WORKLOAD_IDENTITY_PROVIDER"

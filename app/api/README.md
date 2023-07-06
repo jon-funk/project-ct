@@ -30,7 +30,7 @@ After you've generated your migrations, you can apply them with `make mig`
 
 ## API Swagger Docs
 
-While your `api` container is running, you can open: http://localhost:5000/docs to view OpenAPI swagger docs and interact with your API.
+While your `api` container is running, you can open: http://localhost:5000/api/docs to view OpenAPI swagger docs and interact with your API.
 
 ## Environment Variables:
 ### Defines database connection details

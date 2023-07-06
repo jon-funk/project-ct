@@ -20,7 +20,7 @@ locals {
   WIPool_name_prefix = "${ var.project_id }-wipool"
   WIProvider_name = "${ var.project_id }-wiprovider"
   pipeline_service_account = "${ var.project_id }-sa"
-  storage_bucket = "${ var.project_id }-admin-sb"
+  storage_bucket = "${ var.project_id }-sb"
 }
 
 variable "apis" {
@@ -28,10 +28,13 @@ variable "apis" {
   type        = list(string)
   default = [
     "artifactregistry.googleapis.com",
-    #"sqladmin.googleapis.com",
+    "sqladmin.googleapis.com",
     "run.googleapis.com",
-    #"compute.googleapis.com",
+    "compute.googleapis.com",
     "cloudresourcemanager.googleapis.com", //needed by terraform
-    "storage.googleapis.com"
+    "storage.googleapis.com",
+    "vpcaccess.googleapis.com", //VPC access connector
+    "servicenetworking.googleapis.com",
+    "iamcredentials.googleapis.com"
   ]
 }
