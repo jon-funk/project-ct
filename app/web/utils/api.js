@@ -83,7 +83,6 @@ export async function login(email, password) {
       }
 }
 
-
 // Get all patient encounter forms
 export async function getAllPatientEncounters(token) {
   try {
