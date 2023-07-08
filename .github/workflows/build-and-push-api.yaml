@@ -23,6 +23,8 @@ on:
 env:
   TAG: prod
   GAR: ${{ secrets.ARTIFACT_REGISTRY }}
+  CR_SERVICE: cloudrun-service-api
+  CR_REGION: northamerica-northeast2
 
 jobs:
   build-and-push-api:
@@ -59,3 +61,6 @@ jobs:
         run: |
               export GAR=${{ env.GAR }}
               make build-push-api ${{ env.TAG }}
+      - name: Redeploy Cloudrun Service
+        run: |
+          gcloud run services update ${{ env.CR_SERVICE }} --region=${{ env.CR_REGION }} --image=${{ env.GAR }}/api:${{ env.TAG }}
