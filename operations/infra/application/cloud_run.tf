@@ -45,7 +45,7 @@ resource "google_cloud_run_service" "web" {
   template {
     spec {
       containers {
-        image = "${local.GAR_location}${local.GAR_name}/web:test" 
+        image = "${local.GAR_location}${local.GAR_name}/web:${local.ARTIFACT_TAG}"
         
         ports {
           container_port = 3000
@@ -67,7 +67,7 @@ resource "google_cloud_run_service" "api" {
   template {
     spec {
       containers {
-        image = "${local.GAR_location}${local.GAR_name}/api:test"
+        image = "${local.GAR_location}${local.GAR_name}/api:${local.ARTIFACT_TAG}"
 
         ports {
           container_port = 5000
