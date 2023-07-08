@@ -63,4 +63,4 @@ jobs:
               make build-push-web ${{ env.TAG }}
       - name: Redeploy Cloudrun Service
         run: |
-          gcloud run services update ${{ env.CR_SERVICE }} --region=${{ env.CR_REGION }} --image=${{ env.GAR }}/web:${{ env.TAG }}
+          gcloud run services update ${{ env.CR_SERVICE }} --region=${{ env.CR_REGION }} --image=${{ env.GAR }}web:${{ env.TAG }}
