@@ -13,6 +13,7 @@ terraform.*
 .terraform*
 *.tfbackend
 *.tfvars
+*gcp_cred*
 
 app/web/yarn.lock
 app/web/.prettiererrc

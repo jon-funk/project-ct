@@ -14,4 +14,3 @@ def load_env() -> None:
     """
     env_file = os.getenv("CT_ENV_PATH", (PROJECT_ROOT / ".env").as_posix())
     load_dotenv(dotenv_path=env_file)
-
