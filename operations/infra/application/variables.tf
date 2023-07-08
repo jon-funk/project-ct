@@ -9,12 +9,13 @@ variable "zone" {
 }
 
 locals {
-  storage_bucket = "${var.project_id}-sb"
+  storage_bucket = "${var.project_id}-app-sb"
   GAR_name = "${ var.project_id }-gar"
   GAR_location = "${ var.region }-docker.pkg.dev/${ var.project_id }/"
   service_account = "${ var.project_id }-deploy-sa"
   POSTGRES_DB = "${var.project_id}-db"
   POSTGRES_USER = "${var.project_id}-db-user"
+  ARTIFACT_TAG = "prod"
 }
 variable "POSTGRES_PASSWORD" {}
 variable "POSTGRES_HOST" {}

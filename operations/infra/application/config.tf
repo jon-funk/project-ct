@@ -26,8 +26,15 @@ provider "google-beta" {
   zone    = var.zone
 }
 
-data "google_storage_bucket" "storage_bucket" {
+#google storage bucket for terraform state files
+resource "google_storage_bucket" "storage_bucket" {
   name          = local.storage_bucket
+  force_destroy = false
+  location      = var.region
+  storage_class = "STANDARD"
+  versioning {
+    enabled = true
+  }
 }
 
 #for first terraform provision run: comment this out
