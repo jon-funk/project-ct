@@ -7,6 +7,7 @@ on:
       - main
     paths:
       - 'app/web/**'
+      - '.github/workflows/build-and-push-web.yaml'
   pull_request:
     types:
       -opened
