@@ -11,6 +11,8 @@ __pycache__
 
 terraform.*
 .terraform*
+*.tfbackend
+*.tfvars
 
 app/web/yarn.lock
 app/web/.prettiererrc

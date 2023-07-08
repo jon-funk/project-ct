@@ -20,7 +20,7 @@ Refer to the Makefile for further commands
 
 ### Manually test API endpoints
 
-Note that you can also access localhost:5000/docs and execute perform this step much more easily...
+Note that you can also access localhost:5000/api/docs and execute perform this step much more easily...
 
 Create a User against the locally running API:
 

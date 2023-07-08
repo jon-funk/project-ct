@@ -56,4 +56,4 @@ jobs:
       - name: build-tag-push
         run: |
               export GAR=${{ env.GAR }}
-              make build-push-web ${{ env.TAG }}
+              make build-push-api ${{ env.TAG }}

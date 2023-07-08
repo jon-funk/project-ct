@@ -38,7 +38,7 @@ resource "google_project_service" "apis" {
 }
 
 #google storage bucket for terraform state files
-resource "google_storage_bucket" "admin_storage_bucket" {
+resource "google_storage_bucket" "storage_bucket" {
   name          = local.storage_bucket
   force_destroy = false
   location      = var.region
@@ -52,7 +52,8 @@ resource "google_storage_bucket" "admin_storage_bucket" {
 #run "terraform init -backend-config=config.gcs.tfbackend
 #in this file provide the storage bucket name and the prefix
 #run "terraform apply". terraform will provision the bucket.
-#Once provisioned, uncomment and run "terraform apply" again,
+#Once provisioned, uncomment and 
+#run "terraform init -backend-config=config.gcs.tfbackend" again,
 #so terraform will move the statefiles into the bucket.
 #See operations/README
 terraform {

@@ -48,6 +48,11 @@ jobs:
           username: oauth2accesstoken
           password: ${{ steps.auth.outputs.access_token }}
 
+      - name: Setup api url
+        run: |
+          API_URL=$(gcloud run services list | grep api | awk '{print $4}')
+          echo "NEXT_PUBLIC_HOSTNAME=$API_URL/api" > app/web/.env.local
+
       - name: build-tag-push
         run: |
               export GAR=${{ env.GAR }}
