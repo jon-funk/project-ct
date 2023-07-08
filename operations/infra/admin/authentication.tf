@@ -73,6 +73,11 @@ resource "google_project_iam_member" "storage_administrator" {
   role    = "roles/storage.admin"
   member  = "serviceAccount:${google_service_account.pipeline_service_account.email}"
 }
+resource "google_project_iam_member" "sa_user" {
+  project = var.project_id
+  role    = "roles/iam.serviceAccountUser"
+  member  = "serviceAccount:${google_service_account.pipeline_service_account.email}"
+}
 
 #allow the pool access to the service account 
 resource "google_service_account_iam_member" "workload_identity_user" {
