@@ -1,7 +1,7 @@
 SHELL := /bin/bash
 # requires Docker Compose version v2.2.1+
 
-GAR := northamerica-northeast2-docker.pkg.dev/project-ct-sandbox/project-ct/
+GAR := northamerica-northeast2-docker.pkg.dev/project-ct-beta/project-ct-beta-gar/
 
 all:
 	@echo "Starting project application..."
