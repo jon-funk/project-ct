@@ -28,7 +28,7 @@ jobs:
   build-and-push-api:
     name: build-and-push-api
     runs-on: ubuntu-20.04
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    # if: ${{ github.event.workflow_run.conclusion == 'success' }}
     
     permissions:
       contents: 'read'
