@@ -63,4 +63,4 @@ jobs:
               make build-push-api ${{ env.TAG }}
       - name: Redeploy Cloudrun Service
         run: |
-          gcloud run services update ${{ env.CR_SERVICE }} --region=${{ env.CR_REGION }} --image=${{ env.CR_REGION }}-docker.pkg.dev/project-ct-beta/project-ct-beta-gar/api:${{ env.TAG }}
+          gcloud run services update ${{ env.CR_SERVICE }} --region=${{ env.CR_REGION }} --image=${{ env.GAR }}api:${{ env.TAG }}
