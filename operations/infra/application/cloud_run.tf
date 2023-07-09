@@ -17,7 +17,10 @@ resource "google_sql_database_instance" "db-instance" {
   
   settings {
     tier = "db-f1-micro"
-    
+    backup_configuration {
+      enabled    = true
+      start_time = "09:00" # 9am UTC
+    }
     ip_configuration {
       ipv4_enabled     = false
       private_network  = data.google_compute_network.default.id
