@@ -70,6 +70,42 @@ def get_patient_encounter_by_document_number(
     )
 
 
+def get_latest_patient_encounter_by_patient_rfid(
+    db: Session, patient_rfid: str
+) -> Optional[PatientEncounter]:
+    """
+    Returns the latest patient encounter for a given patient RFID.
+
+    If the patient RFID is found returns the latest patient encounter; otherwise, returns None.
+
+
+    Returns:
+        A PatientEncounter.
+    """
+    patient_encounters = (
+        db.query(PatientEncounter)
+        .filter(PatientEncounter.deleted == False)
+        .order_by(PatientEncounter.last_updated_timestamp.desc())
+        .all()
+    )
+
+    for encounter in patient_encounters:
+        try:
+            if argon2.verify(patient_rfid, encounter.patient_rfid):
+                return encounter
+
+        except argon2.exceptions.VerifyMismatchError:
+            continue
+        except (
+            argon2.exceptions.VerificationError,
+            argon2.exceptions.InvalidHash,
+        ) as e:
+            # TODO: Should do something intelligent like logging this.
+            continue
+
+    return None
+
+
 def get_all_patient_encounters(db: Session) -> Optional[List[PatientEncounter]]:
     return db.query(PatientEncounter).filter(PatientEncounter.deleted == False)
 
