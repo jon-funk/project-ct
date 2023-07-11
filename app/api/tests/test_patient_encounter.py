@@ -157,3 +157,62 @@ def test_soft_delete(client: TestClient, auth_header: str) -> None:
     assert (
         response.status_code == 404
     ), "Should not have been able to find entry... Returned: " + str(resp_data)
+
+
+@pytest.mark.needs(postgres=True)
+def test_get_latest_patient_encounter_by_rfid(
+    client: TestClient, auth_header: str
+) -> None:
+    """
+    Test that we are able to get the latest patient encounter by RFID
+    """
+    valid_rfid = "valid"
+    invalid_rfid = "invalid"
+
+    doc_valid_rfid = urlencode({"patient_rfid": valid_rfid})
+    doc_invalid_rfid = urlencode({"patient_rfid": invalid_rfid})
+
+    # Create a valid patient encounter 1
+    SAMPLE_DATA.update({"patient_rfid": valid_rfid})
+    response = client.post(
+        "/api/create-patient-encounter", headers=auth_header, json=SAMPLE_DATA
+    )
+    resp_data = response.json()
+    assert (
+        response.status_code == 200
+    ), "Unable to submit a valid patient encounter form. Received error: " + str(
+        resp_data
+    )
+
+    # Create a valid patient encounter 2
+    SAMPLE_DATA.update({"document_num": "1234"})
+    response = client.post(
+        "/api/create-patient-encounter", headers=auth_header, json=SAMPLE_DATA
+    )
+    resp_data = response.json()
+    assert (
+        response.status_code == 200
+    ), "Unable to submit a valid patient encounter form. Received error: " + str(
+        resp_data
+    )
+
+    # Test valid get RFID
+    doc_url = "/api/latest-patient-encounter-rfid?" + doc_valid_rfid
+    response = client.get(doc_url, headers=auth_header)
+    resp_data = response.json()
+    assert (
+        response.status_code == 200
+    ), "Should have found entry. Received error: " + str(resp_data)
+
+    # Test patient encounter is the latest one
+    assert (
+        resp_data["document_num"] == "1234"
+    ), "Not the latest patient encounter: " + str(resp_data)
+
+    # Test invalid get RFID
+    doc_url = "/api/latest-patient-encounter-rfid?" + doc_invalid_rfid
+    response = client.get(doc_url, headers=auth_header)
+    resp_data = response.json()
+    assert (
+        response.status_code == 404
+    ), "Should not have found entry. Received error: " + str(resp_data)
