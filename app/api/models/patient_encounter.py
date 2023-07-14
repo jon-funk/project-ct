@@ -91,18 +91,21 @@ def get_latest_patient_encounter_by_patient_rfid(
     )
 
     for encounter in patient_encounters:
-        try:
-            if argon2.verify(patient_rfid, encounter.patient_rfid):
-                return encounter
+        if encounter.patient_rfid.startswith("$argon2"):
+            try:
+                if argon2.verify(patient_rfid, encounter.patient_rfid):
+                    return encounter
 
-        except standalone_argon2.exceptions.VerifyMismatchError:
-            continue
-        except (
-            standalone_argon2.exceptions.VerificationError,
-            standalone_argon2.exceptions.InvalidHash,
-        ) as e:
-            # TODO: Should do something intelligent like logging this.
-            continue
+            except standalone_argon2.exceptions.VerifyMismatchError:
+                continue
+            except (
+                standalone_argon2.exceptions.VerificationError,
+                standalone_argon2.exceptions.InvalidHash,
+            ) as e:
+                # TODO: Should do something intelligent like logging this.
+                continue
+        elif encounter.patient_rfid == patient_rfid:
+            return encounter
 
     return None
 
