@@ -21,15 +21,14 @@ export function DepartureTimeField(control, errors) {
         <Controller
           name="departure_time"
           control={control}
-          rules={{ required: "A departure time is required." }}
-          render={({ field }) => (
+          render={({ field: { onChange, value } }) => (
             <TimePicker
               ampm={false}
-              {...field}
+              value={value}
+              onChange={onChange}
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  required={true}
                   error={Boolean(errors?.departure_time)}
                 />
               )}
