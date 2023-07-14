@@ -1,6 +1,7 @@
 import uuid
 from typing import Optional, List, Dict, Any
 
+import argon2 as standalone_argon2
 from passlib.hash import argon2
 from sqlalchemy import Column, DateTime, Integer, String, Boolean
 from sqlalchemy.dialects.postgresql import UUID
@@ -90,18 +91,21 @@ def get_latest_patient_encounter_by_patient_rfid(
     )
 
     for encounter in patient_encounters:
-        try:
-            if argon2.verify(patient_rfid, encounter.patient_rfid):
-                return encounter
+        if encounter.patient_rfid.startswith("$argon2"):
+            try:
+                if argon2.verify(patient_rfid, encounter.patient_rfid):
+                    return encounter
 
-        except argon2.exceptions.VerifyMismatchError:
-            continue
-        except (
-            argon2.exceptions.VerificationError,
-            argon2.exceptions.InvalidHash,
-        ) as e:
-            # TODO: Should do something intelligent like logging this.
-            continue
+            except standalone_argon2.exceptions.VerifyMismatchError:
+                continue
+            except (
+                standalone_argon2.exceptions.VerificationError,
+                standalone_argon2.exceptions.InvalidHash,
+            ) as e:
+                # TODO: Should do something intelligent like logging this.
+                continue
+        elif encounter.patient_rfid == patient_rfid:
+            return encounter
 
     return None
 
