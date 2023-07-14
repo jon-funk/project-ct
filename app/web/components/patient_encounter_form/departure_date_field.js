@@ -21,7 +21,6 @@ export function DepartureDateField(control, errors) {
         <Controller
           name="departure_date"
           control={control}
-          rules={{ required: "A departure date is required." }}
           render={({ field }) => (
             <MobileDatePicker
               inputFormat="MM/dd/yyyy"
@@ -29,7 +28,6 @@ export function DepartureDateField(control, errors) {
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  required={true}
                   error={Boolean(errors?.departure_date)}
                 />
               )}

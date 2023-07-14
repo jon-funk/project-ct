@@ -18,7 +18,7 @@ import { Controller } from "react-hook-form";
  * @returns {JSX.Element} - DepartureDestinationField component.
  */
 export function DepartureDestinationField(control, errors) {
-  const hasError = Boolean(errors?.arrival_method);
+  const hasError = Boolean(errors?.departure_dest);
   return (
     <FormControl error={Boolean(errors?.departure_dest)}>
       <Box
@@ -29,7 +29,6 @@ export function DepartureDestinationField(control, errors) {
         <Controller
           name="departure_dest"
           control={control}
-          rules={{ required: "A departure destination is required." }}
           render={({ field }) => (
             <RadioGroup aria-labelledby="departure-destination" row {...field}>
               <FormControlLabel
