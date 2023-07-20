@@ -83,7 +83,6 @@ function PESearch() {
     { field: "handover_too", headerName: "Handover To", width: 250 },
     { field: "comment", headerName: "Comment", width: 250 },
 
-    { field: "patient_rfid", headerName: "Patient RFID", width: 150 },
     { field: "qr_code", headerName: "QR Code", width: 150 },
   ];
 
