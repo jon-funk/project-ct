@@ -25,10 +25,12 @@ export function LocationField(control, errors) {
             labelId="location-select-label"
             label="Location"
             defaultValue="Main Medical"
-            disabled
           >
             <MenuItem value="Main Medical" required={true}>
               Main Medical
+            </MenuItem>
+            <MenuItem value="Harm Reduction" required={true}>
+              Harm Reduction
             </MenuItem>
           </Select>
         )}
