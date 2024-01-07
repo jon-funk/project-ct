@@ -1,0 +1,66 @@
+{
+  "name": "devtools",
+  "shutdownAction": "stopCompose",
+  "dockerComposeFile": "../docker-compose.yaml",
+  "service": "mediform",
+  "workspaceFolder": "/workspace",
+  "forwardPorts": [3000, 5000], // Web and API ports
+  "postCreateCommand": "echo 'Devtools container started'",
+  "remoteUser": "root",
+
+  // Configure VS Code extensions and settings
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.pylint",
+        "ms-python.black-formatter",
+        "njpwerner.autodocstring",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "jawandarajbir.react-vscode-extension-pack",
+        "burkeholland.simple-react-snippets",
+        "christian-kohler.path-intellisense",
+        "eamodio.gitlens",
+        "hashicorp.terraform"
+      ],
+      "settings": {
+        "terminal.integrated.shell.linux": "/bin/bash",
+
+        // Python
+        "python.languageServer": "Jedi",
+        "pylint.enabled": true,
+        "pylint.args": ["--enable=W0614", "--max-line-length=120"],
+        "[python]": {
+          "editor.defaultFormatter": "ms-python.black-formatter",
+          "editor.insertSpaces": true,
+          "editor.tabSize": 4,
+          "editor.formatOnSave": true
+        },
+        "black-formatter.args": ["--line-length", "120"],
+
+        // TypeScript
+        "[typescript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode",
+          "editor.formatOnSave": true
+        },
+
+        // JavaScript
+        "[javascript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode",
+          "editor.formatOnSave": true
+        },
+        "eslint.validate": ["javascript", "typescript"],
+
+        // Terraform
+        "[terraform]": {
+          "editor.formatOnSave": true,
+          "editor.defaultFormatter": "hashicorp.terraform"
+        },
+
+        // Miscellaneous
+        "editor.lineNumbers": "on"
+      }
+    }
+  }
+}
