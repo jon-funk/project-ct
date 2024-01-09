@@ -1,9 +1,19 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
+# Requirements
+This project requires the following to run locally:
+- Yarn
+Or
+- npm
 
-First, run the development server:
+## Install Yarn
+Yarn or npm is required to start this project. Yarn is recommended.
 
+[Linux installation](https://linuxize.com/post/how-to-install-yarn-on-ubuntu-20-04/)
+[Mac installation](https://tecadmin.net/install-yarn-macos/) via homebrew is easiest.
+
+## Run the server
+Run the development server from the app/web directory
 ```bash
 npm run dev
 # or
