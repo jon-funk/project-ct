@@ -9,7 +9,7 @@ from api.main.app import api
 from api.models import User
 from api.main.database import get_db
 
-from api.seeder.user_seed import USERS
+from api.seeder.seeds.users import USERS
 
 def create_authed_client(email: str, password: str, client: TestClient):
     """ Create an authenticated client for testing
@@ -17,10 +17,10 @@ def create_authed_client(email: str, password: str, client: TestClient):
     Args:
         email (str): User email
         password (str): Plain text password
-        client (TestClient): Test client
+        client (FastAPI.TestClient): Test client to be authenticated
 
     Returns:
-        TestClient: Authenticated test client
+        FastAPI.TestClient: Authenticated test client
     """
 
     # Get token

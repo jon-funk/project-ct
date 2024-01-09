@@ -81,7 +81,7 @@ services:
     user: 1000:1000
     build:
       context: app/api/
-      dockerfile: Dockerfile.seed
+      dockerfile: seeder/Dockerfile.seed
     env_file: app/api/.env
     tty: true
     environment:

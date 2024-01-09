@@ -4,9 +4,11 @@ FROM python:3.9.1-slim
 RUN mkdir -p /app/api
 WORKDIR /app/api
 
-COPY requirements.txt /app/api
-RUN pip install --no-cache-dir -r requirements.txt
-COPY . /app/api/
+COPY seeder/seeder_reqs.txt /app/api
+RUN pip install --no-cache-dir -r seeder_reqs.txt
+COPY main /app/api/
+COPY models /app/api/
+COPY seeder /app/api/
 WORKDIR /app
 
 # Setup user to represent developer permissions in container
