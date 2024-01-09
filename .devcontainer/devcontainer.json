@@ -1,12 +1,15 @@
 {
-  "name": "devtools",
-  "shutdownAction": "stopCompose",
-  "dockerComposeFile": "../docker-compose.yaml",
-  "service": "mediform",
-  "workspaceFolder": "/workspace",
+  "name": "Mediform Development Tools",
+  "shutdownAction": "none",
+  "dockerComposeFile": ["../docker-compose.yaml"],
+  "service": "web",
+  "workspaceFolder": "/code",
   "forwardPorts": [3000, 5000], // Web and API ports
-  "postCreateCommand": "echo 'Devtools container started'",
-  "remoteUser": "root",
+  "postCreateCommand": "echo 'mediform-devtools container started'",
+  "remoteUser": "node",
+  "mounts": [
+    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
+  ],
 
   // Configure VS Code extensions and settings
   "customizations": {
