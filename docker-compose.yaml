@@ -1,4 +1,4 @@
-version: '3.9'
+version: "3.9"
 
 # LOCAL DEV
 
@@ -19,13 +19,14 @@ services:
       # Mount local codebase to reflect changes for local dev
       - ./app/api:/app/api
     healthcheck:
-      test: [ "CMD", "curl", "localhost:5000/api/health" ]
+      test: ["CMD", "curl", "localhost:5000/api/health"]
       interval: 5s
       timeout: 5s
       retries: 5
     depends_on:
       - migs
       - testapi
+      - seeder
 
   migs:
     container_name: migs
@@ -54,7 +55,7 @@ services:
     ports:
       - 5432:5432
     healthcheck:
-      test: [ "CMD", "pg_isready" ]
+      test: ["CMD", "pg_isready"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -74,6 +75,22 @@ services:
       - ./app/api/:/app/api
     depends_on:
       - migs
+
+  seeder:
+    container_name: seeder
+    user: 1000:1000
+    build:
+      context: app/api/
+      dockerfile: Dockerfile.seed
+    env_file: app/api/.env
+    tty: true
+    environment:
+      - POSTGRES_HOST=db
+    volumes:
+      - ./app/api/:/app/api
+    command: python -m api.seeder.seed_database
+    depends_on:
+      - testapi
 
   web:
     container_name: web
@@ -114,8 +131,7 @@ services:
       - ./app/api:/app/api
     command: bash -c "cd /app/api && alembic upgrade head"
 
-
-#PRODUCTION IMAGE VERIFICATION 
+  #PRODUCTION IMAGE VERIFICATION
 
   apitarget:
     container_name: apitarget
@@ -130,7 +146,7 @@ services:
       - 5000:5000
     command: uvicorn api.main.app:api --reload --host=0.0.0.0 --port=5000
     healthcheck:
-      test: [ "CMD", "curl", "localhost:5000/api/health" ]
+      test: ["CMD", "curl", "localhost:5000/api/health"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -138,9 +154,9 @@ services:
       - migstarget
       - testapitarget
 
-  migstarget: 
+  migstarget:
     container_name: migstarget
-    build: 
+    build:
       context: app/api
       dockerfile: Dockerfile.prod
     env_file: app/api/.env
@@ -150,7 +166,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
-  
+
   testapitarget:
     container_name: testapitarget
     user: 1000:1000
@@ -162,21 +178,19 @@ services:
       - POSTGRES_HOST=db
     #run as module so basedir (root) is added to python path
     command: python -m pytest api/tests/
-    depends_on: 
+    depends_on:
       - migstarget
-  
+
   webtarget:
     container_name: webtarget
     user: node
-    build: 
+    build:
       context: app/web/
       dockerfile: Dockerfile.prod
     ports:
       - 3000:3000
-    depends_on: 
+    depends_on:
       - apitarget
-
-  
 
 networks:
   default:

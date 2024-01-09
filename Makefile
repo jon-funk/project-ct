@@ -15,6 +15,10 @@ testapi:
 	@echo "Running api unit tests..."
 	@docker compose up testapi --exit-code-from testapi
 
+seed:
+	@echo "Seeding database..."
+	@docker compose up seeder  --exit-code-from seeder
+
 db:
 	@echo "Starting db..."
 	@docker compose up -d db
