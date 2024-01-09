@@ -31,7 +31,7 @@ After you've generated your migrations, you can apply them with `make mig`
 
 While your `api` container is running, you can open: http://localhost:5000/api/docs to view OpenAPI swagger docs and interact with your API.
 
-## Environment Variables:
+## Environment variables:
 ### Defines database connection details
 `POSTGRES_USER`
 
@@ -44,7 +44,7 @@ While your `api` container is running, you can open: http://localhost:5000/api/d
 `POSTGRES_PORT`
 
 
-## Run Tests Locally
+## Run tests locally
 This should be done inside your dev container
 
 To run API tests locally, run the following commands:
@@ -117,7 +117,7 @@ This command will return your patient encounter form. Example:
 
 Copy the value for "patient_encounter_uuid"
 
-### Get Patient Encounter Form
+### Get patient encounter form
 ```
 curl -X 'GET' \
   'http://localhost:5000/api/patient-encounter?uuid=<patient_encounter_uuid>' \
