@@ -1,0 +1,21 @@
+# Dockerfile.seed for seeding development database
+FROM python:3.9.1-slim
+
+RUN mkdir -p /app/api
+WORKDIR /app/api
+
+COPY seeder/seeder_reqs.txt /app/api
+RUN pip install --no-cache-dir -r seeder_reqs.txt
+COPY main /app/api/
+COPY models /app/api/
+COPY seeder /app/api/
+WORKDIR /app
+
+# Setup user to represent developer permissions in container
+ARG USERNAME=python
+ARG USER_UID=1000
+ARG USER_GID=1000
+RUN useradd -rm -d /home/$USERNAME -s /bin/bash -g root -G sudo -u $USER_UID $USERNAME
+USER $USERNAME
+
+EXPOSE 5000
