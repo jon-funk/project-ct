@@ -26,12 +26,19 @@ def create_authed_client(email: str, password: str, client: TestClient):
     # Get token
     print(f"Creating authed client for {email}")
     login_data = {"email": email, "password": password}
-    r = client.post("/api/sign-in", json=login_data)
+    r = client.post("/api/login", json=login_data)
+
+    # Check if login was successful
+    if r.status_code != 200:
+        print("create_authed_client response: ", r.json())
+        raise Exception("Login failed")
+
     print("create_authed_client response: ", r.json())
     token = r.json()["access_token"]
 
     # Add authorization token header
     client.headers = {"Authorization": f"Bearer {token}"}
+  
 
     return client
 
@@ -71,16 +78,10 @@ def create_users(users: List[Dict], db: Session) -> List[User]:
             db.add(user_obj)
             db.commit()
             db.refresh(user_obj)
-
-            # Check if default user has uuid
-            if user_obj.user_uuid:
-                print(
-                    f"User {user_obj.email} created with uuid: {user_obj.user_uuid}"
-                )
-
-                created_users.append(user_obj)
-            else:
-                print("Default user created without uuid")
+            print(
+                f"User {user_obj.email} created with uuid: {user_obj.user_uuid}"
+            )
+            created_users.append(user_obj)
         except Exception as e:
             print(e)
             db.rollback()
