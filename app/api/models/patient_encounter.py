@@ -104,7 +104,7 @@ def get_latest_patient_encounter_by_patient_rfid(
                 standalone_argon2.exceptions.VerificationError,
                 standalone_argon2.exceptions.InvalidHash,
             ) as e:
-                logger.error(e)
+                logger.error(e, exc_info=True)
         elif encounter.patient_rfid == patient_rfid:
             return encounter
 
