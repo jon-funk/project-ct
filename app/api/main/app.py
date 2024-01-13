@@ -5,9 +5,12 @@ from xml.sax.saxutils import prepare_input_source
 
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+import logging
 from sqlalchemy.orm import Session
 
 from api import routes, constants
+
+logger = logging.getLogger(__name__)
 
 API_PREFIX = os.getenv("API_PREFIX")
 ADMIN_MODE = int(os.getenv("ADMIN_MODE", 0))

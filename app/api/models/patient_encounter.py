@@ -2,6 +2,7 @@ import uuid
 from typing import Optional, List, Dict, Any
 
 import argon2 as standalone_argon2
+import logging
 from passlib.hash import argon2
 from sqlalchemy import Column, DateTime, Integer, String, Boolean
 from sqlalchemy.dialects.postgresql import UUID
@@ -10,6 +11,7 @@ from sqlalchemy.orm import Session
 from api.main.database import Base
 from api.models.mixins import BasicMetrics
 
+logger = logging.getLogger(__name__)
 
 class PatientEncounter(Base, BasicMetrics):
     __tablename__ = "patient_encounters"
@@ -102,8 +104,7 @@ def get_latest_patient_encounter_by_patient_rfid(
                 standalone_argon2.exceptions.VerificationError,
                 standalone_argon2.exceptions.InvalidHash,
             ) as e:
-                # TODO: Should do something intelligent like logging this.
-                continue
+                logger.error(e)
         elif encounter.patient_rfid == patient_rfid:
             return encounter
 

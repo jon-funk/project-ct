@@ -14,7 +14,7 @@ services:
       - POSTGRES_HOST=db
     ports:
       - 5000:5000
-    command: uvicorn api.main.app:api --reload --host=0.0.0.0 --port=5000
+    command: uvicorn api.main.app:api --reload --host=0.0.0.0 --port=5000 --log-config=api/logger_config.yaml
     volumes:
       # Mount local codebase to reflect changes for local dev
       - ./app/api:/app/api
@@ -144,7 +144,7 @@ services:
       - POSTGRES_HOST=db
     ports:
       - 5000:5000
-    command: uvicorn api.main.app:api --reload --host=0.0.0.0 --port=5000
+    command: uvicorn api.main.app:api --reload --host=0.0.0.0 --port=5000 --log-config=api/logger_config.yaml
     healthcheck:
       test: ["CMD", "curl", "localhost:5000/api/health"]
       interval: 5s
