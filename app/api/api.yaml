@@ -1,5 +1,5 @@
 runtime: python39
 service: api
-entrypoint: uvicorn api.main.app:api --reload --host=0.0.0.0 --port=8080
+entrypoint: uvicorn api.main.app:api --reload --host=0.0.0.0 --port=8080 --log-config=api/logger_config.yaml
 vpc_access_connector:
   name: projects/project-ct-356703/locations/us-central1/connectors/project-ct-connector

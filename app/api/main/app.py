@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 
 from api import routes, constants
 
+
 API_PREFIX = os.getenv("API_PREFIX")
 ADMIN_MODE = int(os.getenv("ADMIN_MODE", 0))
 
