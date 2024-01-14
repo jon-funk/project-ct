@@ -4,6 +4,7 @@ from typing import Generator
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy_utils import database_exists, create_database
 
 from api.config import load_env
 
@@ -20,10 +21,12 @@ SQLALCHEMY_DATABASE_URL = (
 )
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL, pool_pre_ping=True)
+if not database_exists(engine.url): # Check if the db exists
+        create_database(engine.url)     # Create new DB    
+
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
-
 
 def get_db() -> Generator:
     db = SessionLocal()
@@ -31,7 +34,6 @@ def get_db() -> Generator:
         yield db
     finally:
         db.close()
-
 
 def create_all_tables() -> None:
     Base.metadata.create_all(engine, checkfirst=True)
