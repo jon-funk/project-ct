@@ -1,5 +1,4 @@
 import os
-
 from functools import lru_cache
 from typing import Generator
 
@@ -30,7 +29,6 @@ def pytest_configure(config):
         "markers",
         "needs(*): mark test to run only when dependencies are available.",
     )
-
 
 @lru_cache
 def postgres_is_running() -> bool:
@@ -72,16 +70,15 @@ def setup_and_teardown_db(request) -> None:
     Set up the database at the start of the pytest session, and then
     tear down all created tables once tests have completed
     """
-    # TODO: Create a separate database only for testing. Otherwise
-    # uncommenting the following will delete all migrations in the database.
-    # database.drop_all_tables(check_first=True)
+
+    database.drop_all_tables(check_first=True)
 
     database.create_all_tables()
 
-    # def teardown():
-    #     database.drop_all_tables()
+    def teardown():
+        database.drop_all_tables()
 
-    # request.addfinalizer(teardown)
+    request.addfinalizer(teardown)
 
 
 @pytest.fixture(scope="session")
