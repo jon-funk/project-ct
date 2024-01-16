@@ -25,9 +25,15 @@
     "react-hook-form": "^7.44.3"
   },
   "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/react": "^18.2.47",
     "cross-env": "^7.0.3",
     "eslint": "^8.19.0",
     "eslint-config-next": "12.2.1",
-    "prettier": "^2.8.8"
-  }
+    "prettier": "^2.8.8",
+    "typescript": "^5.3.3"
+  },
+  "main": "index.js",
+  "repository": "https://github.com/jon-funk/project-ct",
+  "license": "MIT"
 }
