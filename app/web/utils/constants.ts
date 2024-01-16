@@ -1,6 +1,7 @@
 import { PatientEncounterFormDataInterface } from "../interfaces/PatientEncounterFormDataInterface";
 
 export const MFPEFormData: PatientEncounterFormDataInterface = {
+  patient_encounter_uuid: "",
   patient_rfid: "",
   document_num: "",
   location: "Main Medical",
