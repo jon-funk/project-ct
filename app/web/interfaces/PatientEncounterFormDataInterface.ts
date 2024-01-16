@@ -18,4 +18,5 @@ export interface PatientEncounterFormDataInterface {
   departure_date: Date;
   departure_dest: string;
   comment: string;
+  qr_code: string | null;
 }

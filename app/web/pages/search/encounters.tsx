@@ -17,24 +17,25 @@ import { fetchPatientEncounters } from "../../utils/api";
 import MFPEModifyForm from "../../components/patient_encounter_form/ModifyForm";
 import { PatientEncounterFormDataInterface } from "../../interfaces/PatientEncounterFormDataInterface";
 import { SlideTransition } from "../../components/SlideTransition";
+import { PatientEncounterRow } from "../../interfaces/PatientEncounterRow";
 
 function PatientEncounterSearch() {
   const [encounters, setPatientEncounters] = useState<PatientEncounterFormDataInterface[]>([]);
   const [isError, setIsErrorMessage] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
-  const [selectedRow, setSelectedRow] = useState<any>({});
+  const [selectedRow, setSelectedRow] = useState<PatientEncounterRow>({} as PatientEncounterRow);
   const [formUUID, setFormUUID] = useState("");
 
-  const openDialogWindow = (rowData: any) => {
+  const openDialogWindow = (rowData: { row: PatientEncounterRow }) => {
     setOpenDialog(true);
-    setSelectedRow(rowData?.row);
-    setFormUUID(rowData?.row?.patient_encounter_uuid);
+    setSelectedRow(rowData.row);
+    setFormUUID(rowData.row.patient_encounter_uuid);
   };
 
-  const closeDialogWindow = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const closeDialogWindow = () => {
     setOpenDialog(false);
-    setSelectedRow({});
+    setSelectedRow({} as PatientEncounterRow);
   };
 
   useEffect(() => {

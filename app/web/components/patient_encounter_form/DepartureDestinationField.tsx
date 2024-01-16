@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import { Controller } from "react-hook-form";
 import { FormFieldProps } from "../../interfaces/FormFieldProps";
+import { PatientEncounterFormDataInterface } from "../../interfaces/PatientEncounterFormDataInterface";
 
 
 /**
@@ -18,7 +19,7 @@ import { FormFieldProps } from "../../interfaces/FormFieldProps";
  *
  * @returns DepartureDestinationField component.
  */
-export function DepartureDestinationField({ control, errors }: FormFieldProps) {
+export function DepartureDestinationField({ control, errors }: FormFieldProps<PatientEncounterFormDataInterface>) {
   const hasError = Boolean(errors?.departure_dest);
   return (
     <FormControl error={Boolean(errors?.departure_dest)}>

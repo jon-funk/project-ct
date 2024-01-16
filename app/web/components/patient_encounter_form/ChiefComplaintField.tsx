@@ -12,6 +12,7 @@ import {
 import { Controller } from "react-hook-form";
 import { chiefComplaints } from "../../utils/constants";
 import { FormFieldProps } from "../../interfaces/FormFieldProps";
+import { PatientEncounterFormDataInterface } from "../../interfaces/PatientEncounterFormDataInterface";
 
 /**
  * Renders a chief complaint select field controlled by React Hook Form.
@@ -20,7 +21,7 @@ import { FormFieldProps } from "../../interfaces/FormFieldProps";
  *
  * @returns ChiefComplaintField component.
  */
-export function ChiefComplaintField({ control, errors }: FormFieldProps) {
+export function ChiefComplaintField({ control, errors }: FormFieldProps<PatientEncounterFormDataInterface>) {
 
   const MenuProps = {
     PaperProps: {

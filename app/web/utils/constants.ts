@@ -4,6 +4,7 @@ export const MFPEFormData: PatientEncounterFormDataInterface = {
   patient_encounter_uuid: "",
   patient_rfid: "",
   document_num: "",
+  qr_code: "",
   location: "Main Medical",
   handover_from: "",
   arrival_date: new Date(),

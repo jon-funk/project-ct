@@ -2,6 +2,7 @@ import React from "react";
 import { FormControl, FormLabel, MenuItem, Select } from "@mui/material";
 import { Controller } from "react-hook-form";
 import { FormFieldProps } from "../../interfaces/FormFieldProps";
+import { PatientEncounterFormDataInterface } from "../../interfaces/PatientEncounterFormDataInterface";
 
 
 /**
@@ -12,7 +13,7 @@ import { FormFieldProps } from "../../interfaces/FormFieldProps";
  * @returns {JSX.Element} - LocationField component.
  */
 
-export function LocationField({ control, errors }: FormFieldProps) {
+export function LocationField({ control }: FormFieldProps<PatientEncounterFormDataInterface>) {
   return (
     <FormControl>
       <FormLabel id="location-select-label">Location</FormLabel>

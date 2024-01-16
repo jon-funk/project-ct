@@ -1,4 +1,6 @@
+import { PatientEncounterRow } from "./PatientEncounterRow";
+
 export interface PatientEncounterModifyFormProps {
   formUUID: string;
-  rowData: any;
+  rowData: PatientEncounterRow;
 }

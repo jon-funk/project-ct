@@ -2,11 +2,11 @@ import React from "react";
 import {
   FormControl,
   FormHelperText,
-  FormLabel,
   TextField,
 } from "@mui/material";
 import { Controller } from "react-hook-form";
 import { FormFieldProps } from "../../interfaces/FormFieldProps";
+import { PatientEncounterFormDataInterface } from "../../interfaces/PatientEncounterFormDataInterface";
 
 
 /**
@@ -17,7 +17,7 @@ import { FormFieldProps } from "../../interfaces/FormFieldProps";
  * @returns OtherChiefComplaintField component.
  */
 
-export function OtherChiefComplaintField({ control, errors, enableField }: FormFieldProps) {
+export function OtherChiefComplaintField({ control, errors, enableField }: FormFieldProps<PatientEncounterFormDataInterface>) {
   return (
     <FormControl error={Boolean(errors?.chief_complaint_other)} fullWidth>
       <Controller

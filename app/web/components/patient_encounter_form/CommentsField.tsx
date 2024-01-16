@@ -2,6 +2,7 @@ import React from "react";
 import { Box, FormControl, TextField } from "@mui/material";
 import { Controller } from "react-hook-form";
 import { FormFieldProps } from "../../interfaces/FormFieldProps";
+import { PatientEncounterFormDataInterface } from "../../interfaces/PatientEncounterFormDataInterface";
 
 
 /**
@@ -11,7 +12,7 @@ import { FormFieldProps } from "../../interfaces/FormFieldProps";
  *
  * @returns CommentsField component.
  */
-export function CommentsField({ control, errors }: FormFieldProps) {
+export function CommentsField({ control }: FormFieldProps<PatientEncounterFormDataInterface>) {
   return (
     <Box>
       <FormControl fullWidth>

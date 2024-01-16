@@ -26,6 +26,7 @@ import { ConfirmDeletionDialog } from "../ConfirmDeletionDialog";
 import { AlertObject } from "../../interfaces/AlertObject";
 import { PatientEncounterModifyFormProps } from "../../interfaces/PatientEncounterModifyFormProps";
 import { SubmitAlert } from "../../interfaces/SubmitAlert";
+import { PatientEncounterFormDataInterface } from "../../interfaces/PatientEncounterFormDataInterface";
 
 /**
  * Renders a form for modifying a Shambhala Music Festival Patient Encounter.
@@ -36,11 +37,13 @@ import { SubmitAlert } from "../../interfaces/SubmitAlert";
  * @returns MFPEModifyForm component.
  */
 function MFPEModifyForm({ formUUID, rowData }: PatientEncounterModifyFormProps): JSX.Element {
+  const token = useAuthToken();
+
   if (typeof rowData.on_shift === "boolean") {
     rowData.on_shift = rowData.on_shift === true ? "Yes" : "No";
   }
   if (typeof rowData.chief_complaints === "string") {
-    rowData.chief_complaints = rowData.chief_complaints.split(", ");
+    rowData.chief_complaints = (rowData.chief_complaints as string).split(", ");
   }
 
   if (Array.isArray(rowData.chief_complaints)) {
@@ -72,10 +75,9 @@ function MFPEModifyForm({ formUUID, rowData }: PatientEncounterModifyFormProps):
     if (!chiefComplaints.includes("Other")) {
       setValue("chief_complaint_other", "");
     }
-  }, [chiefComplaints]);
+  }, [chiefComplaints, setValue]);
 
-  const handleUpdateSubmit = async (data: any) => {
-    const token = useAuthToken();
+  const handleUpdateSubmit = async (data: PatientEncounterFormDataInterface) => {
 
     if (data.chief_complaints.includes("Other")) {
       data.chief_complaints = data.chief_complaints.filter(
@@ -106,13 +108,11 @@ function MFPEModifyForm({ formUUID, rowData }: PatientEncounterModifyFormProps):
 
   const handleConfirmDelete = async () => {
     setOpenDialog(false);
-    const token = useAuthToken();
     const errorMessage = await deletePatientEncounterForm(formUUID, token);
     if (!errorMessage) {
       window.location.pathname = "/search/encounters";
     } else {
       setErrorMessage(errorMessage);
-      setError(true);
     }
   };
 
@@ -183,8 +183,5 @@ function MFPEModifyForm({ formUUID, rowData }: PatientEncounterModifyFormProps):
   );
 }
 
-export default MFPEModifyForm;
-function setError(arg0: boolean) {
-  throw new Error("Function not implemented.");
-}
 
+export default MFPEModifyForm;

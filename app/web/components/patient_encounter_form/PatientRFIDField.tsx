@@ -2,6 +2,7 @@ import React from "react";
 import { FormControl, TextField } from "@mui/material";
 import { Controller } from "react-hook-form";
 import { FormFieldProps } from "../../interfaces/FormFieldProps";
+import { PatientEncounterFormDataInterface } from "../../interfaces/PatientEncounterFormDataInterface";
 
 
 /**
@@ -12,7 +13,7 @@ import { FormFieldProps } from "../../interfaces/FormFieldProps";
  * @returns PatientRFIDField component.
  */
 
-export function PatientRFIDField({ control }: FormFieldProps) {
+export function PatientRFIDField({ control }: FormFieldProps<PatientEncounterFormDataInterface>) {
   return (
     <FormControl>
       <Controller
