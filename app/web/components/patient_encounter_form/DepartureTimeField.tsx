@@ -5,6 +5,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { Controller } from "react-hook-form";
 import { FormFieldProps } from "../../interfaces/FormFieldProps";
+import { PatientEncounterFormDataInterface } from "../../interfaces/PatientEncounterFormDataInterface";
 
 /**
  * Renders a departure time selection field controlled by React Hook Form.
@@ -13,7 +14,7 @@ import { FormFieldProps } from "../../interfaces/FormFieldProps";
  *
  * @returns DepartureTimeField component.
  */
-export function DepartureTimeField({ control, errors }: FormFieldProps) {
+export function DepartureTimeField({ control, errors }: FormFieldProps<PatientEncounterFormDataInterface>) {
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <FormControl error={Boolean(errors?.departure_time)}>

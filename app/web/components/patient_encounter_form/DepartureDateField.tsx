@@ -5,6 +5,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { Controller } from "react-hook-form";
 import { FormFieldProps } from "../../interfaces/FormFieldProps";
+import { PatientEncounterFormDataInterface } from "../../interfaces/PatientEncounterFormDataInterface";
 
 
 /**
@@ -14,7 +15,7 @@ import { FormFieldProps } from "../../interfaces/FormFieldProps";
  *
  * @returns DepartureDateField component.
  */
-export function DepartureDateField({ control, errors }: FormFieldProps) {
+export function DepartureDateField({ control, errors }: FormFieldProps<PatientEncounterFormDataInterface>) {
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <FormControl error={Boolean(errors?.departure_date)}>

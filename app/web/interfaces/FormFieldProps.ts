@@ -1,7 +1,7 @@
-import { Control, FieldErrors } from "react-hook-form";
+import { Control, FieldErrors, FieldValues } from "react-hook-form";
 
-export interface FormFieldProps {
-    control: Control;
-    errors: FieldErrors;
-    enableField?: boolean;
+export interface FormFieldProps<T extends FieldValues> {
+  control: Control<T>;
+  errors: FieldErrors<T>;
+  enableField?: boolean;
 }
