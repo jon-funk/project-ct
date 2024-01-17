@@ -1,0 +1,14 @@
+{
+  "name": "web",
+  "dockerComposeFile": ["../../docker-compose.yaml"],
+  "service": "web",
+  "shutdownAction": "none",
+  "workspaceFolder": "/app/",
+  "customizations": {
+    "exposePorts": [3000],
+    "postCreateCommand": "yarn install && yarn dev",
+    "vscode": {
+      "extensions": ["dbaeumer.vscode-eslint"]
+    }
+  }
+}
