@@ -57,8 +57,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
  *
  * @returns The protected component.
  */
-export function ProtectedRoute(Component: React.ComponentType<any>) {
-  return (props: any) => {
+export function ProtectedRoute(Component: React.ComponentType) {
+  const WrappedComponent = (props: Record<string, unknown>) => {
     const { isAuthenticated, loading } = useAuth();
 
     useEffect(() => {
@@ -66,10 +66,15 @@ export function ProtectedRoute(Component: React.ComponentType<any>) {
         // User is trying to access authenticated route without credentials
         window.location.pathname = "/";
       }
-    }, [loading, isAuthenticated]);
+    }, [isAuthenticated, loading]);
 
     return <Component {...props} />;
   };
+
+  // Assign a display name for debugging purposes
+  WrappedComponent.displayName = `ProtectedRoute(${Component.displayName || Component.name || "Component"})`;
+
+  return WrappedComponent;
 }
 
 /**
@@ -79,7 +84,9 @@ export function ProtectedRoute(Component: React.ComponentType<any>) {
  */
 export default function useAuth() {
   const context = useContext(AuthContext);
-
+  if (context === undefined) {
+    throw new Error("useAuth must be used within a AuthProvider");
+  }
   return context;
 }
 
@@ -88,7 +95,6 @@ export default function useAuth() {
  *
  * @returns Formatted authentication token.
  */
-
 export function useAuthToken() {
   return `Bearer ${window.localStorage.getItem("auth-token")}`;
 }

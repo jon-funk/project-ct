@@ -2,6 +2,7 @@ import React from "react";
 import { FormControl, TextField } from "@mui/material";
 import { Controller } from "react-hook-form";
 import { FormFieldProps } from "../../interfaces/FormFieldProps";
+import { PatientEncounterFormDataInterface } from "../../interfaces/PatientEncounterFormDataInterface";
 
 
 /**
@@ -11,7 +12,7 @@ import { FormFieldProps } from "../../interfaces/FormFieldProps";
  *
  * @returns DocumentNumberField component.
  */
-export function DocumentNumberField({ control, errors }: FormFieldProps) {
+export function DocumentNumberField({ control, errors }: FormFieldProps<PatientEncounterFormDataInterface>) {
   return (
     <FormControl>
       <Controller

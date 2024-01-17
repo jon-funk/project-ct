@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import { Controller } from "react-hook-form";
 import { FormFieldProps } from "../../interfaces/FormFieldProps";
+import { PatientEncounterFormDataInterface } from "../../interfaces/PatientEncounterFormDataInterface";
 
 
 /**
@@ -20,7 +21,7 @@ import { FormFieldProps } from "../../interfaces/FormFieldProps";
  * @returns TriageAcuityField component.
  */
 
-export function TriageAcuityField({ control, errors }: FormFieldProps) {
+export function TriageAcuityField({ control, errors }: FormFieldProps<PatientEncounterFormDataInterface>) {
   const hasError = Boolean(errors?.arrival_method);
   return (
     <FormControl error={Boolean(errors?.triage_acuity)}>

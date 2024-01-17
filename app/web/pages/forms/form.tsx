@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useForm, FormProvider, UseFormReturn } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import {
   Button,
   Container,
@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 
-import { ProtectedRoute, useAuthToken } from "../../contexts/auth";
+import { ProtectedRoute } from "../../contexts/auth";
 import ProtectedNavbar from "../../components/ProtectedNavbar";
 import { PatientEncounterFormFields } from "../../components/patient_encounter_form/PatientEncounterFormFields";
 
@@ -30,6 +30,7 @@ import { SubmitAlert } from "../../interfaces/SubmitAlert";
  * @returns MFPEForm component.
  */
 function MFPEForm(): JSX.Element {
+  const [token, setToken] = useState<string | null>(null);
   const [submitAlert, setSubmitAlert] = useState<SubmitAlert | null>(null);
   const methods = useForm<PatientEncounterFormDataInterface>({ defaultValues: MFPEFormData });
   const {
@@ -49,8 +50,14 @@ function MFPEForm(): JSX.Element {
     }
   }, [chiefComplaints, setValue]);
 
+  useEffect(() => {
+    const authToken = `Bearer ${window.localStorage.getItem("auth-token")}`;
+    setToken(authToken);
+  }, []);
+
   const handlePatientEncounterSubmit = async (data: PatientEncounterFormDataInterface) => {
-    const token = useAuthToken();
+
+    let errorMessage: string | null = null;
 
     if (data.chief_complaints.includes("Other")) {
       data.chief_complaints = data.chief_complaints.filter(
@@ -60,7 +67,12 @@ function MFPEForm(): JSX.Element {
       delete data.chief_complaint_other;
     }
 
-    const errorMessage = await submitPatientEncounterForm(data, token);
+    if (token) {
+      errorMessage = await submitPatientEncounterForm(data, token);
+    } else {
+      console.log("token is null");
+    }
+
     if (!errorMessage) {
       setSubmitAlert({
         type: "success",

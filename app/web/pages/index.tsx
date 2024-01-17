@@ -26,7 +26,7 @@ export default function SignIn() {
     if (token) {
       router.push("/forms/form");
     }
-  }, []);
+  }, [router]);
 
   const [errorMessage, setErrorMessage] = React.useState("");
   const [hasError, setError] = React.useState(false);
@@ -34,19 +34,19 @@ export default function SignIn() {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    const email = data.get('email');
-    const password = data.get('password');
+    const email = data.get("email");
+    const password = data.get("password");
 
-    if (typeof email === 'string' && typeof password === 'string') {
+    if (typeof email === "string" && typeof password === "string") {
       const errorMessage = await login(email, password);
       if (!errorMessage) {
-        router.push('/forms/form');
+        router.push("/forms/form");
       } else {
         setErrorMessage(errorMessage);
         setError(true);
       }
     } else {
-      setErrorMessage('Invalid email or password');
+      setErrorMessage("Invalid email or password");
       setError(true);
     }
   };

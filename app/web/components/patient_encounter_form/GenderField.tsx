@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import { Controller } from "react-hook-form";
 import { FormFieldProps } from "../../interfaces/FormFieldProps";
+import { PatientEncounterFormDataInterface } from "../../interfaces/PatientEncounterFormDataInterface";
 
 
 /**
@@ -18,7 +19,7 @@ import { FormFieldProps } from "../../interfaces/FormFieldProps";
  *
  * @returns GenderField component.
  */
-export function GenderField({ control, errors }: FormFieldProps) {
+export function GenderField({ control, errors }: FormFieldProps<PatientEncounterFormDataInterface>) {
   const hasError = Boolean(errors?.gender);
   return (
     <FormControl>

@@ -1,5 +1,5 @@
-import * as React from 'react';
-import Typography, { TypographyProps } from '@mui/material/Typography';
+import * as React from "react";
+import Typography, { TypographyProps } from "@mui/material/Typography";
 
 
 /**
@@ -12,9 +12,9 @@ import Typography, { TypographyProps } from '@mui/material/Typography';
 export function Copyright(props: TypographyProps) {
     return (
         <Typography variant="body2" color="text.secondary" align="center" {...props}>
-            {'Copyright © '}
+            {"Copyright © "}
             {new Date().getFullYear()}
-            {'.'}
+            {"."}
         </Typography>
     );
 }
