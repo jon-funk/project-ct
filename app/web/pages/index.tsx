@@ -24,7 +24,7 @@ export default function SignIn() {
   React.useEffect(() => {
     const token = window.localStorage.getItem("auth-token");
     if (token) {
-      router.push("/forms/form");
+      router.push("/medical/form"); // TODO: Implement logic for user's group form
     }
   }, [router]);
 
@@ -40,7 +40,7 @@ export default function SignIn() {
     if (typeof email === "string" && typeof password === "string") {
       const errorMessage = await login(email, password);
       if (!errorMessage) {
-        router.push("/forms/form");
+        router.push("/medical/form"); // TODO: Implement logic for user's group form
       } else {
         setErrorMessage(errorMessage);
         setError(true);
