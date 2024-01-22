@@ -41,7 +41,7 @@ const ProtectedNavbar: React.FC = () => {
       <Divider />
       <List>
         <ListItem key="New Entry" disablePadding>
-          <ListItemButton href="/forms/form" sx={{ textAlign: "center" }}>
+          <ListItemButton href="/medical/form" sx={{ textAlign: "center" }}>{/* TODO: Implement logic for user's group form */}
             <ListItemText primary="New Entry" />
           </ListItemButton>
         </ListItem>
@@ -74,19 +74,19 @@ const ProtectedNavbar: React.FC = () => {
                 display: { xs: "none", sm: "block", fontWeight: "bold" },
               }}
             >
-              <Link href="/home">Home</Link>
+              <Link href="/medical/home">Home</Link>{/* TODO: Implement logic for user's group home */}
             </Typography>
             <Box sx={{ display: { xs: "none", sm: "block" } }}>
               <Button
-                href="/search/encounters"
+                href="/medical/search"
                 sx={{ color: "#fff", fontWeight: "bold" }}
-              >
+              >{/* TODO: Implement logic for user's group search */}
                 List Entries
               </Button>
               <Button
-                href="/forms/form"
+                href="/medical/form"
                 sx={{ color: "#fff", fontWeight: "bold" }}
-              >
+              >{/* TODO: Implement logic to user's group form */}
                 New Entry
               </Button>
               <Button
