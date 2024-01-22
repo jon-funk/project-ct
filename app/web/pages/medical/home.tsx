@@ -1,10 +1,10 @@
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 
-import { ProtectedRoute } from "../contexts/auth";
-import ProtectedNavbar from "../components/ProtectedNavbar";
+import { ProtectedRoute } from "../../contexts/auth";
+import ProtectedNavbar from "../../components/ProtectedNavbar";
 
-function Home() {
+function MedicalHome() {
   return (
     <>
       <Container>
@@ -28,4 +28,4 @@ function Home() {
   );
 }
 
-export default ProtectedRoute(Home);
+export default ProtectedRoute(MedicalHome);
