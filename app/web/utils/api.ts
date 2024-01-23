@@ -79,7 +79,11 @@ export async function HasRefreshedAuthToken(token: string): Promise<boolean> {
  *
  * @returns An empty string if the login was successful, or an error message to be displayed to the user.
  */
-export async function login(email: string, password: string): Promise<string> {
+export async function login(
+  email: string,
+  password: string,
+  userGroup: string
+): Promise<string> {
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_HOSTNAME}/login`, {
       headers: {
@@ -92,6 +96,7 @@ export async function login(email: string, password: string): Promise<string> {
       body: JSON.stringify({
         email: email,
         password: password,
+        user_group: userGroup,
       }),
     });
 

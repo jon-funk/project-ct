@@ -9,17 +9,28 @@ import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import InputLabel from "@mui/material/InputLabel";
+import FormControl from "@mui/material/FormControl";
+import { SubmitHandler, useForm, Controller } from "react-hook-form";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Copyright } from "../components/Copyright";
-
 import { useRouter } from "next/router";
-
 import { login } from "../utils/api";
+import { RenderErrorAlerts } from "../components/RenderErrorAlerts";
+import { RenderSubmitAlert } from "../components/RenderSubmitAlert";
+import { AlertObject } from "../interfaces/AlertObject";
+import { SignInFormInputs } from "../interfaces/SignInFormInputs";
+
 
 const theme = createTheme();
 
 export default function SignIn() {
   const router = useRouter();
+  const { control, handleSubmit, formState: { errors } } = useForm<SignInFormInputs>();
+  const [submitAlert, setSubmitAlert] = React.useState<AlertObject | null>(null);
+
 
   React.useEffect(() => {
     const token = window.localStorage.getItem("auth-token");
@@ -28,28 +39,15 @@ export default function SignIn() {
     }
   }, [router]);
 
-  const [errorMessage, setErrorMessage] = React.useState("");
-  const [hasError, setError] = React.useState(false);
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const email = data.get("email");
-    const password = data.get("password");
-
-    if (typeof email === "string" && typeof password === "string") {
-      const errorMessage = await login(email, password);
-      if (!errorMessage) {
-        router.push("/medical/form"); // TODO: Implement logic for user's group form
-      } else {
-        setErrorMessage(errorMessage);
-        setError(true);
-      }
+  const onSubmit: SubmitHandler<SignInFormInputs> = async (data) => {
+    const errorMessage = await login(data.email, data.password, data.userGroup);
+    if (!errorMessage) {
+      router.push("/medical/form"); // TODO: Implement logic for user's group form
     } else {
-      setErrorMessage("Invalid email or password");
-      setError(true);
+      setSubmitAlert({ type: "error", message: errorMessage });
     }
-  };
+  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -71,59 +69,91 @@ export default function SignIn() {
           </Typography>
           <Box
             component="form"
-            onSubmit={handleSubmit}
+            onSubmit={handleSubmit(onSubmit)}
             noValidate
             sx={{ mt: 1 }}
           >
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
-              autoFocus
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-            />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
-            {hasError && <p style={{ color: "red" }}>{errorMessage}</p>}
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-            >
-              Sign In
-            </Button>
-            {/* <Grid container>
-              <Grid item xs>
-                <Link href="#" variant="body2">
-                  Forgot password?
-                </Link>
-              </Grid>
-              <Grid item>
-                <Link href="/sign-up/sign-up" variant="body2">
-                  {"Don't have an account? Sign Up"}
-                </Link>
-              </Grid>
-            </Grid> */}
+            <FormControl fullWidth margin="dense">
+              <InputLabel id="user-group-label">Sign-in to</InputLabel>
+              <Controller
+                name="userGroup"
+                control={control}
+                defaultValue=""
+                rules={{ required: "Please select user group to sign-in to" }}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    label="Sign-in to"
+                    required
+                    fullWidth
+                  >
+                    <MenuItem value="medical">Medical</MenuItem>
+                    <MenuItem value="sanctuary">Sanctuary</MenuItem>
+                  </Select>
+                )}
+
+              />
+            </FormControl>
+            <FormControl fullWidth margin="dense">
+              <Controller
+                name="email"
+                control={control}
+                defaultValue=""
+                rules={{ required: "Please enter your email" }}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    margin="normal"
+                    required
+                    fullWidth
+                    label="Email Address"
+                    autoComplete="email"
+                    autoFocus
+                    error={!!errors.email}
+                    helperText={errors.email ? String(errors.email.message) : ""}
+                  />
+                )}
+              />
+            </FormControl>
+            <FormControl fullWidth margin="dense">
+              <Controller
+                name="password"
+                control={control}
+                defaultValue=""
+                rules={{ required: "Please enter your password" }}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    margin="normal"
+                    required
+                    fullWidth
+                    label="Password"
+                    type="password"
+                    autoComplete="current-password"
+                    error={!!errors.password}
+                    helperText={errors.password ? String(errors.password.message) : ""}
+                  />
+                )}
+              />
+              <FormControlLabel
+                control={<Checkbox value="remember" color="primary" />}
+                label="Remember me"
+              />
+              {RenderSubmitAlert(submitAlert)}
+              {RenderErrorAlerts(errors)}
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                sx={{ mt: 3, mb: 2 }}
+              >
+                Sign In
+              </Button>
+            </FormControl>
           </Box>
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
       </Container>
-    </ThemeProvider>
+    </ThemeProvider >
   );
 }
