@@ -33,15 +33,6 @@ class Intake(Base, BasicMetrics):
     discharge_time = Column(DateTime, nullable=True)
     discharge_method = Column(String, nullable=True)
 
-
-def get_intake_by_id(db: Session, id: int) -> Optional[Intake]:
-    return (
-        db.query(Intake)
-        .filter(Intake.id == id, Intake.deleted == False)
-        .first()
-    )
-
-
 def get_intake_by_uuid(
     db: Session, uuid: uuid.UUID
 ) -> Optional[Intake]:
@@ -59,9 +50,9 @@ def get_latest_intake_by_guest_rfid(
     db: Session, guest_rfid: str
 ) -> Optional[Intake]:
     """
-    Returns the latest patient encounter for a given patient RFID.
+    Returns the latest intake for a given guest RFID.
 
-    If the patient RFID is found returns the latest patient encounter; otherwise, returns None.
+    If the guest RFID is found returns the latest intake; otherwise, returns None.
 
 
     Returns:
@@ -74,11 +65,11 @@ def get_latest_intake_by_guest_rfid(
         .all()
     )
 
-    for encounter in intakes:
-        if encounter.guest_rfid.startswith("$argon2"):
+    for intake in intakes:
+        if intake.guest_rfid.startswith("$argon2"):
             try:
-                if argon2.verify(guest_rfid, encounter.guest_rfid):
-                    return encounter
+                if argon2.verify(guest_rfid, intake.guest_rfid):
+                    return intake
 
             except standalone_argon2.exceptions.VerifyMismatchError:
                 continue
@@ -87,8 +78,8 @@ def get_latest_intake_by_guest_rfid(
                 standalone_argon2.exceptions.InvalidHash,
             ) as e:
                 logger.error(e, exc_info=True)
-        elif encounter.guest_rfid == guest_rfid:
-            return encounter
+        elif intake.guest_rfid == guest_rfid:
+            return intake
 
     return None
 
@@ -98,9 +89,9 @@ def get_all_intakes(db: Session) -> Optional[List[Intake]]:
 
 
 def create_intake(db: Session, data: Intake) -> Intake:
-    """Create a patient encounter with a unique ID.
+    """Create a intake with a unique ID.
 
-    If provided, the patient RFID is hashed before being stored in the database; otherwise, it is stored as null.
+    If provided, the guest RFID is hashed before being stored in the database; otherwise, it is stored as null.
 
     Returns:
         A Intake.
@@ -123,17 +114,17 @@ def create_intake(db: Session, data: Intake) -> Intake:
 
 
 def update_intake(
-    db: Session, encounter: Intake, updated_values: Dict[str, Any]
+    db: Session, intake: Intake, updated_values: Dict[str, Any]
 ) -> Intake:
     """
-    Update an existing patient encounter document using its existing UUID. Returns the updated patient encounter.
+    Update an existing intake document using its existing UUID. Returns the updated intake.
 
-    If provided, the patient RFID is hashed before being stored in the database; otherwise, it is stored as null.
+    If provided, the guest RFID is hashed before being stored in the database; otherwise, it is stored as null.
 
     """
-    updated_encounter = encounter
+    updated_intake = intake
 
-    # Check if the patient RFID has been updated
+    # Check if the guest RFID has been updated
     if "guest_rfid" in updated_values:
         updated_rfid = updated_values["guest_rfid"]
 
@@ -142,17 +133,17 @@ def update_intake(
 
     db.query(Intake).filter(
         Intake.deleted == False,
-        Intake.intake_uuid == encounter.intake_uuid,
+        Intake.intake_uuid == intake.intake_uuid,
     ).update(values=updated_values)
     db.commit()
-    db.refresh(updated_encounter)
+    db.refresh(updated_intake)
 
-    return updated_encounter
+    return updated_intake
 
 
 def soft_delete_intake(db: Session, uuid: uuid.UUID) -> None:
     """
-    Update patient encounter property to set deleted to True.
+    Update intake property to set deleted to True.
     """
     db.query(Intake).filter(
         Intake.intake_uuid == uuid
