@@ -36,7 +36,8 @@ services:
     env_file: app/api/.env
     environment:
       - POSTGRES_HOST=db
-    command: bash -c "cd /app/api && alembic upgrade head"
+      - DB_NAME=${DB_NAME}
+    command: bash -c "cd /app/api && alembic --name=${DB_NAME} upgrade head"
     volumes:
       # Mount local codebase to reflect changes for local dev
       - ./app/api:/app/api
@@ -59,6 +60,9 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    volumes:
+      - ./scripts/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
+
 
   testapi:
     container_name: testapi

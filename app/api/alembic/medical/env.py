@@ -22,18 +22,13 @@ import api.models
 
 target_metadata = Base.metadata
 
-# other values from the config, defined by the needs of env.py,
-# can be acquired:
-# my_important_option = config.get_main_option("my_important_option")
-# ... etc.
-
 # Environment based sqlalchemy url
 user = os.environ.get("POSTGRES_USER")
 password = os.environ.get("POSTGRES_PASSWORD")
 hostname = os.environ.get("POSTGRES_HOST")
 db = os.environ.get("POSTGRES_DB")
 SQLALCHEMY_DATABASE_URL = f"postgresql+psycopg2://{user}:{password}@{hostname}/{db}"
-config.set_main_option('sqlalchemy.url', SQLALCHEMY_DATABASE_URL)
+config.set_main_option("sqlalchemy.url", SQLALCHEMY_DATABASE_URL)
 
 
 def run_migrations_offline():
@@ -74,8 +69,7 @@ def run_migrations_online():
     )
 
     with connectable.connect() as connection:
-        context.configure(connection=connection,
-                          target_metadata=target_metadata)
+        context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():
             context.run_migrations()
