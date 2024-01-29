@@ -9,9 +9,9 @@ export interface IntakeFormDataInterface {
   presenting_complaint: string;
   guest_consciousness_level: [];
   guest_emotional_state: string[];
-  guest_emotional_state_other: string;
+  guest_emotional_state_other?: string;
   substance_categories: string[];
-  substance_categories_other: string;
+  substance_categories_other?: string;
   time_since_last_dose: number;
   departure_time: Date;
   departure_date: Date;
