@@ -3,18 +3,17 @@ name: Build and Push Web
 on:
   workflow_dispatch:
   push:
-    branches: 
+    branches:
       - main
     paths:
-      - 'app/web/**'
-      - '.github/workflows/build-and-push-web.yaml'
+      - "app/web/**"
+      - ".github/workflows/build-and-push-web.yaml"
   pull_request:
-    types:
-      -opened
-    branches: 
+    types: -opened
+    branches:
       - main
     paths:
-      - 'app/web/**'
+      - "app/web/**"
 
 env:
   TAG: prod
@@ -26,27 +25,27 @@ jobs:
   build-and-push-web:
     name: build-and-push-web
     runs-on: ubuntu-20.04
-      
+
     permissions:
-      contents: 'read'
-      id-token: 'write'
+      contents: "read"
+      id-token: "write"
 
     steps:
       - id: checkout
         name: Checkout
-        uses: actions/checkout@v2
-      
+        uses: actions/checkout@v4
+
       - id: auth
         name: Authenticate with Google Cloud
-        uses: google-github-actions/auth@v1
-        with: 
+        uses: google-github-actions/auth@v2
+        with:
           token_format: access_token
           workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.SERVICE_ACCOUNT }}
           access_token_lifetime: 300s
-        
+
       - name: Login to Google Artifact Registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ${{ secrets.ARTIFACT_REGISTRY }}
           username: oauth2accesstoken
@@ -59,8 +58,8 @@ jobs:
 
       - name: build-tag-push
         run: |
-              export GAR=${{ env.GAR }}
-              make build-push-web ${{ env.TAG }}
+          export GAR=${{ env.GAR }}
+          make build-push-web ${{ env.TAG }}
       - name: Redeploy Cloudrun Service
         run: |
           gcloud run services update ${{ env.CR_SERVICE }} --region=${{ env.CR_REGION }} --image=${{ env.GAR }}web:${{ env.TAG }}
