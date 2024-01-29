@@ -7,7 +7,7 @@ export interface IntakeFormDataInterface {
   identified_gender: string;
   first_visit: boolean;
   presenting_complaint: string;
-  guest_consciousness_level: [];
+  guest_consciousness_level: string;
   guest_emotional_state: string[];
   guest_emotional_state_other?: string;
   substance_categories: string[];
