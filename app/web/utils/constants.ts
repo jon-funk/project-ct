@@ -53,7 +53,7 @@ export const IntakeFormDataDefaults: IntakeFormDataInterface = {
   identified_gender: "",
   first_visit: false,
   presenting_complaint: "",
-  guest_consciousness_level: [],
+  guest_consciousness_level: "",
   guest_emotional_state: [],
   guest_emotional_state_other: "",
   substance_categories: [],
