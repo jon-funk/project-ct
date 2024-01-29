@@ -25,14 +25,14 @@
     "react-hook-form": "^7.44.3"
   },
   "devDependencies": {
-    "@types/node": "^20.11.3",
-    "@types/react": "^18.2.48",
+    "@types/node": "20.11.10",
+    "@types/react": "18.2.48",
     "@typescript-eslint/eslint-plugin": "^6.19.0",
     "@typescript-eslint/parser": "^6.19.0",
     "cross-env": "^7.0.3",
     "eslint": "^8.56.0",
     "eslint-config-next": "12.2.1",
-    "typescript": "^5.3.3"
+    "typescript": "5.3.3"
   },
   "main": "index.js",
   "repository": "https://github.com/jon-funk/project-ct",
