@@ -183,7 +183,7 @@ services:
     env_file: app/api/.env
     environment:
       - POSTGRES_HOST=db
-    command: bash -c "cd /app/api && alembic -name=medical upgrade head"
+    command: bash -c "cd /app/api && alembic --name=medical upgrade head"
     depends_on:
       db:
         condition: service_healthy
