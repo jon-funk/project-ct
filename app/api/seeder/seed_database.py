@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from fastapi.testclient import TestClient
 
 from api.main.app import api
-from api.models import User, PatientEncounter
+from api.models import UserMedical as User, PatientEncounter
 from api.main.database import get_db
 
 from api.seeder.seeds.users import USERS
