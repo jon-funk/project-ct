@@ -3,6 +3,9 @@ from passlib.hash import argon2
 from typing import List, Dict
 import faker
 from datetime import datetime, timedelta
+import logging
+import logging.config
+import yaml
 
 from sqlalchemy.orm import Session
 from fastapi.testclient import TestClient
@@ -15,6 +18,13 @@ from api.seeder.seeds.users import USERS
 from api.seeder.generate_patient_encounters import generate_patient_encounter_data
 
 fake = faker.Faker()
+
+# Load logger configuration
+with open("api/logger_config.yaml", "r") as f:
+    log_cfg = yaml.safe_load(f)
+    logging.config.dictConfig(log_cfg)
+
+logger = logging.getLogger(__name__)
 
 
 def create_authed_client(email: str, password: str, client: TestClient):
@@ -83,7 +93,7 @@ def create_user(user: Dict, db: Session) -> User:
         print(e)
         db.rollback()
         db.flush()
-        print(f"User {user_obj.email} already exists")
+        logger.error("Error adding user to database.", exc_info=True)
         return user_obj
 
 
@@ -176,8 +186,7 @@ def seed_database():
             print(e)
             db.rollback()
             db.flush()
-            print(f"ERROR creating patient encounter: {patient_encounter}")
-            print(f"\tERROR: {e}")
+            logger.error(f"Error adding patient encounter to db.", exc_info=True)
 
     print(f"Created {counter} patient encounters for 2023 festival")
 
