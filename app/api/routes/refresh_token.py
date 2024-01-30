@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from api.schemas.users import UserLogin, UserLoginResponse
 from api.main.auth import load_current_user, generate_auth_token
 from api.main.database import get_db
-from api.models.user import UserMedical as User
+from api.models.user import User
 
 router = APIRouter()
 

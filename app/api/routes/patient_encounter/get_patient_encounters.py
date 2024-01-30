@@ -9,7 +9,7 @@ from . import router
 
 from api.main.auth import load_current_user
 from api.main.database import get_db
-from api.models.user import UserMedical as User
+from api.models.user import User
 from api.models.patient_encounter import get_all_patient_encounters
 from api.schemas.patient_encounter import PatientEncounterResponseSchema
 

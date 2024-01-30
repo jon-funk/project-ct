@@ -25,7 +25,6 @@ services:
       retries: 5
     depends_on:
       - migs
-      - migssanctuary
       - testapi
       - seeder
 
@@ -37,23 +36,7 @@ services:
     env_file: app/api/.env
     environment:
       - POSTGRES_HOST=db
-    command: bash -c "cd /app/api && alembic --name=medical upgrade head"
-    volumes:
-      # Mount local codebase to reflect changes for local dev
-      - ./app/api:/app/api
-    depends_on:
-      db:
-        condition: service_healthy
-
-  migssanctuary:
-    container_name: migssanctuary
-    build:
-      context: app/api/
-      dockerfile: Dockerfile.dev
-    env_file: app/api/.env
-    environment:
-      - POSTGRES_HOST=db
-    command: bash -c "cd /app/api && alembic --name=sanctuary upgrade head"
+    command: bash -c "cd /app/api && alembic upgrade head"
     volumes:
       # Mount local codebase to reflect changes for local dev
       - ./app/api:/app/api
@@ -76,9 +59,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-    volumes:
-      - ./scripts/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
-
 
   testapi:
     container_name: testapi
@@ -150,7 +130,7 @@ services:
     volumes:
       # Mount local codebase to reflect changes for local dev
       - ./app/api:/app/api
-    command: bash -c "cd /app/api && alembic --name=medical upgrade head"
+    command: bash -c "cd /app/api && alembic upgrade head"
 
   #PRODUCTION IMAGE VERIFICATION
 
@@ -183,7 +163,7 @@ services:
     env_file: app/api/.env
     environment:
       - POSTGRES_HOST=db
-    command: bash -c "cd /app/api && alembic --name=medical upgrade head"
+    command: bash -c "cd /app/api && alembic upgrade head"
     depends_on:
       db:
         condition: service_healthy
