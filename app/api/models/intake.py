@@ -8,12 +8,12 @@ from sqlalchemy import Column, DateTime, Integer, String, Boolean
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Session
 
-from api.main.database import BaseSanctuary
+from api.main.database import Base
 from api.models.mixins import BasicMetrics
 
 logger = logging.getLogger(__name__)
 
-class Intake(BaseSanctuary, BasicMetrics):
+class Intake(Base, BasicMetrics):
     __tablename__ = "intakes"
 
     intake_uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True)
