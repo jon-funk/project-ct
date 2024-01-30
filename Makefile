@@ -29,8 +29,8 @@ web:
 
 mig:
 	@echo "Creating database and applying migrations for medical..."
-	@DB_NAME=medical docker compose up migs
-	@DB_NAME=sanctuary docker compose up migs
+	@docker compose up migs
+	@docker compose up migssanctuary
 
 automig:
 	@echo "Autogenerating migration in docker context"

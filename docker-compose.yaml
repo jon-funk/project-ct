@@ -36,8 +36,23 @@ services:
     env_file: app/api/.env
     environment:
       - POSTGRES_HOST=db
-      - DB_NAME=${DB_NAME}
-    command: bash -c "cd /app/api && alembic --name=${DB_NAME} upgrade head"
+    command: bash -c "cd /app/api && alembic --name=medical upgrade head"
+    volumes:
+      # Mount local codebase to reflect changes for local dev
+      - ./app/api:/app/api
+    depends_on:
+      db:
+        condition: service_healthy
+
+  migssanctuary:
+    container_name: migssanctuary
+    build:
+      context: app/api/
+      dockerfile: Dockerfile.dev
+    env_file: app/api/.env
+    environment:
+      - POSTGRES_HOST=db
+    command: bash -c "cd /app/api && alembic --name=sanctuary upgrade head"
     volumes:
       # Mount local codebase to reflect changes for local dev
       - ./app/api:/app/api
