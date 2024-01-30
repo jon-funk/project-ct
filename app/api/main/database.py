@@ -44,11 +44,12 @@ def get_db() -> Generator:
         db.close()
 
 
+# TODO: implement engine and session for sanctuary
 def create_all_tables() -> None:
     Base.metadata.create_all(engine_example, checkfirst=True)
-    BaseSanctuary.metadata.create_all(engine_example, checkfirst=True)
+#    BaseSanctuary.metadata.create_all(engine_example, checkfirst=True)
 
 
 def drop_all_tables(check_first: bool = False) -> None:
     Base.metadata.drop_all(engine_example, checkfirst=check_first)
-    BaseSanctuary.metadata.drop_all(engine_example, checkfirst=check_first)
+#    BaseSanctuary.metadata.drop_all(engine_example, checkfirst=check_first)
