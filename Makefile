@@ -28,13 +28,15 @@ web:
 	@docker compose up -d web
 
 mig:
-	@echo "Creating database and applying migrations..."
+	@echo "Creating database and applying migrations for medical..."
 	@docker compose up migs
+	@docker compose up migssanctuary
 
 automig:
 	@echo "Autogenerating migration in docker context"
 	@docker compose up -d --no-recreate api
-	@docker compose exec api bash -c "cd /app/api && alembic revision --autogenerate -m 'CHANGEME'"
+	@docker compose exec api bash -c "cd /app/api && alembic --name sanctuary revision --autogenerate -m 'CHANGEME'"
+	@docker compose exec api bash -c "cd /app/api && alembic --name medical revision --autogenerate -m 'CHANGEME'"
 
 prune:
 	@echo "Pruning docker artifacts..."
