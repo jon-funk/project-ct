@@ -150,7 +150,7 @@ services:
     volumes:
       # Mount local codebase to reflect changes for local dev
       - ./app/api:/app/api
-    command: bash -c "cd /app/api && alembic upgrade head"
+    command: bash -c "cd /app/api && alembic --name=medical upgrade head"
 
   #PRODUCTION IMAGE VERIFICATION
 
@@ -183,7 +183,7 @@ services:
     env_file: app/api/.env
     environment:
       - POSTGRES_HOST=db
-    command: bash -c "cd /app/api && alembic upgrade head"
+    command: bash -c "cd /app/api && alembic -name=medical upgrade head"
     depends_on:
       db:
         condition: service_healthy
