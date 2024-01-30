@@ -19,4 +19,4 @@ USER $USERNAME
 EXPOSE 5000
 
 #Start the app
-CMD bash -c "cd api && alembic --name=medical upgrade head && cd .. && uvicorn api.main.app:api --reload --host=0.0.0.0 --port=5000" 
+CMD bash -c "cd api && alembic upgrade head && cd .. && uvicorn api.main.app:api --reload --host=0.0.0.0 --port=5000" 
