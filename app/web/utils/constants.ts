@@ -132,3 +132,9 @@ export const IntakeDepartureDestOptions = [
   "Escorted out by Security/Police",
   "Left event to go home via: Please describe below",
 ];
+
+export const RoutesMedical = {
+  home: "/medical/home",
+  form: "/medical/form",
+  search: "/medical/search",
+};
