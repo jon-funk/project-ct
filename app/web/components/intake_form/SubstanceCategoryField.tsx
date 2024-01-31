@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { IntakeFormDataInterface } from "../../interfaces/IntakeFormDataInterface";
 import { Controller } from "react-hook-form";
-import { IntakeSubstanceCategoryOptions } from "../../utils/constants";
+import { IntakeSubstanceCategoryOptions } from "../../constants/sanctuaryForm";
 import { FormFieldProps } from "../../interfaces/FormFieldProps";
 import { MenuProps } from "../../pages/sanctuary/form";
 

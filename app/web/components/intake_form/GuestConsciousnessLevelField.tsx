@@ -7,7 +7,7 @@ import {
 import { IntakeFormDataInterface } from "../../interfaces/IntakeFormDataInterface";
 import { Controller } from "react-hook-form";
 import { FormFieldProps } from "../../interfaces/FormFieldProps";
-import { GuestConsciousnessLevelsOptions } from "../../utils/constants";
+import { GuestConsciousnessLevelsOptions } from "../../constants/sanctuaryForm";
 
 
 /**

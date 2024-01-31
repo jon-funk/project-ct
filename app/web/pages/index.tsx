@@ -22,7 +22,7 @@ import { RenderErrorAlerts } from "../components/RenderErrorAlerts";
 import { RenderSubmitAlert } from "../components/RenderSubmitAlert";
 import { AlertObject } from "../interfaces/AlertObject";
 import { SignInFormInputs } from "../interfaces/SignInFormInputs";
-import { RoutesMedical } from "../utils/constants";
+import { RoutesMedical } from "../constants/routes";
 
 
 const theme = createTheme();

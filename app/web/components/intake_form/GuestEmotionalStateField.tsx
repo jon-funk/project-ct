@@ -9,7 +9,7 @@ import {
 import { IntakeFormDataInterface } from "../../interfaces/IntakeFormDataInterface";
 import { Controller } from "react-hook-form";
 import { FormFieldProps } from "../../interfaces/FormFieldProps";
-import { IntakeEmotionalStateOptions } from "../../utils/constants";
+import { IntakeEmotionalStateOptions } from "../../constants/sanctuaryForm";
 import { MenuProps } from "../../pages/sanctuary/form";
 
 
