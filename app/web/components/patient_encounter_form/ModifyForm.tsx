@@ -27,6 +27,7 @@ import { AlertObject } from "../../interfaces/AlertObject";
 import { PatientEncounterModifyFormProps } from "../../interfaces/PatientEncounterModifyFormProps";
 import { SubmitAlert } from "../../interfaces/SubmitAlert";
 import { PatientEncounterFormDataInterface } from "../../interfaces/PatientEncounterFormDataInterface";
+import { RoutesMedical } from "../../utils/constants";
 
 /**
  * Renders a form for modifying a Shambhala Music Festival Patient Encounter.
@@ -93,7 +94,7 @@ function MFPEModifyForm({ formUUID, rowData }: PatientEncounterModifyFormProps):
         type: "success",
         message: "Successfully submitted patient encounter form!",
       });
-      window.location.pathname = "/search/encounters";
+      window.location.pathname = RoutesMedical.search;
     } else {
       setSubmitAlert({
         type: "error",
@@ -110,7 +111,7 @@ function MFPEModifyForm({ formUUID, rowData }: PatientEncounterModifyFormProps):
     setOpenDialog(false);
     const errorMessage = await deletePatientEncounterForm(formUUID, token);
     if (!errorMessage) {
-      window.location.pathname = "/search/encounters";
+      window.location.pathname = RoutesMedical.search;
     } else {
       setErrorMessage(errorMessage);
     }

@@ -22,6 +22,7 @@ import { RenderErrorAlerts } from "../components/RenderErrorAlerts";
 import { RenderSubmitAlert } from "../components/RenderSubmitAlert";
 import { AlertObject } from "../interfaces/AlertObject";
 import { SignInFormInputs } from "../interfaces/SignInFormInputs";
+import { RoutesMedical } from "../utils/constants";
 
 
 const theme = createTheme();
@@ -35,7 +36,7 @@ export default function SignIn() {
   React.useEffect(() => {
     const token = window.localStorage.getItem("auth-token");
     if (token) {
-      router.push("/medical/form"); // TODO: Implement logic for user's group form
+      router.push(RoutesMedical.form); // TODO: Implement logic for user's group form
     }
   }, [router]);
 
@@ -43,7 +44,7 @@ export default function SignIn() {
   const onSubmit: SubmitHandler<SignInFormInputs> = async (data) => {
     const errorMessage = await login(data.email, data.password, data.userGroup);
     if (!errorMessage) {
-      router.push("/medical/form"); // TODO: Implement logic for user's group form
+      router.push(RoutesMedical.form); // TODO: Implement logic for user's group form
     } else {
       setSubmitAlert({ type: "error", message: errorMessage });
     }

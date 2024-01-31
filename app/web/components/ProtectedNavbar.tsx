@@ -13,6 +13,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
+import { RoutesMedical } from "../utils/constants";
 
 /**
  * Renders a navbar for the protected routes.
@@ -41,7 +42,7 @@ const ProtectedNavbar: React.FC = () => {
       <Divider />
       <List>
         <ListItem key="New Entry" disablePadding>
-          <ListItemButton href="/medical/form" sx={{ textAlign: "center" }}>{/* TODO: Implement logic for user's group form */}
+          <ListItemButton href={RoutesMedical.form} sx={{ textAlign: "center" }}>{/* TODO: Implement logic for user's group form */}
             <ListItemText primary="New Entry" />
           </ListItemButton>
         </ListItem>
@@ -74,17 +75,17 @@ const ProtectedNavbar: React.FC = () => {
                 display: { xs: "none", sm: "block", fontWeight: "bold" },
               }}
             >
-              <Link href="/medical/home">Home</Link>{/* TODO: Implement logic for user's group home */}
+              <Link href={RoutesMedical.home}>Home</Link>{/* TODO: Implement logic for user's group home */}
             </Typography>
             <Box sx={{ display: { xs: "none", sm: "block" } }}>
               <Button
-                href="/medical/search"
+                href={RoutesMedical.search}
                 sx={{ color: "#fff", fontWeight: "bold" }}
               >{/* TODO: Implement logic for user's group search */}
                 List Entries
               </Button>
               <Button
-                href="/medical/form"
+                href={RoutesMedical.form}
                 sx={{ color: "#fff", fontWeight: "bold" }}
               >{/* TODO: Implement logic to user's group form */}
                 New Entry
