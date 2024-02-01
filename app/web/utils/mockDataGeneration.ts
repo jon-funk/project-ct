@@ -1,4 +1,4 @@
-import { chiefComplaints } from "./constants";
+import { chiefComplaints } from "../constants/medicalForm";
 
 /**
  * Generates a random number between the min and max values (inclusive)

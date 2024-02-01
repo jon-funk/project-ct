@@ -15,7 +15,7 @@ import ProtectedNavbar from "../../components/ProtectedNavbar";
 import { PatientEncounterFormFields } from "../../components/patient_encounter_form/PatientEncounterFormFields";
 
 import { submitPatientEncounterForm } from "../../utils/api";
-import { MFPEFormData } from "../../utils/constants";
+import { MFPEFormData } from "../../constants/medicalForm";
 import { PatientEncounterFormDataInterface } from "../../interfaces/PatientEncounterFormDataInterface";
 
 import { RenderErrorAlerts } from "../../components/RenderErrorAlerts";

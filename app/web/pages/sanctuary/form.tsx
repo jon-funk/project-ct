@@ -15,7 +15,7 @@ import { ProtectedRoute } from "../../contexts/auth";
 import { IntakeFormDataInterface } from "../../interfaces/IntakeFormDataInterface";
 import { useForm, FormProvider } from "react-hook-form";
 
-import { IntakeFormDataDefaults } from "../../utils/constants";
+import { IntakeFormDataDefaults } from "../../constants/sanctuaryForm";
 import { SubmitAlert } from "../../interfaces/SubmitAlert";
 
 import { RenderErrorAlerts } from "../../components/RenderErrorAlerts";

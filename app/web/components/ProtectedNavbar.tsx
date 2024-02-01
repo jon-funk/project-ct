@@ -13,7 +13,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import { RoutesMedical } from "../utils/constants";
+import { RoutesMedical } from "../constants/routes";
 
 /**
  * Renders a navbar for the protected routes.
