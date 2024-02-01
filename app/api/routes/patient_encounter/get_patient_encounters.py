@@ -1,7 +1,7 @@
 import logging
-from typing import Any, List
+from typing import Any, List, Optional
 
-from fastapi import Depends, HTTPException
+from fastapi import Depends, HTTPException, Query
 
 from sqlalchemy.orm import Session
 
@@ -23,13 +23,30 @@ LOGGER = logging.getLogger(__name__)
     name="get-patient-encounters",
 )
 def get_patient_encounters(
-    loaded_user: User = Depends(load_current_user), db: Session = Depends(get_db)
+    loaded_user: User = Depends(load_current_user),
+    db: Session = Depends(get_db),
+    arrival_date_min: Optional[str] = Query(
+        None, description="The start date of the patient encounter(s) to retrieve."
+    ),
+    arrival_date_max: Optional[str] = Query(
+        None, description="The end date of the patient encounter(s) to retrieve."
+    ),
 ) -> Any:
     """
     Retrieve all patient encounters from the database and return a list of patient encounters.
+
+    If you want to filter the patient encounters by arrival date, you can provide the `arrival_date_min` and `arrival_date_max` query parameters.
+
+    If you provide the `arrival_date_min` and `arrival_date_max` query parameters, the API will return all patient encounters that have an arrival date between the `arrival_date_min` and `arrival_date_max` inclusive.
+
+    If you do not provide the `arrival_date_min` and `arrival_date_max` query parameters, the API will return all patient encounters.
+
+    If you provide the `arrival_date_min` query parameter and do not provide the `arrival_date_max` query parameter, the API will return all patient encounters that have an arrival date on or after the `arrival_date_min`.
+
+    If you provide the `arrival_date_max` query parameter and do not provide the `arrival_date_min` query parameter, the API will return all patient encounters that have an arrival date on or before the `arrival_date_max`.
     """
     try:
-        encounters = get_all_patient_encounters(db)
+        encounters = get_all_patient_encounters(db, arrival_date_min, arrival_date_max)
     except Exception as err:
         LOGGER.error(f"Server error while trying to get patient encounter: {err}")
         return HTTPException(

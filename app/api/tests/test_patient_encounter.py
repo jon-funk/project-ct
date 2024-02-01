@@ -74,6 +74,120 @@ def test_get_multiple_entries(client: TestClient, auth_header: str) -> None:
 
 
 @pytest.mark.needs(postgres=True)
+def test_get_multiple_entries_with_arrival_date(
+    client: TestClient, auth_header: str
+) -> None:
+    """
+    Test what we submit and retrieve multiple entries with a date range, minimum date, and maximum date.
+    """
+
+    # Test that we can get entries within a date range (start and end date)
+    for i in range(4):
+        SAMPLE_DATA.update({"document_num": str(i)})
+        SAMPLE_DATA.update({"arrival_date": "2020-12-14T21:03:34.436Z"})
+        response = client.post(
+            "/api/create-patient-encounter", headers=auth_header, json=SAMPLE_DATA
+        )
+        resp_data = response.json()
+        assert (
+            response.status_code == 200
+        ), "Unable to submit a valid patient encounter form. Received error: " + str(
+            resp_data
+        )
+
+    response = client.get(
+        "/api/patient-encounters?arrival_date_min=2020-07-18&arrival_date_max=2021-07-19",
+        headers=auth_header,
+    )
+    resp_data = response.json()
+
+    assert response.status_code == 200, (
+        "Unable to retrieve all entries from db. Received error: ",
+        resp_data,
+    )
+
+    assert len(resp_data) == 4, (
+        "Did not retrieve entries within date range from the database. Received: ",
+        resp_data,
+    )
+
+    # Test that we can get entries with a minimum date (start date)
+    for i in range(2):
+        SAMPLE_DATA.update({"document_num": str(i)})
+        SAMPLE_DATA.update({"arrival_date": "2025-01-02T21:03:34.436Z"})
+        response = client.post(
+            "/api/create-patient-encounter", headers=auth_header, json=SAMPLE_DATA
+        )
+        resp_data = response.json()
+        assert (
+            response.status_code == 200
+        ), "Unable to submit a valid patient encounter form. Received error: " + str(
+            resp_data
+        )
+
+    response = client.get(
+        "/api/patient-encounters?arrival_date_min=2025-01-01", headers=auth_header
+    )
+    resp_data = response.json()
+
+    assert response.status_code == 200, (
+        "Unable to retrieve all entries from db. Received error: ",
+        resp_data,
+    )
+
+    assert len(resp_data) == 2, (
+        "Did not retrieve entries within min date range from the database. Received: ",
+        resp_data,
+    )
+
+    # Test that we can get entries with a maximum date (end date)
+    for i in range(2):
+        SAMPLE_DATA.update({"document_num": str(i)})
+        SAMPLE_DATA.update({"arrival_date": "1950-01-02T21:03:34.436Z"})
+        response = client.post(
+            "/api/create-patient-encounter", headers=auth_header, json=SAMPLE_DATA
+        )
+        resp_data = response.json()
+        assert (
+            response.status_code == 200
+        ), "Unable to submit a valid patient encounter form. Received error: " + str(
+            resp_data
+        )
+
+    response = client.get(
+        "/api/patient-encounters?arrival_date_max=1950-01-03", headers=auth_header
+    )
+    resp_data = response.json()
+
+    assert response.status_code == 200, (
+        "Unable to retrieve all entries from db. Received error: ",
+        resp_data,
+    )
+
+    assert len(resp_data) == 2, (
+        "Did not retrieve entries within max date range from the database. Received: ",
+        resp_data,
+    )
+
+    # Check date range where no entries exist
+    response = client.get(
+        "/api/patient-encounters?arrival_date_min=1800-01-01&arrival_date_max=1899-01-02",
+        headers=auth_header,
+    )
+    resp_data = response.json()
+
+    assert response.status_code == 200, (
+        "Unable to retrieve all entries from db. Received error: ",
+        resp_data,
+    )
+
+    assert len(resp_data) == 0, (
+        "Did not retrieve entries within date range from the database. Received: ",
+        resp_data,
+    )
+
+
+@pytest.mark.needs(postgres=True)
 def test_update_entry(client: TestClient, auth_header: str) -> None:
     """
     Test that we can create and then update a patient encounter

@@ -111,7 +111,27 @@ def get_latest_patient_encounter_by_patient_rfid(
     return None
 
 
-def get_all_patient_encounters(db: Session) -> Optional[List[PatientEncounter]]:
+def get_all_patient_encounters(
+    db: Session, arrival_date_min: Optional[str], arrival_date_max: Optional[str]
+) -> Optional[List[PatientEncounter]]:
+    if arrival_date_min and arrival_date_max:
+        return db.query(PatientEncounter).filter(
+            PatientEncounter.deleted == False,
+            PatientEncounter.arrival_date >= arrival_date_min,
+            PatientEncounter.arrival_date <= arrival_date_max,
+        )
+
+    elif arrival_date_min:
+        return db.query(PatientEncounter).filter(
+            PatientEncounter.deleted == False,
+            PatientEncounter.arrival_date >= arrival_date_min,
+        )
+    elif arrival_date_max:
+        return db.query(PatientEncounter).filter(
+            PatientEncounter.deleted == False,
+            PatientEncounter.arrival_date <= arrival_date_max,
+        )
+
     return db.query(PatientEncounter).filter(PatientEncounter.deleted == False)
 
 
