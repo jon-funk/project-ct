@@ -10,7 +10,7 @@ import {
   Select,
 } from "@mui/material";
 import { Controller } from "react-hook-form";
-import { chiefComplaints } from "../../utils/constants";
+import { chiefComplaints } from "../../constants/medicalForm";
 import { FormFieldProps } from "../../interfaces/FormFieldProps";
 import { PatientEncounterFormDataInterface } from "../../interfaces/PatientEncounterFormDataInterface";
 

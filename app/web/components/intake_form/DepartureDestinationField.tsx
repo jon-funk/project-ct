@@ -9,7 +9,7 @@ import {
 import { IntakeFormDataInterface } from "../../interfaces/IntakeFormDataInterface";
 import { Controller } from "react-hook-form";
 import { FormFieldProps } from "../../interfaces/FormFieldProps";
-import { IntakeDepartureDestOptions } from "../../utils/constants";
+import { IntakeDepartureDestOptions } from "../../constants/sanctuaryForm";
 
 
 /**

@@ -27,7 +27,7 @@ import { AlertObject } from "../../interfaces/AlertObject";
 import { PatientEncounterModifyFormProps } from "../../interfaces/PatientEncounterModifyFormProps";
 import { SubmitAlert } from "../../interfaces/SubmitAlert";
 import { PatientEncounterFormDataInterface } from "../../interfaces/PatientEncounterFormDataInterface";
-import { RoutesMedical } from "../../utils/constants";
+import { RoutesMedical } from "../../constants/routes";
 
 /**
  * Renders a form for modifying a Shambhala Music Festival Patient Encounter.

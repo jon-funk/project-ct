@@ -7,7 +7,7 @@ import {
 import { IntakeFormDataInterface } from "../../interfaces/IntakeFormDataInterface";
 import { Controller } from "react-hook-form";
 import { FormFieldProps } from "../../interfaces/FormFieldProps";
-import { IntakeArrivalMethodOptions } from "../../utils/constants";
+import { IntakeArrivalMethodOptions } from "../../constants/sanctuaryForm";
 
 /**
  * Arrival method field for Sanctuary intake form
