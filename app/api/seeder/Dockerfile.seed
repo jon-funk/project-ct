@@ -9,6 +9,7 @@ RUN pip install --no-cache-dir -r seeder_reqs.txt
 COPY main /app/api/
 COPY models /app/api/
 COPY seeder /app/api/
+COPY logger_config.yaml /app/api/
 WORKDIR /app
 
 # Setup user to represent developer permissions in container
