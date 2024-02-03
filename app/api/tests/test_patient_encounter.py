@@ -3,6 +3,8 @@ from urllib.parse import urlencode
 
 from fastapi.testclient import TestClient
 
+# TODO: Use pytest fixtures to avoid dependencies and repeating the same code in multiple tests 
+# TICKET: https://mediform.atlassian.net/browse/MEDI-45
 SAMPLE_DATA = {
     "patient_rfid": "string",
     "document_num": "string",

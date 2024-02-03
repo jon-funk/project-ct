@@ -114,26 +114,19 @@ def get_latest_patient_encounter_by_patient_rfid(
 def get_all_patient_encounters(
     db: Session, arrival_date_min: Optional[str], arrival_date_max: Optional[str]
 ) -> Optional[List[PatientEncounter]]:
-    if arrival_date_min and arrival_date_max:
-        return db.query(PatientEncounter).filter(
-            PatientEncounter.deleted == False,
-            PatientEncounter.arrival_date >= arrival_date_min,
-            PatientEncounter.arrival_date <= arrival_date_max,
-        )
+    
+    # Base query
+    query = db.query(PatientEncounter).filter(PatientEncounter.deleted == False)
 
-    elif arrival_date_min:
-        return db.query(PatientEncounter).filter(
-            PatientEncounter.deleted == False,
-            PatientEncounter.arrival_date >= arrival_date_min,
-        )
-    elif arrival_date_max:
-        return db.query(PatientEncounter).filter(
-            PatientEncounter.deleted == False,
-            PatientEncounter.arrival_date <= arrival_date_max,
-        )
+    # If arrival_date_min is provided, filter by arrival_date_min
+    if arrival_date_min:
+        query = query.filter(PatientEncounter.arrival_date >= arrival_date_min)
 
-    return db.query(PatientEncounter).filter(PatientEncounter.deleted == False)
+    # If arrival_date_max is provided, filter by arrival_date_max
+    if arrival_date_max:
+        query = query.filter(PatientEncounter.arrival_date <= arrival_date_max)
 
+    return query.all()
 
 def create_patient_encounter(db: Session, data: PatientEncounter) -> PatientEncounter:
     """Create a patient encounter with a unique ID.

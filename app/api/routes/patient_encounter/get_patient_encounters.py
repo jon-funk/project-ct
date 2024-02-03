@@ -49,7 +49,7 @@ def get_patient_encounters(
         encounters = get_all_patient_encounters(db, arrival_date_min, arrival_date_max)
     except Exception as err:
         LOGGER.error(f"Server error while trying to get patient encounter: {err}")
-        return HTTPException(
+        raise HTTPException(
             status_code=500,
             detail="Unable to get patient encounter at this time. Please try again later or contact support.",
         )
