@@ -48,6 +48,7 @@ class UserLoginResponse(BaseModel):
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
+    user_group: str
 
     @validator("password", allow_reuse=True)
     def _validate_password(cls, password: str) -> str:

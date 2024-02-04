@@ -20,6 +20,16 @@ SQLALCHEMY_DATABASE_URL = (
     f"postgresql+psycopg2://{user}:{password}@{hostname}:{port}/{db}"
 )
 
+# Define engine for the 'sanctuary' database
+SQLALCHEMY_DATABASE_URL_SANCTUARY = (
+    f"postgresql+psycopg2://{user}:{password}@{hostname}:{port}/sanctuary"
+)
+engine_sanctuary = create_engine(SQLALCHEMY_DATABASE_URL_SANCTUARY)
+SessionLocalSanctuary = sessionmaker(
+    autocommit=False, autoflush=False, bind=engine_sanctuary
+)
+
+
 # TODO: rename "example" database to medical
 # Engine for the 'medical' database
 engine_example = create_engine(SQLALCHEMY_DATABASE_URL)
@@ -34,6 +44,22 @@ Base = declarative_base()
 BaseSanctuary = declarative_base()
 
 
+def get_db_medical() -> Generator:
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+def get_db_sanctuary() -> Generator:
+    db = SessionLocalSanctuary()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+# TODO: Replace all instances of get_db with get_db medical
 def get_db() -> Generator:
     db = SessionLocal()
     try:
@@ -41,8 +67,11 @@ def get_db() -> Generator:
     finally:
         db.close()
 
+db_functions = {
+    "medical": get_db_medical,
+    "sanctuary": get_db_sanctuary,
+}
 
-# TODO: implement engine and session for sanctuary
 def create_all_tables() -> None:
     Base.metadata.create_all(engine_example, checkfirst=True)
 #    BaseSanctuary.metadata.create_all(engine_example, checkfirst=True)
