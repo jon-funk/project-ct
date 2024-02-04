@@ -103,5 +103,5 @@ def auth_header(client: TestClient) -> Generator:
             password=DEFAULT_USER["password"],
         )
 
-    token = "Bearer " + generate_auth_token(data={"sub": user.email})
+    token = "Bearer " + generate_auth_token(data={"sub": user.email}, user_group="medical")
     yield {"Authorization": token}
