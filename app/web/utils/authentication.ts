@@ -1,5 +1,5 @@
 import { UserGroupKey } from "../constants/routes";
-import { LocalStorageKeys } from "../constants/keys";
+import { LocalStorageKeys, UserGroupKeys } from "../constants/keys";
 
 /**
  * Loads the auth token from local storage
@@ -69,11 +69,12 @@ export function removeUserGroup() {
 /**
  * Gets the user group key from local storage.
  *
- * @returns The user group key or null if it does not exist.
+ * @returns The user group key or null if it does not exist/invalid.
  */
 export function getUserGroupKey(): UserGroupKey | null {
   const group = loadUserGroup();
-  if (group === null) {
+  // Check if null or user group is not in the enum
+  if (group === null || !(group in UserGroupKeys)) {
     return null;
   }
   return group as UserGroupKey;
