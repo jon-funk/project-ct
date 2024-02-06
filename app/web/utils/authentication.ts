@@ -73,8 +73,8 @@ export function removeUserGroup() {
  */
 export function getUserGroupKey(): UserGroupKey | null {
   const group = loadUserGroup();
-  // Check if null or user group is not in the enum
-  if (group === null || !(group in UserGroupKeys)) {
+  // Check if null or user group is not in the object's values
+  if (group === null || !Object.values(UserGroupKeys).includes(group)) {
     return null;
   }
   return group as UserGroupKey;
