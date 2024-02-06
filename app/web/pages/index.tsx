@@ -22,7 +22,9 @@ import { RenderErrorAlerts } from "../components/RenderErrorAlerts";
 import { RenderSubmitAlert } from "../components/RenderSubmitAlert";
 import { AlertObject } from "../interfaces/AlertObject";
 import { SignInFormInputs } from "../interfaces/SignInFormInputs";
-import { RoutesMedical } from "../constants/routes";
+import { UserGroupRoutes, UserGroupKey } from "../constants/routes";
+import { saveUserGroup, getUserGroupKey } from "../utils/authentication";
+import { UserGroupKeys } from "../constants/keys";
 
 
 const theme = createTheme();
@@ -32,19 +34,23 @@ export default function SignIn() {
   const { control, handleSubmit, formState: { errors } } = useForm<SignInFormInputs>();
   const [submitAlert, setSubmitAlert] = React.useState<AlertObject | null>(null);
 
-
+  // Redirect to home page if user is already logged in
   React.useEffect(() => {
     const token = window.localStorage.getItem("auth-token");
-    if (token) {
-      router.push(RoutesMedical.form); // TODO: Implement logic for user's group form
+    const userGroupKey = getUserGroupKey() as UserGroupKey;
+
+    if (token && userGroupKey) {
+      const userRoutes = UserGroupRoutes[userGroupKey];
+      router.push(userRoutes.home);
     }
   }, [router]);
-
 
   const onSubmit: SubmitHandler<SignInFormInputs> = async (data) => {
     const errorMessage = await login(data.email, data.password, data.userGroup);
     if (!errorMessage) {
-      router.push(RoutesMedical.form); // TODO: Implement logic for user's group form
+      saveUserGroup(data.userGroup);
+      const userRoutes = UserGroupRoutes[data.userGroup as UserGroupKey];
+      router.push(userRoutes.home);
     } else {
       setSubmitAlert({ type: "error", message: errorMessage });
     }
@@ -88,8 +94,8 @@ export default function SignIn() {
                     required
                     fullWidth
                   >
-                    <MenuItem value="medical">Medical</MenuItem>
-                    <MenuItem value="sanctuary">Sanctuary</MenuItem>
+                    <MenuItem value={UserGroupKeys.Medical}>Medical</MenuItem>
+                    <MenuItem value={UserGroupKeys.Sanctuary}>Sanctuary</MenuItem>
                   </Select>
                 )}
 

@@ -11,7 +11,7 @@ import {
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import { ProtectedRoute } from "../../contexts/auth";
 
-// import ProtectedNavbar from "../../components/ProtectedNavbar"; // TODO: Uncomment this line when the navbar is ready.
+import ProtectedNavbar from "../../components/ProtectedNavbar";
 import { IntakeFormDataInterface } from "../../interfaces/IntakeFormDataInterface";
 import { useForm, FormProvider } from "react-hook-form";
 
@@ -102,6 +102,7 @@ function SanctuaryIntakeForm(): JSX.Element {
 
     return (
         <>
+            <ProtectedNavbar />
             <Container maxWidth="sm">
                 <Paper>
                     <FormProvider {...methods}>
