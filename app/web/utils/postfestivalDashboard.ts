@@ -266,6 +266,14 @@ export function calculatePostFestivalLengthOfStayData(
   ];
 
   const losDurations = patientEncounters.map((encounter) => {
+    if (
+      encounter.departure_date === null ||
+      encounter.departure_time === null
+    ) {
+      console.log("DEBUG: RETURNING NULL");
+      return { durationMinutes: null, acuity: encounter.triage_acuity };
+    }
+
     const arrivalDateTime = new Date(encounter.arrival_date);
     arrivalDateTime.setHours(encounter.arrival_time.getHours());
     arrivalDateTime.setMinutes(encounter.arrival_time.getMinutes());
@@ -284,7 +292,9 @@ export function calculatePostFestivalLengthOfStayData(
 
   losDurations.forEach(({ durationMinutes, acuity }) => {
     let rowIndex;
-    if (durationMinutes <= 15) {
+    if (durationMinutes === null) {
+      rowIndex = 0;
+    } else if (durationMinutes <= 15) {
       rowIndex = 1;
     } else if (durationMinutes <= 30) {
       rowIndex = 2;
@@ -310,7 +320,6 @@ export function calculatePostFestivalLengthOfStayData(
 
     (rowsDataCCCount[rowIndex][1] as number)++;
 
-    console.log("acuity", acuity);
     // Increment the count for the specific triage acuity
     switch (acuity) {
       case TriageAcuities.Red:
@@ -336,6 +345,10 @@ export function calculatePostFestivalLengthOfStayData(
   const whiteDurations: number[] = [];
 
   losDurations.forEach(({ durationMinutes, acuity }) => {
+    if (durationMinutes === null) {
+      return;
+    }
+
     totalDurations.push(durationMinutes);
     switch (acuity) {
       case TriageAcuities.Red:
