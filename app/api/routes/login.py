@@ -24,7 +24,7 @@ def login_user(user: UserLogin) -> Any:
         db_generator = db_functions[user.user_group]()
         db = next(db_generator)
     else:
-        raise HTTPException(status_code=401, detail="Invalid user group.")
+        raise HTTPException(status_code=400, detail="Invalid user group.")
 
     found_user = get_user_by_email(db, str(user.email))
     if found_user is None:

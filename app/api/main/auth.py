@@ -32,9 +32,9 @@ def load_current_user(
         email: str = payload.get("sub")
         user_group: str = payload.get("user_group")  # Extract user group from the token
         if email is None or user_group != "medical":
-            raise get_credentials_exeption()
+            raise get_credentials_exception()
     except JWTError:
-        raise get_credentials_exeption()
+        raise get_credentials_exception()
     if user_group in db_functions:
         db_generator = db_functions[user_group]()
         db = next(db_generator)
@@ -42,7 +42,7 @@ def load_current_user(
         raise HTTPException(status_code=400, detail="Invalid user group.")
     user = get_user_by_email(db, email)
     if user is None:
-        raise get_credentials_exeption()
+        raise get_credentials_exception()
 
     return user
 
@@ -57,7 +57,7 @@ def get_user_group(
         payload = jwt.decode(token, os.getenv("SECRET_KEY"), algorithms=["HS256"])
         user_group: str = payload.get("user_group")  # Extract user group from the token
     except JWTError:
-        raise get_credentials_exeption()
+        raise get_credentials_exception()
     
     return user_group
 
@@ -78,9 +78,9 @@ def load_current_sanctuary_user(
         email: str = payload.get("sub")
         user_group: str = payload.get("user_group")  # Extract user group from the token
         if email is None or user_group != "sanctuary":
-            raise get_credentials_exeption()
+            raise get_credentials_exception()
     except JWTError:
-        raise get_credentials_exeption()
+        raise get_credentials_exception()
 
     # Fetch the function based on user group and call it
     if user_group in db_functions:
@@ -90,7 +90,7 @@ def load_current_sanctuary_user(
 
     user = get_user_by_email(db, email)
     if user is None:
-        raise get_credentials_exeption()
+        raise get_credentials_exception()
 
     return user
 
@@ -109,7 +109,7 @@ def generate_auth_token(data: dict, user_group: str, expires_minutes: int = 60 *
     return encoded_jwt
 
 
-def get_credentials_exeption() -> HTTPException:
+def get_credentials_exception() -> HTTPException:
 
     return HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
