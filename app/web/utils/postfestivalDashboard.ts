@@ -3,44 +3,8 @@ import { PresentationGroup } from "../interfaces/PresentationGroup";
 import { buildBearerTokenHeader } from "./authentication";
 import { SubmitAlert } from "../interfaces/SubmitAlert";
 import { ChiefComplaintCountsTableRowData } from "../interfaces/ChiefComplaintCountsTableProps";
-
-/**
- * Generates data for the Post Festival Length of Stay table
- *
- * @param data The patient encounters data to generate the table from
- *
- * @returns An object containing the data for the Post Festival Length of Stay table
- */
-export const generatePostFestivalLengthOfStayData = (
-  data: PatientEncounterRow[]
-) => {
-  // TODO: Implement actual generation logic
-  console.log("TODO: Implement actual generation logic:", data);
-
-  const rowsDataCCCount = [
-    ["Unknown", 0, 0, 0, 0, 0],
-    ["0 - 15 mins", 0, 0, 0, 0, 0],
-    ["16 - 30 mins", 0, 0, 0, 0, 0],
-    ["31 - 45 mins", 0, 0, 0, 0, 0],
-    ["46 - 60 mins", 0, 0, 0, 0, 0],
-    ["61 - 75 mins", 0, 0, 0, 0, 0],
-    ["76 - 90 mins", 0, 0, 0, 0, 0],
-    ["91 - 105 mins", 0, 0, 0, 0, 0],
-    ["106 - 120 mins", 0, 0, 0, 0, 0],
-    ["121 - 135 mins", 0, 0, 0, 0, 0],
-    ["136 - 150 mins", 0, 0, 0, 0, 0],
-    [">150 mins", 0, 0, 0, 0, 0],
-  ];
-
-  const summaryRowsCCCount = [
-    ["Q1", 0, 0, 0, 0, 0],
-    ["Mean", 0, 0, 0, 0, 0],
-    ["Q3", 0, 0, 0, 0, 0],
-    ["Max", 0, 0, 0, 0, 0],
-  ];
-
-  return { rowsDataCCCount, summaryRowsCCCount };
-};
+import { TriageAcuities } from "../constants/medicalForm";
+import { LengthOfStayCountsTableProps } from "../interfaces/LengthOfStayCountsTableProps";
 
 /**
  * Generates data for the Post Festival Common Presentations table
@@ -274,4 +238,172 @@ export function calculateChiefComplaintEncounterCountsSummary(
   summaryData.sort((a, b) => b.total_count - a.total_count);
 
   return summaryData;
+}
+
+export function calculatePostFestivalLengthOfStayData(
+  patientEncounters: PatientEncounterRow[]
+): LengthOfStayCountsTableProps {
+  const rowsDataCCCount = [
+    ["Unknown", 0, 0, 0, 0, 0],
+    ["0 - 15 mins", 0, 0, 0, 0, 0],
+    ["16 - 30 mins", 0, 0, 0, 0, 0],
+    ["31 - 45 mins", 0, 0, 0, 0, 0],
+    ["46 - 60 mins", 0, 0, 0, 0, 0],
+    ["61 - 75 mins", 0, 0, 0, 0, 0],
+    ["76 - 90 mins", 0, 0, 0, 0, 0],
+    ["91 - 105 mins", 0, 0, 0, 0, 0],
+    ["106 - 120 mins", 0, 0, 0, 0, 0],
+    ["121 - 135 mins", 0, 0, 0, 0, 0],
+    ["136 - 150 mins", 0, 0, 0, 0, 0],
+    [">150 mins", 0, 0, 0, 0, 0],
+  ];
+
+  const summaryRowsCCCount = [
+    ["Q1", 0, 0, 0, 0, 0],
+    ["Mean", 0, 0, 0, 0, 0],
+    ["Q3", 0, 0, 0, 0, 0],
+    ["Max", 0, 0, 0, 0, 0],
+  ];
+
+  const losDurations = patientEncounters.map((encounter) => {
+    const arrivalDateTime = new Date(encounter.arrival_date);
+    arrivalDateTime.setHours(encounter.arrival_time.getHours());
+    arrivalDateTime.setMinutes(encounter.arrival_time.getMinutes());
+    arrivalDateTime.setSeconds(encounter.arrival_time.getSeconds());
+
+    const departureDateTime = new Date(encounter.departure_date);
+    departureDateTime.setHours(encounter.departure_time.getHours());
+    departureDateTime.setMinutes(encounter.departure_time.getMinutes());
+    departureDateTime.setSeconds(encounter.departure_time.getSeconds());
+
+    const durationMinutes =
+      (departureDateTime.getTime() - arrivalDateTime.getTime()) / (1000 * 60);
+
+    return { durationMinutes, acuity: encounter.triage_acuity };
+  });
+
+  losDurations.forEach(({ durationMinutes, acuity }) => {
+    let rowIndex;
+    if (durationMinutes <= 15) {
+      rowIndex = 1;
+    } else if (durationMinutes <= 30) {
+      rowIndex = 2;
+    } else if (durationMinutes <= 45) {
+      rowIndex = 3;
+    } else if (durationMinutes <= 60) {
+      rowIndex = 4;
+    } else if (durationMinutes <= 75) {
+      rowIndex = 5;
+    } else if (durationMinutes <= 90) {
+      rowIndex = 6;
+    } else if (durationMinutes <= 105) {
+      rowIndex = 7;
+    } else if (durationMinutes <= 120) {
+      rowIndex = 8;
+    } else if (durationMinutes <= 135) {
+      rowIndex = 9;
+    } else if (durationMinutes <= 150) {
+      rowIndex = 10;
+    } else {
+      rowIndex = 11;
+    }
+
+    (rowsDataCCCount[rowIndex][1] as number)++;
+
+    console.log("acuity", acuity);
+    // Increment the count for the specific triage acuity
+    switch (acuity) {
+      case TriageAcuities.Red:
+        (rowsDataCCCount[rowIndex][2] as number)++;
+        break;
+      case TriageAcuities.Yellow:
+        (rowsDataCCCount[rowIndex][3] as number)++;
+        break;
+      case TriageAcuities.Green:
+        (rowsDataCCCount[rowIndex][4] as number)++;
+        break;
+      case TriageAcuities.White:
+        (rowsDataCCCount[rowIndex][5] as number)++;
+        break;
+    }
+  });
+
+  // Step 1: Aggregate duration minutes into separate arrays
+  const totalDurations: number[] = [];
+  const redDurations: number[] = [];
+  const yellowDurations: number[] = [];
+  const greenDurations: number[] = [];
+  const whiteDurations: number[] = [];
+
+  losDurations.forEach(({ durationMinutes, acuity }) => {
+    totalDurations.push(durationMinutes);
+    switch (acuity) {
+      case TriageAcuities.Red:
+        redDurations.push(durationMinutes);
+        break;
+      case TriageAcuities.Yellow:
+        yellowDurations.push(durationMinutes);
+        break;
+      case TriageAcuities.Green:
+        greenDurations.push(durationMinutes);
+        break;
+      case TriageAcuities.White:
+        whiteDurations.push(durationMinutes);
+        break;
+    }
+  });
+
+  // Helper function to calculate mean, quartiles, and max
+  const calculateStatistics = (durations: number[]) => {
+    const sorted = durations.sort((a, b) => a - b);
+    const mean = sorted.reduce((acc, val) => acc + val, 0) / sorted.length;
+    const Q1 = sorted[Math.floor(sorted.length / 4)];
+    const Q3 = sorted[Math.floor(sorted.length * (3 / 4))];
+    const max = sorted[sorted.length - 1];
+
+    return { mean, Q1, Q3, max };
+  };
+
+  // Step 2, 3, 4, 5: Calculate statistics for each category
+  const totalStats = calculateStatistics(totalDurations);
+  const redStats = calculateStatistics(redDurations);
+  const yellowStats = calculateStatistics(yellowDurations);
+  const greenStats = calculateStatistics(greenDurations);
+  const whiteStats = calculateStatistics(whiteDurations);
+
+  // Populate summaryRowsCCCount with calculated statistics
+  summaryRowsCCCount[0] = [
+    "Q1",
+    totalStats.Q1,
+    redStats.Q1,
+    yellowStats.Q1,
+    greenStats.Q1,
+    whiteStats.Q1,
+  ];
+  summaryRowsCCCount[1] = [
+    "Mean",
+    totalStats.mean,
+    redStats.mean,
+    yellowStats.mean,
+    greenStats.mean,
+    whiteStats.mean,
+  ];
+  summaryRowsCCCount[2] = [
+    "Q3",
+    totalStats.Q3,
+    redStats.Q3,
+    yellowStats.Q3,
+    greenStats.Q3,
+    whiteStats.Q3,
+  ];
+  summaryRowsCCCount[3] = [
+    "Max",
+    totalStats.max,
+    redStats.max,
+    yellowStats.max,
+    greenStats.max,
+    whiteStats.max,
+  ];
+
+  return { rows: rowsDataCCCount, summaryRows: summaryRowsCCCount };
 }
