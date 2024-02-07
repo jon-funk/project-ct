@@ -42,3 +42,10 @@ export const chiefComplaints = [
   "Shortness of Breath",
   "Trauma",
 ];
+
+export const TriageAcuities = {
+  Red: "red",
+  Yellow: "yellow",
+  Green: "green",
+  White: "white",
+};
