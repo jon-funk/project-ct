@@ -1,6 +1,6 @@
 import React from "react";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
-import { LengthOfStayCountsTableProps } from "./LengthOfStayCountsTableProps";
+import { LengthOfStayCountsTableProps } from "../../interfaces/LengthOfStayCountsTableProps";
 
 
 /**
@@ -28,11 +28,11 @@ export const LengthOfStayCountsTable: React.FC<LengthOfStayCountsTableProps> = (
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {rows.map((row, index) => (
+                    {rows.map((row: (string | number)[], index: number) => (
                         <TableRow key={index}>
                             {row.map((cell, cellIndex) => (
                                 <TableCell key={cellIndex} align="center">
-                                    {cell}
+                                    {typeof cell === "number" ? cell.toFixed(0) : cell}
                                 </TableCell>
                             ))}
                         </TableRow>
@@ -42,11 +42,11 @@ export const LengthOfStayCountsTable: React.FC<LengthOfStayCountsTableProps> = (
                         <TableCell colSpan={6} align="left">Quartiles</TableCell>
                     </TableRow>
                     {/* Quantiles, Mean, etc. */}
-                    {summaryRows.map((row, index) => (
+                    {summaryRows.map((row: (string | number)[], index: number) => (
                         <TableRow key={index}>
                             {row.map((cell, cellIndex) => (
                                 <TableCell key={cellIndex} align="center">
-                                    {cell}
+                                    {row[0] === "Mean" && typeof cell === "number" ? cell.toFixed(2) : cell}
                                 </TableCell>
                             ))}
                         </TableRow>

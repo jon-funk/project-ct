@@ -6,7 +6,7 @@ import { ChiefComplaintCountsTable } from "../../../components/dashboard/ChiefCo
 import { YearSelectionField } from "../../../components/dashboard/YearSelectionField";
 import { PatientEncounterAcuityBarChart } from "../../../components/dashboard/PatientEncounterAcuityChart";
 import { ChiefComplaintEncounterCountsTable } from "../../../components/dashboard/ChiefComplaintEncounterCountsTable";
-// import { LengthOfStayCountsTable } from "../../../components/dashboard/LengthOfStayCountsTable";
+import { LengthOfStayCountsTable } from "../../../components/dashboard/LengthOfStayCountsTable";
 import { calculateChiefComplaintEncounterCountsData, calculateChiefComplaintEncounterCountsSummary } from "../../../utils/postfestivalDashboard";
 // import { CommonPresentationsAndTransportsTables } from "../../../components/dashboard/TopTenCommonPresentationsTable";
 import { fetchPatientEncountersData } from "../../../utils/postfestivalDashboard";
@@ -18,6 +18,8 @@ import { SubmitAlert } from "../../../interfaces/SubmitAlert";
 import { PatientEncounterRow } from "../../../interfaces/PatientEncounterRow";
 import { ChiefComplaintCountsTableRowData } from "../../../interfaces/ChiefComplaintCountsTableProps";
 // import { ChiefComplaintEncounterCountsTableProps } from "../../../interfaces/ChiefComplaintEncounterCountsTableProps";
+import { calculatePostFestivalLengthOfStayData } from "../../../utils/postfestivalDashboard";
+import { LengthOfStayCountsTableProps } from "../../../interfaces/LengthOfStayCountsTableProps";
 
 
 /**
@@ -40,9 +42,9 @@ const MedicalPostEventSummaryDashboard = () => {
     const selectedYear = watch("selectedYear");
 
     // Calculated data
-    const [chiefComplaintEncounterCountsData, setChiefComplaintEncounterCountsData] = useState<number[]>([]); // TODO: Replace with actual data when API integration is complete
-    const [chiefComplaintCountRows, setChiefComplaintCountRows] = useState<ChiefComplaintCountsTableRowData[]>([]); // TODO: Replace with actual data when API integration is complete
-    // const [lengthOfStayData, setLengthOfStayData] = useState([]);
+    const [chiefComplaintEncounterCountsData, setChiefComplaintEncounterCountsData] = useState<number[]>([]);
+    const [chiefComplaintCountRows, setChiefComplaintCountRows] = useState<ChiefComplaintCountsTableRowData[]>([]);
+    const [lengthOfStayData, setLengthOfStayData] = useState<LengthOfStayCountsTableProps>({ rows: [], summaryRows: [] });
     // const [commonPresentationData, setCommonPresentationData] = useState([]);
 
     // When the year is selected, fetch the patient encounters for that year
@@ -64,8 +66,8 @@ const MedicalPostEventSummaryDashboard = () => {
                     const chiefComplaintCountRows = calculateChiefComplaintEncounterCountsSummary(patientEncounters);
                     setChiefComplaintCountRows(chiefComplaintCountRows);
 
-                    // const lengthOfStayData = generatePostFestivalLengthOfStayData(patientEncounters);
-                    // setLengthOfStayData(lengthOfStayData);
+                    const lengthOfStayData = calculatePostFestivalLengthOfStayData(patientEncounters);
+                    setLengthOfStayData(lengthOfStayData);
 
                     // const commonPresentationData = generatePostFestivalCommonPresentationsData(patientEncounters);
                     // setCommonPresentationData(commonPresentationData);
@@ -103,10 +105,10 @@ const MedicalPostEventSummaryDashboard = () => {
                     <Grid item xs={12} md={8} lg={8}>
                         <ChiefComplaintCountsTable rows={chiefComplaintCountRows} />
                     </Grid>
-                    {/* <Grid item xs={12} md={8} lg={8}>
-                        <LengthOfStayCountsTable rows={rowsDataCCCount} summaryRows={summaryRowsCCCount} />
+                    <Grid item xs={12} md={8} lg={8}>
+                        <LengthOfStayCountsTable {...lengthOfStayData} />
                     </Grid>
-                    <Grid item xs={12} md={4} lg={4}>
+                    {/* <Grid item xs={12} md={4} lg={4}>
                         <CommonPresentationsAndTransportsTables
                             commonPresentationsDataRed={commonPresentationsDataRed}
                             transportsDataRed={transportsDataRed}
