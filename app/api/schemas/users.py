@@ -1,6 +1,7 @@
 import os
 
 from pydantic import BaseModel, EmailStr, validator
+from typing import Optional
 
 MIN_PASSWORD_LEN = int(os.getenv("MIN_PASSWORD_LEN", 7))
 MAX_PASSWORD_LEN = int(os.getenv("MAX_PASSWORD_LEN", 79))
@@ -48,6 +49,7 @@ class UserLoginResponse(BaseModel):
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
+    user_group: Optional[str] = None
 
     @validator("password", allow_reuse=True)
     def _validate_password(cls, password: str) -> str:

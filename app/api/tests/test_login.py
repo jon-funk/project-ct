@@ -16,7 +16,7 @@ def test_valid_login(client: TestClient) -> None:
     assert user, "User not created before trying to sign in a valid user."
 
     resp = client.post(
-        "/api/login", json={"email": "test@gmail.com", "password": "Testing-123"}
+        "/api/login", json={"email": "test@gmail.com", "password": "Testing-123", "user_group": "medical"}
     )
     resp_data = resp.json()
     assert (
@@ -75,9 +75,37 @@ def test_user_not_found(client: TestClient) -> None:
     Test that a user that does not exist is not found.
     """
     resp = client.post(
-        "/api/login", json={"email": "doesntexist@gmail.com", "password": "Testing-123"}
+        "/api/login", json={"email": "doesntexist@gmail.com", "password": "Testing-123", "user_group": "medical"}
     )
     resp_data = resp.json()
     assert (
         resp.status_code == 401
     ), "User should not have been found, instead got:\n" + str(resp_data)
+
+
+@pytest.mark.needs(postgres=True)
+def test_no_user_group(client: TestClient) -> None:
+    """
+    Test that a sign in attempt without a user group fails gracefully
+    """
+    resp = client.post(
+        "/api/login", json={"email": "doesntexist@gmail.com", "password": "Testing-123"}
+    )
+    resp_data = resp.json()
+    assert (
+        resp.status_code == 401
+    ), "Invalid user group error should have been returned, instead got:\n" + str(resp_data)
+
+
+@pytest.mark.needs(postgres=True)
+def test_invalid_user_group(client: TestClient) -> None:
+    """
+    Test that a sign in attempt with an invalid user group fails gracefully
+    """
+    resp = client.post(
+        "/api/login", json={"email": "doesntexist@gmail.com", "password": "Testing-123", "user_group": "invalidUserGroup"}
+    )
+    resp_data = resp.json()
+    assert (
+        resp.status_code == 401
+    ), "Invalid user group error should have been returned, instead got:\n" + str(resp_data)
