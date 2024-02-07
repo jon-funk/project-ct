@@ -167,12 +167,18 @@ def seed_database():
         arrival_datetime = datetime.combine(
             patient_encounter["arrival_date"], patient_encounter["arrival_time"]
         )
-        departure_datetime = datetime.combine(
-            patient_encounter["departure_date"], patient_encounter["departure_time"]
-        )
-
         patient_encounter["arrival_time"] = arrival_datetime
-        patient_encounter["departure_time"] = departure_datetime
+
+        if (
+            patient_encounter["departure_date"] is not None
+            and patient_encounter["departure_time"] is not None
+        ):
+            departure_datetime = datetime.combine(
+                patient_encounter["departure_date"], patient_encounter["departure_time"]
+            )
+            patient_encounter["departure_time"] = departure_datetime
+        else:
+            patient_encounter["departure_time"] = None
 
         # Create patient encounter
         patient_encounter_obj = PatientEncounter(**patient_encounter)

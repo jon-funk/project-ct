@@ -202,6 +202,15 @@ def generate_dates_and_times(
     # Generate a random arrival datetime within the given range
     arrival_date_time = fake.date_time_between(start_date=start_date, end_date=end_date)
 
+    # 5% chance no departure date and time
+    if random.random() < 0.05:
+        return {
+            "arrival_date": arrival_date_time.date(),
+            "arrival_time": arrival_date_time.time(),
+            "departure_date": None,
+            "departure_time": None,
+        }
+
     # Define length of stay based on triage_acuity
     if triage_acuity == "white":
         length_of_stay = timedelta(minutes=10)
