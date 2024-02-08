@@ -93,7 +93,7 @@ def test_no_user_group(client: TestClient) -> None:
     )
     resp_data = resp.json()
     assert (
-        resp.status_code == 401
+        resp.status_code == 400
     ), "Invalid user group error should have been returned, instead got:\n" + str(resp_data)
 
 
@@ -107,5 +107,5 @@ def test_invalid_user_group(client: TestClient) -> None:
     )
     resp_data = resp.json()
     assert (
-        resp.status_code == 401
+        resp.status_code == 400
     ), "Invalid user group error should have been returned, instead got:\n" + str(resp_data)
