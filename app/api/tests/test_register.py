@@ -54,7 +54,7 @@ def test_no_usergroup_register(client: TestClient) -> None:
 @pytest.mark.needs(postgres=True)
 def test_invalid_user_group_register(client: TestClient) -> None:
     """
-    Test that a user without a user group can't make an account
+    Test that a user with an invalid user group can't make an account
     """
 
     resp = client.post(
@@ -77,7 +77,7 @@ def test_invalid_user_group_register(client: TestClient) -> None:
 @pytest.mark.needs(postgres=True)
 def test_existing_user_register(client: TestClient) -> None:
     """
-    Test that a user without a user group can't make an account
+    Test that an existing user can't make a new account
     """
     db_generator = db_functions[MEDICAL]()
     db = next(db_generator)
