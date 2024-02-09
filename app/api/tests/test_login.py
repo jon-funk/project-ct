@@ -1,6 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 
+from api.constants import MEDICAL
 from api.models.user import create_user
 from api.main.database import SessionLocal
 
@@ -16,7 +17,12 @@ def test_valid_login(client: TestClient) -> None:
     assert user, "User not created before trying to sign in a valid user."
 
     resp = client.post(
-        "/api/login", json={"email": "test@gmail.com", "password": "Testing-123", "user_group": "medical"}
+        "/api/login",
+        json={
+            "email": "test@gmail.com",
+            "password": "Testing-123",
+            "user_group": MEDICAL,
+        },
     )
     resp_data = resp.json()
     assert (
@@ -75,7 +81,12 @@ def test_user_not_found(client: TestClient) -> None:
     Test that a user that does not exist is not found.
     """
     resp = client.post(
-        "/api/login", json={"email": "doesntexist@gmail.com", "password": "Testing-123", "user_group": "medical"}
+        "/api/login",
+        json={
+            "email": "doesntexist@gmail.com",
+            "password": "Testing-123",
+            "user_group": MEDICAL,
+        },
     )
     resp_data = resp.json()
     assert (
