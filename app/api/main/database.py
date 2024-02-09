@@ -6,6 +6,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import database_exists, create_database
 
+from api.constants import MEDICAL, SANCTUARY
 from api.config import load_env
 
 
@@ -68,8 +69,8 @@ def get_db() -> Generator:
         db.close()
 
 db_functions = {
-    "medical": get_db_medical,
-    "sanctuary": get_db_sanctuary,
+    MEDICAL: get_db_medical,
+    SANCTUARY: get_db_sanctuary,
 }
 
 def create_all_tables() -> None:

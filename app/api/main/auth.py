@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 
+from api.constants import MEDICAL, SANCTUARY
 from api.main.database import db_functions
 from api.models.user import get_user_by_email
 
@@ -31,7 +32,7 @@ def load_current_user(
         payload = jwt.decode(token, os.getenv("SECRET_KEY"), algorithms=["HS256"])
         email: str = payload.get("sub")
         user_group: str = payload.get("user_group")  # Extract user group from the token
-        if email is None or user_group != "medical":
+        if email is None or user_group != MEDICAL:
             raise get_credentials_exception()
     except JWTError:
         raise get_credentials_exception()
@@ -77,7 +78,7 @@ def load_current_sanctuary_user(
         payload = jwt.decode(token, os.getenv("SECRET_KEY"), algorithms=["HS256"])
         email: str = payload.get("sub")
         user_group: str = payload.get("user_group")  # Extract user group from the token
-        if email is None or user_group != "sanctuary":
+        if email is None or user_group != SANCTUARY:
             raise get_credentials_exception()
     except JWTError:
         raise get_credentials_exception()

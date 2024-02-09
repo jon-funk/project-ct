@@ -6,6 +6,7 @@ import psycopg2
 import pytest
 from fastapi.testclient import TestClient
 
+from api.constants import MEDICAL
 from api.main.app import api
 from api.main import database
 from api.main.auth import generate_auth_token
@@ -103,5 +104,5 @@ def auth_header(client: TestClient) -> Generator:
             password=DEFAULT_USER["password"],
         )
 
-    token = "Bearer " + generate_auth_token(data={"sub": user.email}, user_group="medical")
+    token = "Bearer " + generate_auth_token(data={"sub": user.email}, user_group=MEDICAL)
     yield {"Authorization": token}
