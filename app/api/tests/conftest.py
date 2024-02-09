@@ -12,10 +12,13 @@ from api.main import database
 from api.main.auth import generate_auth_token
 from api.models.user import create_user, get_user_by_email
 
-DEFAULT_USER = {
-    "email": "justice_beaver@justforbeavers.ca",
-    "password": "You-st0le-my-purse",
-}
+
+@pytest.fixture(scope="session")
+def default_user() -> dict:
+    return {
+        "email": "justice_beaver@justforbeavers.ca",
+        "password": "You-st0le-my-purse",
+    }
 
 
 def pytest_configure(config):
@@ -30,6 +33,7 @@ def pytest_configure(config):
         "markers",
         "needs(*): mark test to run only when dependencies are available.",
     )
+
 
 @lru_cache
 def postgres_is_running() -> bool:
@@ -92,17 +96,19 @@ def client(request) -> Generator:
 
 @pytest.mark.usefixtures("client")
 @pytest.fixture(scope="module")
-def auth_header(client: TestClient) -> Generator:
+def auth_header(client: TestClient, default_user) -> Generator:
     """
     Create a user and return an authentication token for that user.
     """
-    user = get_user_by_email(next(database.get_db()), DEFAULT_USER["email"])
+    user = get_user_by_email(next(database.get_db()), default_user["email"])
     if not user:
         user = create_user(
             next(database.get_db()),
-            email=DEFAULT_USER["email"],
-            password=DEFAULT_USER["password"],
+            email=default_user["email"],
+            password=default_user["password"],
         )
 
-    token = "Bearer " + generate_auth_token(data={"sub": user.email}, user_group=MEDICAL)
+    token = "Bearer " + generate_auth_token(
+        data={"sub": user.email}, user_group=MEDICAL
+    )
     yield {"Authorization": token}
