@@ -5,12 +5,20 @@ from typing import Generator
 import psycopg2
 import pytest
 from fastapi.testclient import TestClient
+import faker
 
 from api.constants import MEDICAL
 from api.main.app import api
 from api.main import database
 from api.main.auth import generate_auth_token
 from api.models.user import create_user, get_user_by_email
+
+# Get environment variables
+MIN_PASSWORD_LENGTH = int(os.getenv("MIN_PASSWORD_LENGTH", 8))
+MAX_PASSWORD_LENGTH = int(os.getenv("MAX_PASSWORD_LENGTH", 80))
+
+# Create a Faker instance
+faker = faker.Faker()
 
 
 @pytest.fixture(scope="session")
@@ -19,6 +27,52 @@ def default_user() -> dict:
         "email": "justice_beaver@justforbeavers.ca",
         "password": "You-st0le-my-purse",
     }
+
+
+def generate_user_data(valid_email=True, valid_password=True, valid_user_group=True):
+    """
+    Generate random user data for testing purposes.
+    """
+
+    if MAX_PASSWORD_LENGTH < MIN_PASSWORD_LENGTH:
+        raise ValueError(
+            "MAX_PASSWORD_LEN must be greater than or equal to MIN_PASSWORD_LEN"
+        )
+
+    # Generate password
+    if valid_password:
+        password_length = faker.random_int(
+            min=MIN_PASSWORD_LENGTH, max=MAX_PASSWORD_LENGTH
+        )
+        password = faker.password(
+            length=password_length,
+            special_chars=True,
+            digits=True,
+            upper_case=True,
+            lower_case=True,
+        )
+    else:
+        password = "123"
+
+    # Generate email
+    email = faker.email() if valid_email else "invalidemail"
+
+    # Generate user group
+    user_group = MEDICAL if valid_user_group else "invalid_user_group"
+
+    return {
+        "email": email,
+        "password": password,
+        "user_group": user_group,
+    }
+
+
+@pytest.fixture
+def sample_user(scope="function"):
+    """
+    Generate a random valid user for testing purposes.
+    """
+    return generate_user_data()
 
 
 def pytest_configure(config):

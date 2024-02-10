@@ -1,9 +1,20 @@
+import os
 import pytest
 from fastapi.testclient import TestClient
+
+import faker
+
 
 from api.constants import MEDICAL
 from api.models.user import create_user
 from api.main.database import SessionLocal
+from api.tests.conftest import generate_user_data
+
+MIN_PASSWORD_LENGTH = int(os.getenv("MIN_PASSWORD_LENGTH", 8))
+MAX_PASSWORD_LENGTH = int(os.getenv("MAX_PASSWORD_LENGTH", 80))
+
+
+faker = faker.Faker()
 
 
 @pytest.fixture
@@ -29,13 +40,23 @@ def create_db_user():
         db.close()
 
 
-@pytest.fixture
-def sample_user():
-    return {
-        "email": "test_unique_email@gmail.com",
-        "password": "Testing-123",
-        "user_group": MEDICAL,
+def login_user(client: TestClient, email: str, password: str, user_group=None):
+    """
+    Helper function to login a user using the api
+    """
+    login_data = {
+        "email": email,
+        "password": password,
     }
+
+    if user_group:
+        login_data["user_group"] = user_group
+
+    resp = client.post(
+        "/api/login",
+        json=login_data,
+    )
+    return resp
 
 
 @pytest.mark.needs(postgres=True)
@@ -49,14 +70,7 @@ def test_valid_login(client: TestClient, create_db_user, sample_user) -> None:
     user = create_db_user(**sample_user)
     assert user, "User not created before trying to sign in a valid user."
 
-    resp = client.post(
-        "/api/login",
-        json={
-            "email": sample_user["email"],
-            "password": sample_user["password"],
-            "user_group": sample_user["user_group"],
-        },
-    )
+    resp = login_user(client, **sample_user)
     resp_data = resp.json()
     assert (
         resp.status_code == 200
@@ -75,17 +89,9 @@ def test_invalid_email(client: TestClient, sample_user, create_db_user) -> None:
     # Use the fixture to create a unique user
     create_db_user(**sample_user)
 
-    # Change the email to an invalid one
-    sample_user["email"] = "invalidemail.com"
-
-    resp = client.post(
-        "/api/login",
-        json={
-            "email": sample_user["email"],
-            "password": sample_user["password"],
-            "user_group": sample_user["user_group"],
-        },
-    )
+    # Create a user with an invalid email
+    invalid_email_user = generate_user_data(valid_email=False)
+    resp = login_user(client, **invalid_email_user)
     resp_data = resp.json()
     assert (
         resp.status_code == 422
@@ -109,16 +115,9 @@ def test_invalid_password(client: TestClient, sample_user, create_db_user) -> No
     create_db_user(**sample_user)
 
     # Change the password to an invalid one
-    sample_user["password"] = "invalidpassword"
+    invalid_password_user = {**sample_user, "password": "ugh"}
 
-    resp = client.post(
-        "/api/login",
-        json={
-            "email": sample_user["email"],
-            "password": sample_user["password"],
-            "user_group": sample_user["user_group"],
-        },
-    )
+    resp = login_user(client, **invalid_password_user)
     resp_data = resp.json()
     assert (
         resp.status_code == 422
@@ -137,14 +136,7 @@ def test_user_not_found(client: TestClient, sample_user) -> None:
     """
     Test that a user that does not exist is not found.
     """
-    resp = client.post(
-        "/api/login",
-        json={
-            "email": sample_user["email"],
-            "password": sample_user["password"],
-            "user_group": sample_user["user_group"],
-        },
-    )
+    resp = login_user(client, **sample_user)
     resp_data = resp.json()
     assert (
         resp.status_code == 401
@@ -152,16 +144,14 @@ def test_user_not_found(client: TestClient, sample_user) -> None:
 
 
 @pytest.mark.needs(postgres=True)
-def test_no_user_group(client: TestClient, sample_user, create_db_user) -> None:
+def test_no_user_group(client: TestClient, create_db_user) -> None:
     """
     Test that a sign in attempt without a user group fails gracefully
     """
 
-    create_db_user(**sample_user)
-    resp = client.post(
-        "/api/login",
-        json={"email": sample_user["email"], "password": sample_user["password"]},
-    )
+    no_user_group_user = generate_user_data()
+    no_user_group_user.pop("user_group")
+    resp = login_user(client, **no_user_group_user)
     resp_data = resp.json()
     assert (
         resp.status_code == 400
@@ -176,16 +166,9 @@ def test_invalid_user_group(client: TestClient, sample_user, create_db_user) -> 
     Test that a sign in attempt with an invalid user group fails gracefully
     """
 
-    create_db_user(**sample_user)
+    invalid_user_group_user = generate_user_data(valid_user_group=False)
 
-    resp = client.post(
-        "/api/login",
-        json={
-            "email": sample_user["email"],
-            "password": sample_user["password"],
-            "user_group": "invalidUserGroup",
-        },
-    )
+    resp = login_user(client, **invalid_user_group_user)
     resp_data = resp.json()
     assert (
         resp.status_code == 400
