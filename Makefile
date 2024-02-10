@@ -74,6 +74,10 @@ clean: stop |
 	@echo "Deleting .next build artifacts"
 	@rm -rf app/web/.next
 
+test-web:
+	@echo "Running web tests..."
+	cd app/web && yarn test
+
 #PRODUCTION IMAGE VERIFICATION
 allprod:
 	@echo "Starting production project application..."
