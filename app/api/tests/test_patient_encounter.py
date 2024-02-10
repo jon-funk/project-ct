@@ -1,38 +1,87 @@
 import pytest
 from urllib.parse import urlencode
+import itertools
 
 from fastapi.testclient import TestClient
 
-# TODO: Use pytest fixtures to avoid dependencies and repeating the same code in multiple tests 
-# TICKET: https://mediform.atlassian.net/browse/MEDI-45
-SAMPLE_DATA = {
-    "patient_rfid": "string",
-    "document_num": "string",
-    "location": "string",
-    "handover_from": "string",
-    "arrival_method": "string",
-    "arrival_date": "2022-07-18T21:03:34.436Z",
-    "arrival_time": "2022-07-18T21:03:34.436Z",
-    "triage_acuity": "string",
-    "on_shift": False,
-    "chief_complaints": "string",
-    "handover_too": "string",
-    "departure_date": "2022-07-18T21:03:34.436Z",
-    "departure_time": "2022-07-18T21:03:34.436Z",
-    "departure_dest": "string",
-    "comment": "string",
-    "document_num": "1",
-    "qr_code": "",
-}
+document_num_counter = itertools.count()
+
+DEFAULT_ARRIVAL_DATE = "2022-07-18T21:03:34.436Z"
+
+
+def next_document_num() -> str:
+    """
+    Returns the next document number for a patient encounter form.
+    """
+    return str(next(document_num_counter))
+
+
+def generate_patient_encounter(
+    document_num: str,
+    arrival_date: str,
+    patient_rfid: str = None,
+) -> dict:
+    """
+    Returns a sample patient encounter form.
+    """
+
+    patient_rfid = patient_rfid or f"rfid_{document_num}"
+
+    return {
+        "patient_rfid": patient_rfid,
+        "document_num": document_num,
+        "location": "string",
+        "handover_from": "string",
+        "arrival_method": "string",
+        "arrival_date": arrival_date,
+        "arrival_time": arrival_date,
+        "triage_acuity": "string",
+        "on_shift": False,
+        "chief_complaints": "string",
+        "handover_too": "string",
+        "departure_date": arrival_date,
+        "departure_time": arrival_date,
+        "departure_dest": "string",
+        "comment": "string",
+        "qr_code": "",
+    }
+
+
+@pytest.fixture
+def sample_patient_encounter() -> dict:
+    """
+    Returns a sample patient encounter form. Document number is unique for each encounter.
+    """
+    document_num = next_document_num()
+    return generate_patient_encounter(document_num, arrival_date=DEFAULT_ARRIVAL_DATE)
+
+
+@pytest.fixture
+def multiple_patient_encounters_factory() -> callable:
+    """
+    Returns a function that creates a list of patient encounters. Document number is unique for each encounter.
+    """
+
+    def create_encounters(num_encounters, arrival_date=DEFAULT_ARRIVAL_DATE):
+        return [
+            generate_patient_encounter(next_document_num(), arrival_date)
+            for _ in range(num_encounters)
+        ]
+
+    return create_encounters
 
 
 @pytest.mark.needs(postgres=True)
-def test_valid_submit_patient_encounter(client: TestClient, auth_header: str) -> None:
+def test_valid_submit_patient_encounter(
+    client: TestClient, auth_header: str, sample_patient_encounter: dict
+) -> None:
     """
     Test that we are able to submit a valid patient encounter form with a signed in user.
     """
     response = client.post(
-        "/api/create-patient-encounter", headers=auth_header, json=SAMPLE_DATA
+        "/api/create-patient-encounter",
+        headers=auth_header,
+        json=sample_patient_encounter,
     )
 
     resp_data = response.json()
@@ -45,14 +94,19 @@ def test_valid_submit_patient_encounter(client: TestClient, auth_header: str) ->
 
 
 @pytest.mark.needs(postgres=True)
-def test_get_multiple_entries(client: TestClient, auth_header: str) -> None:
+def test_get_multiple_entries(
+    client: TestClient, auth_header: str, multiple_patient_encounters_factory
+) -> None:
     """
     Test that we can submit and retrieve multiple entries.
     """
-    for i in range(4):
-        SAMPLE_DATA.update({"document_num": str(i)})
+
+    num_patient_encounters = 4
+    patient_encounters = multiple_patient_encounters_factory(num_patient_encounters)
+
+    for patient_encounter in patient_encounters:
         response = client.post(
-            "/api/create-patient-encounter", headers=auth_header, json=SAMPLE_DATA
+            "/api/create-patient-encounter", headers=auth_header, json=patient_encounter
         )
         resp_data = response.json()
         assert (
@@ -69,7 +123,7 @@ def test_get_multiple_entries(client: TestClient, auth_header: str) -> None:
     )
 
     # Can only run the below line when we are actually dropping all data from the database after each run
-    assert len(resp_data) >= 4, (
+    assert len(resp_data) >= num_patient_encounters, (
         "Did not retrieve all entries from the database. Received: ",
         resp_data,
     )
@@ -77,25 +131,29 @@ def test_get_multiple_entries(client: TestClient, auth_header: str) -> None:
 
 @pytest.mark.needs(postgres=True)
 def test_get_multiple_entries_with_arrival_date(
-    client: TestClient, auth_header: str
+    client: TestClient, auth_header: str, multiple_patient_encounters_factory
 ) -> None:
     """
     Test what we submit and retrieve multiple entries with a date range, minimum date, and maximum date.
     """
 
+    # Date, Number of Entries
+    date_ranges = [
+        ("2020-12-14T21:03:34.436Z", 4),
+        ("2025-01-02T21:03:34.436Z", 2),
+        ("1950-01-02T21:03:34.436Z", 2),
+    ]
+
     # Test that we can get entries within a date range (start and end date)
-    for i in range(4):
-        SAMPLE_DATA.update({"document_num": str(i)})
-        SAMPLE_DATA.update({"arrival_date": "2020-12-14T21:03:34.436Z"})
-        response = client.post(
-            "/api/create-patient-encounter", headers=auth_header, json=SAMPLE_DATA
-        )
-        resp_data = response.json()
-        assert (
-            response.status_code == 200
-        ), "Unable to submit a valid patient encounter form. Received error: " + str(
-            resp_data
-        )
+    for arrival_date, num_entries in date_ranges:
+        encounters = multiple_patient_encounters_factory(num_entries, arrival_date)
+        for encounter in encounters:
+            response = client.post(
+                "/api/create-patient-encounter", headers=auth_header, json=encounter
+            )
+            assert (
+                response.status_code == 200
+            ), "Unable to submit a valid patient encounter form."
 
     response = client.get(
         "/api/patient-encounters?arrival_date_min=2020-07-18&arrival_date_max=2021-07-19",
@@ -114,19 +172,6 @@ def test_get_multiple_entries_with_arrival_date(
     )
 
     # Test that we can get entries with a minimum date (start date)
-    for i in range(2):
-        SAMPLE_DATA.update({"document_num": str(i)})
-        SAMPLE_DATA.update({"arrival_date": "2025-01-02T21:03:34.436Z"})
-        response = client.post(
-            "/api/create-patient-encounter", headers=auth_header, json=SAMPLE_DATA
-        )
-        resp_data = response.json()
-        assert (
-            response.status_code == 200
-        ), "Unable to submit a valid patient encounter form. Received error: " + str(
-            resp_data
-        )
-
     response = client.get(
         "/api/patient-encounters?arrival_date_min=2025-01-01", headers=auth_header
     )
@@ -143,19 +188,6 @@ def test_get_multiple_entries_with_arrival_date(
     )
 
     # Test that we can get entries with a maximum date (end date)
-    for i in range(2):
-        SAMPLE_DATA.update({"document_num": str(i)})
-        SAMPLE_DATA.update({"arrival_date": "1950-01-02T21:03:34.436Z"})
-        response = client.post(
-            "/api/create-patient-encounter", headers=auth_header, json=SAMPLE_DATA
-        )
-        resp_data = response.json()
-        assert (
-            response.status_code == 200
-        ), "Unable to submit a valid patient encounter form. Received error: " + str(
-            resp_data
-        )
-
     response = client.get(
         "/api/patient-encounters?arrival_date_max=1950-01-03", headers=auth_header
     )
@@ -190,12 +222,16 @@ def test_get_multiple_entries_with_arrival_date(
 
 
 @pytest.mark.needs(postgres=True)
-def test_update_entry(client: TestClient, auth_header: str) -> None:
+def test_update_entry(
+    client: TestClient, auth_header: str, sample_patient_encounter: dict
+) -> None:
     """
     Test that we can create and then update a patient encounter
     """
     response = client.post(
-        "/api/create-patient-encounter", headers=auth_header, json=SAMPLE_DATA
+        "/api/create-patient-encounter",
+        headers=auth_header,
+        json=sample_patient_encounter,
     )
     update_req_data = response.json()
     assert (
@@ -243,13 +279,17 @@ def test_update_entry(client: TestClient, auth_header: str) -> None:
 
 
 @pytest.mark.needs(postgres=True)
-def test_soft_delete(client: TestClient, auth_header: str) -> None:
+def test_soft_delete(
+    client: TestClient, auth_header: str, sample_patient_encounter: dict
+) -> None:
     """
     Test that we are able to delete an entry and that we are no longer able to retrieve
     it using an API get request afterwards.
     """
     response = client.post(
-        "/api/create-patient-encounter", headers=auth_header, json=SAMPLE_DATA
+        "/api/create-patient-encounter",
+        headers=auth_header,
+        json=sample_patient_encounter,
     )
     resp_data = response.json()
     assert (
@@ -265,10 +305,12 @@ def test_soft_delete(client: TestClient, auth_header: str) -> None:
     doc_uuid = resp_data["patient_encounter_uuid"]
     doc_url = "/api/patient-encounter?" + urlencode({"uuid": doc_uuid})
 
-    response = client.delete(doc_url, headers=auth_header, json=SAMPLE_DATA)
+    response = client.delete(
+        doc_url, headers=auth_header, json=sample_patient_encounter
+    )
     assert response.status_code == 204, "Should have deleted entry."
 
-    response = client.get(doc_url, headers=auth_header, json=SAMPLE_DATA)
+    response = client.get(doc_url, headers=auth_header, json=sample_patient_encounter)
     resp_data = response.json()
     assert (
         response.status_code == 404
@@ -282,53 +324,42 @@ def test_get_latest_patient_encounter_by_rfid(
     """
     Test that we are able to get the latest patient encounter by RFID
     """
-    valid_rfid = "valid"
-    invalid_rfid = "invalid"
-
-    doc_valid_rfid = urlencode({"patient_rfid": valid_rfid})
-    doc_invalid_rfid = urlencode({"patient_rfid": invalid_rfid})
 
     # Create a valid patient encounter 1
-    SAMPLE_DATA.update({"patient_rfid": valid_rfid})
+    encounter1 = generate_patient_encounter(
+        next_document_num(), arrival_date=DEFAULT_ARRIVAL_DATE
+    )
+    valid_rfid = encounter1["patient_rfid"]
     response = client.post(
-        "/api/create-patient-encounter", headers=auth_header, json=SAMPLE_DATA
+        "/api/create-patient-encounter", headers=auth_header, json=encounter1
     )
-    resp_data = response.json()
-    assert (
-        response.status_code == 200
-    ), "Unable to submit a valid patient encounter form. Received error: " + str(
-        resp_data
-    )
+    assert response.status_code == 200, "Unable to submit the first patient encounter."
 
-    # Create a valid patient encounter 2
-    SAMPLE_DATA.update({"document_num": "1234"})
+    # Create a valid patient encounter 2 with the same RFID
+    encounter2 = generate_patient_encounter(
+        next_document_num(),
+        patient_rfid=valid_rfid,
+        arrival_date=DEFAULT_ARRIVAL_DATE,
+    )
     response = client.post(
-        "/api/create-patient-encounter", headers=auth_header, json=SAMPLE_DATA
+        "/api/create-patient-encounter", headers=auth_header, json=encounter2
     )
-    resp_data = response.json()
-    assert (
-        response.status_code == 200
-    ), "Unable to submit a valid patient encounter form. Received error: " + str(
-        resp_data
-    )
+    assert response.status_code == 200, "Unable to submit the second patient encounter."
 
-    # Test valid get RFID
-    doc_url = "/api/latest-patient-encounter-rfid?" + doc_valid_rfid
+    # Test valid RFID retrieval
+    doc_url = "/api/latest-patient-encounter-rfid?" + urlencode(
+        {"patient_rfid": valid_rfid}
+    )
     response = client.get(doc_url, headers=auth_header)
     resp_data = response.json()
+    assert response.status_code == 200, "Should have found entry."
     assert (
-        response.status_code == 200
-    ), "Should have found entry. Received error: " + str(resp_data)
+        resp_data["document_num"] == encounter2["document_num"]
+    ), "Not the latest patient encounter."
 
-    # Test patient encounter is the latest one
-    assert (
-        resp_data["document_num"] == "1234"
-    ), "Not the latest patient encounter: " + str(resp_data)
-
-    # Test invalid get RFID
-    doc_url = "/api/latest-patient-encounter-rfid?" + doc_invalid_rfid
+    # Test invalid RFID
+    doc_url = "/api/latest-patient-encounter-rfid?" + urlencode(
+        {"patient_rfid": "invalid_rfid"}
+    )
     response = client.get(doc_url, headers=auth_header)
-    resp_data = response.json()
-    assert (
-        response.status_code == 404
-    ), "Should not have found entry. Received error: " + str(resp_data)
+    assert response.status_code == 404, "Should not have found entry for invalid RFID."

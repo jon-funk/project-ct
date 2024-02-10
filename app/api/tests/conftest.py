@@ -5,6 +5,7 @@ from typing import Generator
 import psycopg2
 import pytest
 from fastapi.testclient import TestClient
+import faker
 
 from api.constants import MEDICAL
 from api.main.app import api
@@ -12,10 +13,66 @@ from api.main import database
 from api.main.auth import generate_auth_token
 from api.models.user import create_user, get_user_by_email
 
-DEFAULT_USER = {
-    "email": "justice_beaver@justforbeavers.ca",
-    "password": "You-st0le-my-purse",
-}
+# Get environment variables
+MIN_PASSWORD_LENGTH = int(os.getenv("MIN_PASSWORD_LENGTH", 8))
+MAX_PASSWORD_LENGTH = int(os.getenv("MAX_PASSWORD_LENGTH", 80))
+
+# Create a Faker instance
+faker = faker.Faker()
+
+
+@pytest.fixture(scope="session")
+def default_user() -> dict:
+    return {
+        "email": "justice_beaver@justforbeavers.ca",
+        "password": "You-st0le-my-purse",
+    }
+
+
+def generate_user_data(valid_email=True, valid_password=True, valid_user_group=True):
+    """
+    Generate random user data for testing purposes.
+    """
+
+    if MAX_PASSWORD_LENGTH < MIN_PASSWORD_LENGTH:
+        raise ValueError(
+            "MAX_PASSWORD_LEN must be greater than or equal to MIN_PASSWORD_LEN"
+        )
+
+    # Generate password
+    if valid_password:
+        password_length = faker.random_int(
+            min=MIN_PASSWORD_LENGTH, max=MAX_PASSWORD_LENGTH
+        )
+        password = faker.password(
+            length=password_length,
+            special_chars=True,
+            digits=True,
+            upper_case=True,
+            lower_case=True,
+        )
+    else:
+        password = "123"
+
+    # Generate email
+    email = faker.email() if valid_email else "invalidemail"
+
+    # Generate user group
+    user_group = MEDICAL if valid_user_group else "invalid_user_group"
+
+    return {
+        "email": email,
+        "password": password,
+        "user_group": user_group,
+    }
+
+
+@pytest.fixture
+def sample_user(scope="function"):
+    """
+    Generate a random valid user for testing purposes.
+    """
+    return generate_user_data()
 
 
 def pytest_configure(config):
@@ -30,6 +87,7 @@ def pytest_configure(config):
         "markers",
         "needs(*): mark test to run only when dependencies are available.",
     )
+
 
 @lru_cache
 def postgres_is_running() -> bool:
@@ -92,17 +150,19 @@ def client(request) -> Generator:
 
 @pytest.mark.usefixtures("client")
 @pytest.fixture(scope="module")
-def auth_header(client: TestClient) -> Generator:
+def auth_header(client: TestClient, default_user) -> Generator:
     """
     Create a user and return an authentication token for that user.
     """
-    user = get_user_by_email(next(database.get_db()), DEFAULT_USER["email"])
+    user = get_user_by_email(next(database.get_db()), default_user["email"])
     if not user:
         user = create_user(
             next(database.get_db()),
-            email=DEFAULT_USER["email"],
-            password=DEFAULT_USER["password"],
+            email=default_user["email"],
+            password=default_user["password"],
         )
 
-    token = "Bearer " + generate_auth_token(data={"sub": user.email}, user_group=MEDICAL)
+    token = "Bearer " + generate_auth_token(
+        data={"sub": user.email}, user_group=MEDICAL
+    )
     yield {"Authorization": token}
