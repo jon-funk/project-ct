@@ -29,7 +29,7 @@ def post_patient_encounter(
     data: PatientEncounterSchema,
     loaded_user: User = Depends(load_current_user),
     db: Session = Depends(get_db),
-) -> Any:
+) -> PatientEncounterResponseSchema:
     """
     Create a new patient encounter.
     """
@@ -39,7 +39,7 @@ def post_patient_encounter(
         encounter = create_patient_encounter(db, new_encounter)
     except Exception as err:
         LOGGER.error(f"Server error while trying to create patient encounter: {err}")
-        return HTTPException(
+        raise HTTPException(
             status_code=500,
             detail="Unable to create patient encounter at this time. Please try again later or contact support.",
         )

@@ -1,5 +1,4 @@
 import logging
-from uuid import UUID
 from typing import Any
 
 from fastapi import Depends, HTTPException
@@ -25,9 +24,8 @@ LOGGER = logging.getLogger(__name__)
 )
 def get_latest_patient_encounter_rfid(
     patient_rfid: str,
-    loaded_user: User = Depends(load_current_user),
     db: Session = Depends(get_db),
-) -> Any:
+) -> PatientEncounterResponseSchema:
     """
     Retrieve a patient encounter from the database with the provided RFID.
     """
@@ -37,7 +35,7 @@ def get_latest_patient_encounter_rfid(
         LOGGER.error(
             f"Server error while trying to get patient encounter: {err}",
         )
-        return HTTPException(
+        raise HTTPException(
             status_code=500,
             detail="Unable to get patient encounter at this time. Please try again later or contact support.",
         )

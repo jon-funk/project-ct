@@ -23,7 +23,6 @@ LOGGER = logging.getLogger(__name__)
     name="get-patient-encounters",
 )
 def get_patient_encounters(
-    loaded_user: User = Depends(load_current_user),
     db: Session = Depends(get_db),
     arrival_date_min: Optional[str] = Query(
         None, description="The start date of the patient encounter(s) to retrieve."
@@ -31,7 +30,7 @@ def get_patient_encounters(
     arrival_date_max: Optional[str] = Query(
         None, description="The end date of the patient encounter(s) to retrieve."
     ),
-) -> Any:
+) -> List[PatientEncounterResponseSchema]:
     """
     Retrieve all patient encounters from the database and return a list of patient encounters.
 

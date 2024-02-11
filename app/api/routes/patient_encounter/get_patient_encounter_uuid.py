@@ -25,9 +25,8 @@ LOGGER = logging.getLogger(__name__)
 )
 def get_patient_encounter(
     uuid: UUID,
-    loaded_user: User = Depends(load_current_user),
     db: Session = Depends(get_db),
-) -> Any:
+) -> PatientEncounterResponseSchema:
     """
     Retrieve a patient encounter from the database with the provided UUID.
     """
@@ -37,7 +36,7 @@ def get_patient_encounter(
         LOGGER.error(
             f"Server error while trying to get patient encounters: {err}",
         )
-        return HTTPException(
+        raise HTTPException(
             status_code=500,
             detail="Unable to get patient encounters at this time. Please try again later or contact support.",
         )
