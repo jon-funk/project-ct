@@ -1,6 +1,5 @@
 import logging
 from typing import Any
-from uuid import UUID
 
 from fastapi import Depends, HTTPException
 
@@ -30,9 +29,8 @@ LOGGER = logging.getLogger(__name__)
 )
 def update_encounter(
     data: PatientEncounterResponseSchema,
-    loaded_user: User = Depends(load_current_user),
     db: Session = Depends(get_db),
-) -> Any:
+) -> PatientEncounterResponseSchema:
     """
     Update a given patient encounter. In the event that a patient
     """
@@ -40,7 +38,7 @@ def update_encounter(
         encounter = get_patient_encounter_by_uuid(db, data.patient_encounter_uuid)
     except Exception as err:
         LOGGER.error(f"Server error while trying to retrieve patient encounter: {err}")
-        return HTTPException(
+        raise HTTPException(
             status_code=500,
             detail="Unable to retrieve patient encounter to update at this time. Please try again later or contact support.",
         )
@@ -57,7 +55,7 @@ def update_encounter(
         updated_encounter = update_patient_encounter(db, encounter, data_dict)
     except Exception as err:
         LOGGER.error(f"Server error while trying to update patient encounter: {err}")
-        return HTTPException(
+        raise HTTPException(
             status_code=500,
             detail="Unable to update patient encounter at this time. Please try again later or contact support.",
         )
