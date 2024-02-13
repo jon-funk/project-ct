@@ -1,5 +1,4 @@
 import logging
-from typing import Any
 
 from fastapi import Depends, HTTPException
 
@@ -7,9 +6,7 @@ from sqlalchemy.orm import Session
 
 from . import router
 
-from api.main.auth import load_current_user
 from api.main.database import get_db
-from api.models.user import UserMedical as User
 from api.models.patient_encounter import get_latest_patient_encounter_by_patient_rfid
 from api.schemas.patient_encounter import PatientEncounterResponseSchema
 
