@@ -5,6 +5,14 @@ import { SubmitAlert } from "../interfaces/SubmitAlert";
 import { ChiefComplaintCountsTableRowData } from "../interfaces/ChiefComplaintCountsTableProps";
 import { TriageAcuities } from "../constants/medicalForm";
 import { LengthOfStayCountsTableProps } from "../interfaces/LengthOfStayCountsTableProps";
+import { calculateQuartileStatistics } from "./statistics";
+import {
+  initialRowsDataCCCount,
+  initialSummaryRowsCCCount,
+} from "../constants/posteventDashboard";
+import { AggregatedDurations } from "../interfaces/PosteventDashboard";
+import { LosDuration } from "../interfaces/PosteventDashboard";
+import { RowDataCCCount } from "../interfaces/PosteventDashboard";
 
 /**
  * Generates data for the Post Festival Common Presentations table
@@ -77,6 +85,13 @@ export const generatePostFestivalCommonPresentationsData = (
   };
 };
 
+/**
+ * Builds the API path with query parameters for the patient encounters
+ *
+ * @param startDate The start date to filter the patient encounters by
+ * @param endDate The end date to filter the patient encounters by
+ * @returns The full API path with query parameters
+ */
 export function buildPatientEncountersAPIPathQuery(
   startDate: string | null,
   endDate: string | null
@@ -99,6 +114,14 @@ export function buildPatientEncountersAPIPathQuery(
   return fullPath;
 }
 
+/**
+ * Fetch the patient encounters data from the API
+ *
+ * @param startDate The start date to filter the patient encounters by
+ * @param endDate The end date to filter the patient encounters by
+ * @param setApiAlert The state setter for the API alert
+ * @returns The patient encounters data
+ */
 export async function fetchPatientEncountersData(
   startDate: string | null,
   endDate: string | null,
@@ -163,6 +186,12 @@ export async function fetchPatientEncountersData(
   }
 }
 
+/**
+ * Calculate the chief complaint encounter counts data for the Post Festival Chief Complaints table
+ *
+ * @param patientEncounters The patient encounters to calculate the chief complaint encounter counts for
+ * @returns An array containing the counts for each number of chief complaints
+ */
 export function calculateChiefComplaintEncounterCountsData(
   patientEncounters: PatientEncounterRow[]
 ): number[] {
@@ -180,6 +209,12 @@ export function calculateChiefComplaintEncounterCountsData(
   return counts;
 }
 
+/**
+ * Calculate the chief complaint encounter counts summary for the Post Festival Chief Complaints table
+ *
+ * @param patientEncounters The patient encounters to calculate the chief complaint encounter counts summary for
+ * @returns An array containing the summary data for the Post Festival Chief Complaints table
+ */
 export function calculateChiefComplaintEncounterCountsSummary(
   patientEncounters: PatientEncounterRow[]
 ): ChiefComplaintCountsTableRowData[] {
@@ -240,56 +275,118 @@ export function calculateChiefComplaintEncounterCountsSummary(
   return summaryData;
 }
 
+/**
+ * Calculate the length of stay data for the Post Festival Length of Stay table
+ *
+ * @param patientEncounters The patient encounters to calculate the length of stay data for
+ * @returns An object containing the data for the Post Festival Length of Stay table
+ */
 export function calculatePostFestivalLengthOfStayData(
   patientEncounters: PatientEncounterRow[]
 ): LengthOfStayCountsTableProps {
-  const rowsDataCCCount = [
-    ["Unknown", 0, 0, 0, 0, 0],
-    ["0 - 15 mins", 0, 0, 0, 0, 0],
-    ["16 - 30 mins", 0, 0, 0, 0, 0],
-    ["31 - 45 mins", 0, 0, 0, 0, 0],
-    ["46 - 60 mins", 0, 0, 0, 0, 0],
-    ["61 - 75 mins", 0, 0, 0, 0, 0],
-    ["76 - 90 mins", 0, 0, 0, 0, 0],
-    ["91 - 105 mins", 0, 0, 0, 0, 0],
-    ["106 - 120 mins", 0, 0, 0, 0, 0],
-    ["121 - 135 mins", 0, 0, 0, 0, 0],
-    ["136 - 150 mins", 0, 0, 0, 0, 0],
-    [">150 mins", 0, 0, 0, 0, 0],
+  // Get the initial data templates for the table
+  const rowsDataCCCount = initialRowsDataCCCount();
+  const summaryRowsCCCount = initialSummaryRowsCCCount();
+
+  // Calculate the length of stay durations for each patient encounter
+  const losDurations = calculateLosDurations(patientEncounters);
+
+  // Categorize and count the encounters based on their length of stay
+  const updatedRowsDataCCCount: RowDataCCCount[] = categorizeAndCountEncounters(
+    losDurations,
+    rowsDataCCCount as RowDataCCCount[]
+  );
+
+  // Aggregate the duration data by acuity
+  const aggregatedDurations = aggregateDurationByAcuity(losDurations);
+
+  // Calculate the statistics for each acuity
+  const { totalStats, redStats, yellowStats, greenStats, whiteStats } =
+    calculateStatisticsForAcuity(aggregatedDurations);
+
+  // Update the summary rows with the calculated statistics
+  summaryRowsCCCount[0] = [
+    "Q1",
+    totalStats.Q1,
+    redStats.Q1,
+    yellowStats.Q1,
+    greenStats.Q1,
+    whiteStats.Q1,
+  ];
+  summaryRowsCCCount[1] = [
+    "Mean",
+    totalStats.mean,
+    redStats.mean,
+    yellowStats.mean,
+    greenStats.mean,
+    whiteStats.mean,
+  ];
+  summaryRowsCCCount[2] = [
+    "Q3",
+    totalStats.Q3,
+    redStats.Q3,
+    yellowStats.Q3,
+    greenStats.Q3,
+    whiteStats.Q3,
+  ];
+  summaryRowsCCCount[3] = [
+    "Max",
+    totalStats.max,
+    redStats.max,
+    yellowStats.max,
+    greenStats.max,
+    whiteStats.max,
   ];
 
-  const summaryRowsCCCount = [
-    ["Q1", 0, 0, 0, 0, 0],
-    ["Mean", 0, 0, 0, 0, 0],
-    ["Q3", 0, 0, 0, 0, 0],
-    ["Max", 0, 0, 0, 0, 0],
-  ];
+  return { rows: updatedRowsDataCCCount, summaryRows: summaryRowsCCCount };
+}
 
-  const losDurations = patientEncounters.map((encounter) => {
-    if (
-      encounter.departure_date === null ||
-      encounter.departure_time === null
-    ) {
-      console.log("DEBUG: RETURNING NULL");
+/**
+ * Calculate the length of stay durations for each patient encounter
+ *
+ * @param patientEncounters The patient encounters to calculate the length of stay durations for
+ * @returns An array of objects containing the duration in minutes and the acuity of the encounter
+ */
+export function calculateLosDurations(
+  patientEncounters: PatientEncounterRow[]
+) {
+  return patientEncounters.map((encounter) => {
+    if (encounter.departure_date == null || encounter.departure_time == null) {
       return { durationMinutes: null, acuity: encounter.triage_acuity };
     }
 
     const arrivalDateTime = new Date(encounter.arrival_date);
-    arrivalDateTime.setHours(encounter.arrival_time.getHours());
-    arrivalDateTime.setMinutes(encounter.arrival_time.getMinutes());
-    arrivalDateTime.setSeconds(encounter.arrival_time.getSeconds());
+    arrivalDateTime.setHours(
+      encounter.arrival_time.getHours(),
+      encounter.arrival_time.getMinutes(),
+      encounter.arrival_time.getSeconds()
+    );
 
     const departureDateTime = new Date(encounter.departure_date);
-    departureDateTime.setHours(encounter.departure_time.getHours());
-    departureDateTime.setMinutes(encounter.departure_time.getMinutes());
-    departureDateTime.setSeconds(encounter.departure_time.getSeconds());
+    departureDateTime.setHours(
+      encounter.departure_time.getHours(),
+      encounter.departure_time.getMinutes(),
+      encounter.departure_time.getSeconds()
+    );
 
     const durationMinutes =
       (departureDateTime.getTime() - arrivalDateTime.getTime()) / (1000 * 60);
 
     return { durationMinutes, acuity: encounter.triage_acuity };
   });
+}
 
+/**
+ * Categorize and count the encounters based on their length of stay
+ *
+ * @param losDurations The length of stay durations for each patient encounter
+ * @param rowsDataCCCount The initial data for the Post Festival Length of Stay table
+ * @returns The updated data for the Post Festival Length of Stay table
+ */
+export const categorizeAndCountEncounters = (
+  losDurations: LosDuration[],
+  rowsDataCCCount: RowDataCCCount[]
+) => {
   losDurations.forEach(({ durationMinutes, acuity }) => {
     let rowIndex;
     if (durationMinutes === null) {
@@ -337,86 +434,217 @@ export function calculatePostFestivalLengthOfStayData(
     }
   });
 
-  // Step 1: Aggregate duration minutes into separate arrays
-  const totalDurations: number[] = [];
-  const redDurations: number[] = [];
-  const yellowDurations: number[] = [];
-  const greenDurations: number[] = [];
-  const whiteDurations: number[] = [];
+  return rowsDataCCCount;
+};
+
+/**
+ * Aggregates the duration data by acuity
+ *
+ * @param losDurations The length of stay durations for each patient encounter
+ * @returns An object containing the aggregated duration data for each acuity
+ */
+export function aggregateDurationByAcuity(losDurations: LosDuration[]) {
+  const aggregatedDurations: AggregatedDurations = {
+    totalDurations: [],
+    redDurations: [],
+    yellowDurations: [],
+    greenDurations: [],
+    whiteDurations: [],
+  };
 
   losDurations.forEach(({ durationMinutes, acuity }) => {
-    if (durationMinutes === null) {
-      return;
-    }
+    if (durationMinutes === null) return;
 
-    totalDurations.push(durationMinutes);
+    aggregatedDurations.totalDurations.push(durationMinutes);
+
     switch (acuity) {
       case TriageAcuities.Red:
-        redDurations.push(durationMinutes);
+        aggregatedDurations.redDurations.push(durationMinutes);
         break;
       case TriageAcuities.Yellow:
-        yellowDurations.push(durationMinutes);
+        aggregatedDurations.yellowDurations.push(durationMinutes);
         break;
       case TriageAcuities.Green:
-        greenDurations.push(durationMinutes);
+        aggregatedDurations.greenDurations.push(durationMinutes);
         break;
       case TriageAcuities.White:
-        whiteDurations.push(durationMinutes);
+        aggregatedDurations.whiteDurations.push(durationMinutes);
         break;
     }
   });
 
-  // Helper function to calculate mean, quartiles, and max
-  const calculateStatistics = (durations: number[]) => {
-    const sorted = durations.sort((a, b) => a - b);
-    const mean = sorted.reduce((acc, val) => acc + val, 0) / sorted.length;
-    const Q1 = sorted[Math.floor(sorted.length / 4)];
-    const Q3 = sorted[Math.floor(sorted.length * (3 / 4))];
-    const max = sorted[sorted.length - 1];
+  return aggregatedDurations;
+}
 
-    return { mean, Q1, Q3, max };
+/**
+ * Calculate the statistics for each acuity and aggregate the duration data.
+ *
+ * @param aggregatedDurations The aggregated duration data for each acuity
+ * @returns An object containing the statistics for each acuity
+ */
+export function calculateStatisticsForAcuity(
+  aggregatedDurations: AggregatedDurations
+) {
+  return {
+    totalStats: calculateQuartileStatistics(aggregatedDurations.totalDurations),
+    redStats: calculateQuartileStatistics(aggregatedDurations.redDurations),
+    yellowStats: calculateQuartileStatistics(
+      aggregatedDurations.yellowDurations
+    ),
+    greenStats: calculateQuartileStatistics(aggregatedDurations.greenDurations),
+    whiteStats: calculateQuartileStatistics(aggregatedDurations.whiteDurations),
   };
+}
 
-  // Step 2, 3, 4, 5: Calculate statistics for each category
-  const totalStats = calculateStatistics(totalDurations);
-  const redStats = calculateStatistics(redDurations);
-  const yellowStats = calculateStatistics(yellowDurations);
-  const greenStats = calculateStatistics(greenDurations);
-  const whiteStats = calculateStatistics(whiteDurations);
+export function calculateCommonPresentationsAndTransports(
+  patientEncounters: PatientEncounterRow[]
+) {
+  // Filter encounters for red and yellow acuities
+  const filteredForRed = patientEncounters.filter(
+    (e) => e.triage_acuity === "red"
+  );
+  const filteredForYellow = patientEncounters.filter(
+    (e) => e.triage_acuity === "yellow"
+  );
 
-  // Populate summaryRowsCCCount with calculated statistics
-  summaryRowsCCCount[0] = [
-    "Q1",
-    totalStats.Q1,
-    redStats.Q1,
-    yellowStats.Q1,
-    greenStats.Q1,
-    whiteStats.Q1,
-  ];
-  summaryRowsCCCount[1] = [
-    "Mean",
-    totalStats.mean,
-    redStats.mean,
-    yellowStats.mean,
-    greenStats.mean,
-    whiteStats.mean,
-  ];
-  summaryRowsCCCount[2] = [
-    "Q3",
-    totalStats.Q3,
-    redStats.Q3,
-    yellowStats.Q3,
-    greenStats.Q3,
-    whiteStats.Q3,
-  ];
-  summaryRowsCCCount[3] = [
-    "Max",
-    totalStats.max,
-    redStats.max,
-    yellowStats.max,
-    greenStats.max,
-    whiteStats.max,
-  ];
+  // Calculating common presentations and transports for Red and Yellow acuities
+  const {
+    aggregatedComplaints: commonPresentationsRed,
+    uniqueTop10Count: uniqueRedTop10,
+    totalUniqueEncounters: uniqueRedEncounters,
+  } = aggregateComplaints(filteredForRed, () => true);
 
-  return { rows: rowsDataCCCount, summaryRows: summaryRowsCCCount };
+  const {
+    aggregatedComplaints: commonPresentationsYellow,
+    uniqueTop10Count: uniqueYellowTop10,
+    totalUniqueEncounters: uniqueYellowEncounters,
+  } = aggregateComplaints(filteredForYellow, () => true);
+
+  const {
+    aggregatedComplaints: transportsDataRed,
+    totalUniqueEncounters: uniqueRedTransports,
+  } = aggregateComplaints(filteredForRed, (e) =>
+    e.departure_dest?.toLowerCase().includes("hospital")
+  );
+
+  const {
+    aggregatedComplaints: transportsDataYellow,
+    totalUniqueEncounters: uniqueYellowTransports,
+  } = aggregateComplaints(filteredForYellow, (e) =>
+    e.departure_dest?.toLowerCase().includes("hospital")
+  );
+
+  const totalTransports = uniqueRedTransports + uniqueYellowTransports;
+
+  return {
+    commonPresentationsDataRed: {
+      rows: commonPresentationsRed.map(({ complaint, count }) => ({
+        complaint,
+        count,
+      })),
+      totals: {
+        totalCount: uniqueRedTop10,
+        outOf: uniqueRedEncounters,
+      },
+      headerName: "Common Presentations Red",
+      backgroundColor: "#800020",
+      textColor: "#FFFFFF",
+    },
+    transportsDataRed: {
+      rows: transportsDataRed.map(({ complaint, count }) => ({
+        complaint,
+        count,
+      })),
+      totals: {
+        totalCount: uniqueRedTransports,
+        outOf: totalTransports,
+      },
+      headerName: "Common Transports Red",
+      backgroundColor: "#800020",
+      textColor: "#FFFFFF",
+    },
+    commonPresentationsDataYellow: {
+      rows: commonPresentationsYellow.map(({ complaint, count }) => ({
+        complaint,
+        count,
+      })),
+      totals: {
+        totalCount: uniqueYellowTop10,
+        outOf: uniqueYellowEncounters,
+      },
+      headerName: "Common Presentations Yellow",
+      backgroundColor: "#ffbf00",
+      textColor: "#000000",
+    },
+    transportsDataYellow: {
+      rows: transportsDataYellow.map(({ complaint, count }) => ({
+        complaint,
+        count,
+      })),
+      totals: {
+        totalCount: uniqueYellowTransports,
+        outOf: totalTransports,
+      },
+      headerName: "Common Transports Yellow",
+      backgroundColor: "#ffbf00",
+      textColor: "#000000",
+    },
+  };
+}
+
+export function aggregateComplaints(
+  encounters: PatientEncounterRow[],
+  filterCondition: (e: PatientEncounterRow) => boolean
+) {
+  const complaintCounts: Record<
+    string,
+    { count: number; encounters: Set<string> }
+  > = {};
+
+  encounters.forEach((encounter) => {
+    if (filterCondition(encounter)) {
+      encounter.chief_complaints.forEach((complaint) => {
+        const normalizedComplaint = complaint.toLowerCase().trim();
+        if (!complaintCounts[normalizedComplaint]) {
+          complaintCounts[normalizedComplaint] = {
+            count: 0,
+            encounters: new Set(),
+          };
+        }
+        complaintCounts[normalizedComplaint].count += 1;
+        complaintCounts[normalizedComplaint].encounters.add(
+          encounter.patient_encounter_uuid
+        );
+      });
+    }
+  });
+
+  const aggregatedComplaints = Object.entries(complaintCounts)
+    .map(([complaint, data]) => ({
+      complaint,
+      count: data.count,
+      encounters: data.encounters.size,
+    }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 10); // Get top 10
+
+  const uniqueTop10Encounters = new Set<string>();
+  aggregatedComplaints.forEach(({ complaint }) => {
+    complaintCounts[complaint].encounters.forEach((encounterId) =>
+      uniqueTop10Encounters.add(encounterId)
+    );
+  });
+
+  const totalUniqueEncounters = new Set<string>();
+  Object.values(complaintCounts).forEach((data) => {
+    data.encounters.forEach((encounterId) =>
+      totalUniqueEncounters.add(encounterId)
+    );
+  });
+
+  return {
+    aggregatedComplaints,
+    uniqueTop10Count: uniqueTop10Encounters.size,
+    totalUniqueEncounters: totalUniqueEncounters.size,
+  };
 }
