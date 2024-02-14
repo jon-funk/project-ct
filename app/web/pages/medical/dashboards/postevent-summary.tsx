@@ -7,8 +7,13 @@ import { YearSelectionField } from "../../../components/dashboard/YearSelectionF
 import { PatientEncounterAcuityBarChart } from "../../../components/dashboard/PatientEncounterAcuityChart";
 import { ChiefComplaintEncounterCountsTable } from "../../../components/dashboard/ChiefComplaintEncounterCountsTable";
 import { LengthOfStayCountsTable } from "../../../components/dashboard/LengthOfStayCountsTable";
-import { calculateChiefComplaintEncounterCountsData, calculateChiefComplaintEncounterCountsSummary } from "../../../utils/postfestivalDashboard";
-// import { CommonPresentationsAndTransportsTables } from "../../../components/dashboard/TopTenCommonPresentationsTable";
+import {
+    calculateChiefComplaintEncounterCountsData,
+    calculatePostFestivalLengthOfStayData,
+    calculateChiefComplaintEncounterCountsSummary,
+    calculateCommonPresentationsAndTransports
+} from "../../../utils/postfestivalDashboard";
+import { CommonPresentationsAndTransportsTables } from "../../../components/dashboard/TopTenCommonPresentationsTable";
 import { fetchPatientEncountersData } from "../../../utils/postfestivalDashboard";
 import { MedicalDashboardConfigs } from "../../../constants/configs";
 import { MedicalPostEventSummaryDashboardConfig } from "../../../interfaces/MedicalPostEventSummaryDashboardProps";
@@ -17,9 +22,8 @@ import { RenderSubmitAlert } from "../../../components/RenderSubmitAlert";
 import { SubmitAlert } from "../../../interfaces/SubmitAlert";
 import { PatientEncounterRow } from "../../../interfaces/PatientEncounterRow";
 import { ChiefComplaintCountsTableRowData } from "../../../interfaces/ChiefComplaintCountsTableProps";
-// import { ChiefComplaintEncounterCountsTableProps } from "../../../interfaces/ChiefComplaintEncounterCountsTableProps";
-import { calculatePostFestivalLengthOfStayData } from "../../../utils/postfestivalDashboard";
 import { LengthOfStayCountsTableProps } from "../../../interfaces/LengthOfStayCountsTableProps";
+import { TopTenCommonPresentationsTableProps } from "../../../interfaces/TopTenCommonPresentationsTableProps";
 
 
 /**
@@ -45,7 +49,7 @@ const MedicalPostEventSummaryDashboard = () => {
     const [chiefComplaintEncounterCountsData, setChiefComplaintEncounterCountsData] = useState<number[]>([]);
     const [chiefComplaintCountRows, setChiefComplaintCountRows] = useState<ChiefComplaintCountsTableRowData[]>([]);
     const [lengthOfStayData, setLengthOfStayData] = useState<LengthOfStayCountsTableProps>({ rows: [], summaryRows: [] });
-    // const [commonPresentationData, setCommonPresentationData] = useState([]);
+    const [commonPresentationData, setCommonPresentationData] = useState<TopTenCommonPresentationsTableProps | null>(null);
 
     // When the year is selected, fetch the patient encounters for that year
     useEffect(() => {
@@ -69,8 +73,8 @@ const MedicalPostEventSummaryDashboard = () => {
                     const lengthOfStayData = calculatePostFestivalLengthOfStayData(patientEncounters);
                     setLengthOfStayData(lengthOfStayData);
 
-                    // const commonPresentationData = generatePostFestivalCommonPresentationsData(patientEncounters);
-                    // setCommonPresentationData(commonPresentationData);
+                    const commonPresentationData = calculateCommonPresentationsAndTransports(patientEncounters);
+                    setCommonPresentationData(commonPresentationData);
 
                 } catch (error) {
                     console.error("Error fetching patient encounters: ", error);
@@ -108,14 +112,14 @@ const MedicalPostEventSummaryDashboard = () => {
                     <Grid item xs={12} md={8} lg={8}>
                         <LengthOfStayCountsTable {...lengthOfStayData} />
                     </Grid>
-                    {/* <Grid item xs={12} md={4} lg={4}>
-                        <CommonPresentationsAndTransportsTables
-                            commonPresentationsDataRed={commonPresentationsDataRed}
-                            transportsDataRed={transportsDataRed}
-                            commonPresentationsDataYellow={commonPresentationsDataYellow}
-                            transportsDataYellow={transportsDataYellow}
-                        />
-                    </Grid> */}
+                    <Grid item xs={12} md={4} lg={4}>
+                        {commonPresentationData && (<CommonPresentationsAndTransportsTables
+                            commonPresentationsDataRed={commonPresentationData?.commonPresentationsDataRed}
+                            transportsDataRed={commonPresentationData?.transportsDataRed}
+                            commonPresentationsDataYellow={commonPresentationData?.commonPresentationsDataYellow}
+                            transportsDataYellow={commonPresentationData?.transportsDataYellow}
+                        />)}
+                    </Grid>
                 </Grid>
             </FormProvider>
         </Container>

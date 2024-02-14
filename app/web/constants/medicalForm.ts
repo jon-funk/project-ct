@@ -48,4 +48,6 @@ export const TriageAcuities = {
   Yellow: "yellow",
   Green: "green",
   White: "white",
-};
+} as const;
+
+export type TriageAcuity = (typeof TriageAcuities)[keyof typeof TriageAcuities];
