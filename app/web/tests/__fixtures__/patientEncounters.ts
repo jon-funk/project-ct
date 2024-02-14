@@ -3,7 +3,7 @@ import { PatientEncounterRow } from "../../interfaces/PatientEncounterRow";
 import { faker } from "@faker-js/faker";
 
 export function generateFakePatientEncounter(
-  numberOfChiefComplaints: number,
+  numberOfChiefComplaints: number = 1,
   overrides?: Partial<PatientEncounterRow>
 ): PatientEncounterRow {
   const patient_encounter_uuid = faker.string.uuid();
@@ -35,7 +35,7 @@ export function generateFakePatientEncounter(
     ? faker.lorem.sentence()
     : "";
 
-  // Maye or may not have departure_time and departure_date
+  // May or may not have departure_time and departure_date
   const departure_datetime = faker.datatype.boolean();
 
   let departure_time = faker.date.recent();
