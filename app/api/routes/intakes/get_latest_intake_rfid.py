@@ -5,6 +5,7 @@ from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from . import router
+from ...constants import SANCTUARY
 
 from api.main.database import get_db_sanctuary as get_db
 from api.models.intake import get_latest_intake_by_guest_rfid
@@ -14,10 +15,11 @@ LOGGER = logging.getLogger(__name__)
 
 
 @router.get(
-    "/latest-intake-rfid",
+    f"/{SANCTUARY}/latest-form-rfid",
     status_code=200,
     response_model=IntakeResponseSchema,
-    name="get-latest-intake-rfid",
+    name=f"get-latest-{SANCTUARY}-rfid",
+    tags=[SANCTUARY],
 )
 def get_latest_intake_rfid(
     guest_rfid: str,

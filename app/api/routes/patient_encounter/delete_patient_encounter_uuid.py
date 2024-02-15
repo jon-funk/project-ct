@@ -6,6 +6,8 @@ from fastapi import Depends, HTTPException, Response
 from sqlalchemy.orm import Session
 
 from . import router
+from ...constants import MEDICAL
+
 
 from api.main.database import get_db
 from api.models.patient_encounter import (
@@ -17,9 +19,10 @@ LOGGER = logging.getLogger(__name__)
 
 
 @router.delete(
-    "/patient-encounter",
+    f"/{MEDICAL}/form",
     status_code=204,
-    name="delete-patient-encounter",
+    name=f"delete-{MEDICAL}-form",
+    tags=[MEDICAL],
 )
 def delete_patient_encounter(
     uuid: UUID,

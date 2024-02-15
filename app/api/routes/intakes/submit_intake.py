@@ -5,6 +5,7 @@ from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from . import router
+from ...constants import SANCTUARY
 
 from api.main.auth import load_current_user
 from api.main.database import get_db_sanctuary as get_db
@@ -19,10 +20,11 @@ LOGGER = logging.getLogger(__name__)
 
 
 @router.post(
-    "/create-intake",
+    f"/{SANCTUARY}/form",
     status_code=200,
     response_model=IntakeResponseSchema,
-    name="create-intake",
+    name=f"create-{SANCTUARY}-form",
+    tags=[SANCTUARY],
 )
 def post_intake(
     data: IntakeSchema,

@@ -6,6 +6,7 @@ from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from . import router
+from ...constants import SANCTUARY
 
 from api.main.database import get_db_sanctuary as get_db
 from api.models.intake import get_intake_by_uuid
@@ -15,10 +16,11 @@ LOGGER = logging.getLogger(__name__)
 
 
 @router.get(
-    "/intake",
+    f"/{SANCTUARY}/form",
     status_code=200,
     response_model=IntakeResponseSchema,
-    name="get-intake",
+    name=f"get-{SANCTUARY}-form",
+    tags=[SANCTUARY],
 )
 def get_intake(
     uuid: UUID,

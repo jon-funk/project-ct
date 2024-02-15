@@ -5,6 +5,7 @@ from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from . import router
+from ...constants import MEDICAL
 
 from api.main.database import get_db
 from api.models.patient_encounter import get_latest_patient_encounter_by_patient_rfid
@@ -14,10 +15,11 @@ LOGGER = logging.getLogger(__name__)
 
 
 @router.get(
-    "/latest-patient-encounter-rfid",
+    f"/{MEDICAL}/latest-form-rfid",
     status_code=200,
     response_model=PatientEncounterResponseSchema,
-    name="get-latest-patient-encounter-rfid",
+    name=f"get-latest-{MEDICAL}-form-rfid",
+    tags=[MEDICAL],
 )
 def get_latest_patient_encounter_rfid(
     patient_rfid: str,

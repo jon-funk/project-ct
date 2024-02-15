@@ -6,6 +6,7 @@ from fastapi import Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from . import router
+from ...constants import MEDICAL
 
 from api.main.database import get_db
 from api.models.patient_encounter import get_all_patient_encounters
@@ -15,10 +16,11 @@ LOGGER = logging.getLogger(__name__)
 
 
 @router.get(
-    "/patient-encounters",
+    f"/{MEDICAL}/forms",
     status_code=200,
     response_model=List[PatientEncounterResponseSchema],
-    name="get-patient-encounters",
+    name="get-{MEDCIAL}-forms",
+    tags=[MEDICAL],
 )
 def get_patient_encounters(
     db: Session = Depends(get_db),

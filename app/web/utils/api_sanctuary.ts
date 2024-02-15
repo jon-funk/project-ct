@@ -1,4 +1,5 @@
 import { IntakeFormDataInterface } from "../interfaces/IntakeFormDataInterface";
+import { UserGroupKeys } from "../constants/keys";
 // TODO: Refactor API calls to dynamically determine user group. Ticket: https://mediform.atlassian.net/browse/MEDI-42
 
 /**
@@ -19,7 +20,7 @@ export async function fetchSanctuaryIntakes(
 ) {
   try {
     const response = await fetch(
-      `${process.env.REACT_APP_API_URL}/sanctuary/intakes`,
+      `${process.env.REACT_APP_API_URL}/${UserGroupKeys.Sanctuary}/intakes`,
       {
         method: "GET",
         mode: "cors",

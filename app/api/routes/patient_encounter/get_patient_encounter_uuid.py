@@ -6,6 +6,7 @@ from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from . import router
+from ...constants import MEDICAL
 
 from api.main.database import get_db
 from api.models.patient_encounter import get_patient_encounter_by_uuid
@@ -15,10 +16,11 @@ LOGGER = logging.getLogger(__name__)
 
 
 @router.get(
-    "/patient-encounter",
+    f"/{MEDICAL}/form",
     status_code=200,
     response_model=PatientEncounterResponseSchema,
-    name="get-patient-encounter",
+    name=f"get-{MEDICAL}-form",
+    tags=[MEDICAL],
 )
 def get_patient_encounter(
     uuid: UUID,

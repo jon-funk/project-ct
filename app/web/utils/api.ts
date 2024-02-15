@@ -1,4 +1,5 @@
 import { PatientEncounterFormDataInterface } from "../interfaces/PatientEncounterFormDataInterface";
+import { UserGroupKeys } from "../constants/keys";
 
 /**
  * Set the error message to be displayed to the user. If the error is a string, return it.
@@ -130,7 +131,7 @@ export async function login(
 export async function getAllPatientEncounters(token: string): Promise<any[]> {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_HOSTNAME}/patient-encounters`,
+      `${process.env.NEXT_PUBLIC_HOSTNAME}/${UserGroupKeys.Medical}/forms`,
       {
         headers: {
           Accept: "application/json",
@@ -189,7 +190,7 @@ export async function submitPatientEncounterForm(
 ) {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_HOSTNAME}/create-patient-encounter`,
+      `${process.env.NEXT_PUBLIC_HOSTNAME}/${UserGroupKeys.Medical}/form`,
       {
         headers: {
           Accept: "application/json",
@@ -248,7 +249,7 @@ export async function deletePatientEncounterForm(
 ): Promise<string> {
   try {
     const url =
-      `${process.env.NEXT_PUBLIC_HOSTNAME}/patient-encounter?uuid=` +
+      `${process.env.NEXT_PUBLIC_HOSTNAME}/${UserGroupKeys.Medical}/form?uuid=` +
       encodeURIComponent(uuid);
     const response = await fetch(url, {
       headers: {
@@ -287,7 +288,7 @@ export async function updatePatientEncounterForm(
 ): Promise<string> {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_HOSTNAME}/patient-encounter`,
+      `${process.env.NEXT_PUBLIC_HOSTNAME}/${UserGroupKeys.Medical}/form`,
       {
         headers: {
           Accept: "application/json",
