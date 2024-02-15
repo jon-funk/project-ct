@@ -15,12 +15,12 @@ import { Copyright } from "../../components/Copyright";
 const theme = createTheme();
 
 export default function SignUp() {
+  // TODO: Actually implement the form submission
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     console.log({
-      email: data.get("email"),
-      password: data.get("password"),
+      email: data.get("email")
     });
   };
 

@@ -11,7 +11,8 @@ import {
     calculateChiefComplaintEncounterCountsData,
     calculatePostFestivalLengthOfStayData,
     calculateChiefComplaintEncounterCountsSummary,
-    calculateCommonPresentationsAndTransports
+    calculateCommonPresentationsAndTransports,
+    calculateAcuityCountsData
 } from "../../../utils/postfestivalDashboard";
 import { CommonPresentationsAndTransportsTables } from "../../../components/dashboard/TopTenCommonPresentationsTable";
 import { fetchPatientEncountersData } from "../../../utils/postfestivalDashboard";
@@ -24,6 +25,7 @@ import { PatientEncounterRow } from "../../../interfaces/PatientEncounterRow";
 import { ChiefComplaintCountsTableRowData } from "../../../interfaces/ChiefComplaintCountsTableProps";
 import { LengthOfStayCountsTableProps } from "../../../interfaces/LengthOfStayCountsTableProps";
 import { TopTenCommonPresentationsTableProps } from "../../../interfaces/TopTenCommonPresentationsTableProps";
+import { AcuityCountsData } from "../../../interfaces/AcuityCountsData";
 
 
 /**
@@ -33,8 +35,6 @@ import { TopTenCommonPresentationsTableProps } from "../../../interfaces/TopTenC
  */
 const MedicalPostEventSummaryDashboard = () => {
 
-    // TODO: Remove eslint-disable-next-line when API integration is complete
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [patientEncounters, setPatientEncounters] = useState<PatientEncounterRow[]>([]);
     const [apiAlert, setApiAlert] = useState<SubmitAlert | null>(null);
     const methods = useForm<MedicalPostEventSummaryDashboardConfig>();
@@ -50,6 +50,7 @@ const MedicalPostEventSummaryDashboard = () => {
     const [chiefComplaintCountRows, setChiefComplaintCountRows] = useState<ChiefComplaintCountsTableRowData[]>([]);
     const [lengthOfStayData, setLengthOfStayData] = useState<LengthOfStayCountsTableProps>({ rows: [], summaryRows: [] });
     const [commonPresentationData, setCommonPresentationData] = useState<TopTenCommonPresentationsTableProps | null>(null);
+    const [acuityCountsData, setAcuityCountsData] = useState<AcuityCountsData[]>([]);
 
     // When the year is selected, fetch the patient encounters for that year
     useEffect(() => {
@@ -60,8 +61,8 @@ const MedicalPostEventSummaryDashboard = () => {
                 setValue("festivalStartDate", festivalStartDate);
                 setValue("festivalEndDate", festivalEndDate);
                 try {
-                    const patientEncounters = await fetchPatientEncountersData(festivalStartDate, festivalEndDate, setApiAlert);
-                    setPatientEncounters(patientEncounters);
+                    const fetchedPatientEncounters = await fetchPatientEncountersData(festivalStartDate, festivalEndDate, setApiAlert);
+                    setPatientEncounters(fetchedPatientEncounters);
 
                     // Calculate the data for the dashboard
                     const chiefComplaintEncounterCountsData = calculateChiefComplaintEncounterCountsData(patientEncounters);
@@ -76,6 +77,9 @@ const MedicalPostEventSummaryDashboard = () => {
                     const commonPresentationData = calculateCommonPresentationsAndTransports(patientEncounters);
                     setCommonPresentationData(commonPresentationData);
 
+                    const acuityCountsData = calculateAcuityCountsData(patientEncounters);
+                    setAcuityCountsData(acuityCountsData);
+
                 } catch (error) {
                     console.error("Error fetching patient encounters: ", error);
                     setApiAlert({ type: "error", message: "Error fetching patient encounters" });
@@ -84,14 +88,14 @@ const MedicalPostEventSummaryDashboard = () => {
         };
 
         fetchPatientEncounters();
-    }, [selectedYear, setValue]);
+    }, [patientEncounters, selectedYear, setValue]);
 
     return (
         <Container>
             <FormProvider {...methods}>
                 <Grid container spacing={2} style={{ padding: 1 + "rem" }}>
                     <Grid item xs={12}>
-                        <Typography variant="h3">Post-Event Summary Dashboard {selectedYear}</Typography>
+                        <Typography variant="h3">Post-Event Summary {selectedYear}</Typography>
                     </Grid>
                     <Grid item xs={12}>
                         {RenderErrorAlerts(errors)}
@@ -101,7 +105,7 @@ const MedicalPostEventSummaryDashboard = () => {
                         <YearSelectionField control={control} />
                     </Grid>
                     <Grid item xs={12} sm={6} md={4}>
-                        <PatientEncounterAcuityBarChart />
+                        <PatientEncounterAcuityBarChart acuityCountsData={acuityCountsData} />
                     </Grid>
                     <Grid item xs={12} sm={3} md={4}>
                         <ChiefComplaintEncounterCountsTable encounterCounts={chiefComplaintEncounterCountsData} />
