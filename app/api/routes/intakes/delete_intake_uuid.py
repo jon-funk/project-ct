@@ -6,6 +6,7 @@ from fastapi import Depends, HTTPException, Response
 from sqlalchemy.orm import Session
 
 from . import router
+from api.constants import SANCTUARY
 
 from api.main.database import get_db_sanctuary as get_db
 from api.models.intake import (
@@ -17,9 +18,10 @@ LOGGER = logging.getLogger(__name__)
 
 
 @router.delete(
-    "/intake",
+    f"/{SANCTUARY}/form",
     status_code=204,
-    name="delete-intake",
+    name=f"delete-{SANCTUARY}-form",
+    tags=[SANCTUARY],
 )
 def delete_intake(
     uuid: UUID,

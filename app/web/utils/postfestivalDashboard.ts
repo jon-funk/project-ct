@@ -13,6 +13,7 @@ import {
 import { AggregatedDurations } from "../interfaces/PosteventDashboard";
 import { LosDuration } from "../interfaces/PosteventDashboard";
 import { RowDataCCCount } from "../interfaces/PosteventDashboard";
+import { UserGroupKeys } from "../constants/keys";
 
 /**
  * Generates data for the Post Festival Common Presentations table
@@ -96,7 +97,7 @@ export function buildPatientEncountersAPIPathQuery(
   startDate: string | null,
   endDate: string | null
 ): string {
-  const baseUrl = `${process.env.NEXT_PUBLIC_HOSTNAME}/patient-encounters`;
+  const baseUrl = `${process.env.NEXT_PUBLIC_HOSTNAME}/${UserGroupKeys.Medical}/forms`;
   const queryParams = [];
 
   if (startDate) {
