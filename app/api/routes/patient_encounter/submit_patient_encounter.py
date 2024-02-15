@@ -5,7 +5,7 @@ from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from . import router
-from ...constants import MEDICAL
+from api.constants import MEDICAL
 
 from api.main.auth import load_current_user
 from api.main.database import get_db

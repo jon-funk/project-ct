@@ -5,7 +5,7 @@ from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from . import router
-from ...constants import SANCTUARY
+from api.constants import SANCTUARY
 
 from api.main.auth import load_current_user
 from api.main.database import get_db_sanctuary as get_db
