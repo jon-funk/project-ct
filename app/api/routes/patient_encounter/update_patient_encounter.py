@@ -5,6 +5,7 @@ from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from . import router
+from api.constants import MEDICAL
 
 from api.main.database import get_db
 from api.models.patient_encounter import (
@@ -19,10 +20,11 @@ LOGGER = logging.getLogger(__name__)
 
 
 @router.put(
-    "/patient-encounter",
+    f"/{MEDICAL}/form",
     status_code=200,
     response_model=PatientEncounterResponseSchema,
-    name="update-patient-encounter",
+    name=f"update-{MEDICAL}-form",
+    tags=[MEDICAL],
 )
 def update_encounter(
     data: PatientEncounterResponseSchema,
