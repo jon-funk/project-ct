@@ -7,12 +7,14 @@ import {
   calculatePostFestivalLengthOfStayData,
   aggregateComplaints,
   calculateCommonPresentationsAndTransports,
+  calculateAcuityCountsData,
 } from "../../utils/postfestivalDashboard";
 import { PatientEncounterRow } from "../../interfaces/PatientEncounterRow";
 import { generateFakePatientEncounter } from "../__fixtures__/patientEncounters";
 import { TriageAcuities } from "../../constants/medicalForm";
 import { initialRowsDataCCCount } from "../../constants/posteventDashboard";
 import { RowDataCCCount } from "../../interfaces/PosteventDashboard";
+import { describe } from "node:test";
 
 describe("calculateChiefComplaintEncounterCountsData", () => {
   it("correctly calculates encounter counts for varying numbers of chief complaints", () => {
@@ -617,4 +619,36 @@ describe("calculateCommonPresentationsAndTransports", () => {
     expect(result.commonPresentationsDataRed.totals.totalCount).toBe(5);
     expect(result.commonPresentationsDataRed.totals.outOf).toBe(9);
   });
+});
+
+describe("calculateAcuityCountsData", () => {
+  it("correctly calculates acuity counts", () => {});
+
+  const patientEncounters: PatientEncounterRow[] = [
+    generateFakePatientEncounter(1, {
+      triage_acuity: TriageAcuities.Red,
+    }),
+    generateFakePatientEncounter(1, {
+      triage_acuity: TriageAcuities.Yellow,
+    }),
+    generateFakePatientEncounter(1, {
+      triage_acuity: TriageAcuities.Green,
+    }),
+    generateFakePatientEncounter(1, {
+      triage_acuity: TriageAcuities.White,
+    }),
+  ];
+
+  const result = calculateAcuityCountsData(patientEncounters).sort((a, b) =>
+    a.acuity.localeCompare(b.acuity)
+  );
+
+  const expected = [
+    { acuity: "red", encounters: 1 },
+    { acuity: "yellow", encounters: 1 },
+    { acuity: "green", encounters: 1 },
+    { acuity: "white", encounters: 1 },
+  ].sort((a, b) => a.acuity.localeCompare(b.acuity));
+
+  expect(result).toEqual(expected);
 });
