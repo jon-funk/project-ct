@@ -1,5 +1,4 @@
 import { PatientEncounterRow } from "../interfaces/PatientEncounterRow";
-import { PresentationGroup } from "../interfaces/PresentationGroup";
 import { buildBearerTokenHeader } from "./authentication";
 import { SubmitAlert } from "../interfaces/SubmitAlert";
 import { ChiefComplaintCountsTableRowData } from "../interfaces/ChiefComplaintCountsTableProps";
@@ -14,77 +13,7 @@ import { AggregatedDurations } from "../interfaces/PosteventDashboard";
 import { LosDuration } from "../interfaces/PosteventDashboard";
 import { RowDataCCCount } from "../interfaces/PosteventDashboard";
 import { UserGroupKeys } from "../constants/keys";
-
-/**
- * Generates data for the Post Festival Common Presentations table
- *
- * @param data The patient encounters data to generate the table from
- *
- * @returns An object containing the data for the Post Festival Common Presentations table
- */
-export const generatePostFestivalCommonPresentationsData = (
-  data: PatientEncounterRow[]
-) => {
-  // TODO: Implement actual generation logic
-  console.log("TODO: Implement actual generation logic:", data);
-
-  const commonPresentationsDataRed: PresentationGroup = {
-    rows: [
-      { complaint: "Loss of Consciousness", count: 8 },
-      { complaint: "Chest Pain", count: 2 },
-      { complaint: "Abdominal Pain", count: 2 },
-      { complaint: "Trauma", count: 2 },
-    ],
-    totals: { totalCount: 14, outOf: 50 },
-    headerName: "Common Presentations Red",
-    backgroundColor: "#800020",
-    textColor: "#FFFFFF",
-  };
-
-  const transportsDataRed: PresentationGroup = {
-    rows: [
-      { complaint: "Seizure", count: 3 },
-      { complaint: "Loss of Consciousness", count: 2 },
-      { complaint: "Agitation", count: 1 },
-    ],
-    totals: { totalCount: 6, outOf: 12 },
-    headerName: "Common Transports Red",
-    backgroundColor: "#800020",
-    textColor: "#FFFFFF",
-  };
-
-  const commonPresentationsDataYellow: PresentationGroup = {
-    rows: [
-      { complaint: "Loss of Consciousness", count: 8 },
-      { complaint: "Chest Pain", count: 2 },
-      { complaint: "Abdominal Pain", count: 2 },
-      { complaint: "Trauma", count: 2 },
-    ],
-    totals: { totalCount: 14, outOf: 14 },
-    headerName: "Common Presentations Yellow",
-    backgroundColor: "#ffbf00",
-    textColor: "#000000",
-  };
-
-  const transportsDataYellow: PresentationGroup = {
-    rows: [
-      { complaint: "Seizure", count: 3 },
-      { complaint: "Loss of Consciousness", count: 2 },
-      { complaint: "Agitation", count: 1 },
-    ],
-    totals: { totalCount: 6, outOf: 12 },
-    headerName: "Common Transports Yellow",
-    backgroundColor: "#ffbf00",
-    textColor: "#000000",
-  };
-
-  return {
-    commonPresentationsDataRed,
-    transportsDataRed,
-    commonPresentationsDataYellow,
-    transportsDataYellow,
-  };
-};
+import { AcuityCountsData } from "../interfaces/AcuityCountsData";
 
 /**
  * Builds the API path with query parameters for the patient encounters
@@ -648,4 +577,24 @@ export function aggregateComplaints(
     uniqueTop10Count: uniqueTop10Encounters.size,
     totalUniqueEncounters: totalUniqueEncounters.size,
   };
+}
+
+export function calculateAcuityCountsData(
+  patientEncounters: PatientEncounterRow[]
+): AcuityCountsData[] {
+  const acuityCounts: Record<string, number> = {
+    white: 0,
+    green: 0,
+    yellow: 0,
+    red: 0,
+  };
+
+  patientEncounters.forEach((encounter) => {
+    acuityCounts[encounter.triage_acuity] += 1;
+  });
+
+  return Object.entries(acuityCounts).map(([acuity, encounters]) => ({
+    acuity,
+    encounters,
+  }));
 }
