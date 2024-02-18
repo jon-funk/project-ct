@@ -8,14 +8,28 @@ import Drawer from "@mui/material/Drawer";
 import IconButton from "@mui/material/IconButton";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
+import MenuItem from "@mui/material/MenuItem";
+import Menu from "@mui/material/Menu";
 import { UserGroupRoutes, UserGroupKey } from "../constants/routes";
 import { getUserGroupKey, removeUserGroup } from "../utils/authentication";
+import HomeIcon from "@mui/icons-material/Home";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import LogoutIcon from "@mui/icons-material/Logout";
+import SearchIcon from "@mui/icons-material/Search";
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import AddIcon from "@mui/icons-material/Add";
+import QueryStatsIcon from "@mui/icons-material/QueryStats";
+
+
+
+
 
 /**
  * Renders a navbar for the protected routes.
@@ -34,11 +48,144 @@ const ProtectedNavbar: React.FC = () => {
   const userGroupKey = getUserGroupKey() as UserGroupKey;
   const userRoutes = userGroupKey ? UserGroupRoutes[userGroupKey] : null;
 
+  const [anchorAccountEl, setAnchorAccountEl] = useState<null | HTMLElement>(null);
+  const [patientEncountersAnchorEl, setPatientEncountersAnchorEl] = useState<null | HTMLElement>(null);
+  const [dashboardAnchorEl, setDashboardAnchorEl] = useState<null | HTMLElement>(null);
+  const isDashboardMenuOpen = Boolean(dashboardAnchorEl);
+  const isPatientEncountersMenuOpen = Boolean(patientEncountersAnchorEl);
+
+  const handleAccountMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorAccountEl(event.currentTarget);
+  };
+  const handleAccountMenuClose = () => {
+    setAnchorAccountEl(null);
+  };
+
+  const handlePatientEncountersMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setPatientEncountersAnchorEl(event.currentTarget);
+  };
+
+  const handlePatientEncountersMenuClose = () => {
+    setPatientEncountersAnchorEl(null);
+  };
+
+  const handleDashboardMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setDashboardAnchorEl(event.currentTarget);
+  };
+
+  const handleDashboardMenuClose = () => {
+    setDashboardAnchorEl(null);
+  };
+
+  const logout = () => {
+    handleAccountMenuClose(); // Close menu before logging out
+    removeUserGroup();
+    window.localStorage.removeItem("auth-token");
+    router.push("/");
+  };
+
+  const currentFormMenuButtonText = buttonFormMenuTextByUserGroup[userGroupKey] || "Forms";
+  const currentNewFormButtonText = formMenuItemsTextByUserGroup[userGroupKey]?.newEntry || "New Entry";
+  const currentListFormsButtonText = formMenuItemsTextByUserGroup[userGroupKey]?.listEntries || "List Entries";
+
+  const menuId = "primary-search-account-menu";
+
+  const renderAccountMenu = (
+    <Menu
+      anchorEl={anchorAccountEl}
+      anchorOrigin={{
+        vertical: "bottom",
+        horizontal: "right",
+      }}
+      id={menuId}
+      keepMounted
+      transformOrigin={{
+        vertical: "top",
+        horizontal: "right",
+      }}
+      open={Boolean(anchorAccountEl)}
+      onClose={handleAccountMenuClose}
+    >
+      <MenuItem onClick={logout}>
+        <ListItemIcon>
+          <LogoutIcon />
+        </ListItemIcon>
+        <ListItemText primary="Logout" />
+      </MenuItem>
+    </Menu>
+  );
+
+  // Patient encounters menu
+  const renderPatientEncountersMenu = (
+    <Menu
+      anchorEl={patientEncountersAnchorEl}
+      anchorOrigin={{
+        vertical: "bottom",
+        horizontal: "right",
+      }}
+      keepMounted
+      transformOrigin={{
+        vertical: "top",
+        horizontal: "right",
+      }}
+      open={isPatientEncountersMenuOpen}
+      onClose={handlePatientEncountersMenuClose}
+    >
+      <MenuItem onClick={() => {
+        if (userRoutes) {
+          router.push(userRoutes.form); handlePatientEncountersMenuClose();
+        }
+      }}>
+        <ListItemIcon>
+          <AddIcon fontSize="small" />
+        </ListItemIcon>
+        <ListItemText>{currentNewFormButtonText}</ListItemText>
+      </MenuItem>
+      <MenuItem onClick={() => {
+        if (userRoutes) {
+          router.push(userRoutes.search); handlePatientEncountersMenuClose();
+        }
+      }}>
+        <ListItemIcon>
+          <SearchIcon fontSize="small" />
+        </ListItemIcon>
+        <ListItemText>{currentListFormsButtonText}</ListItemText>
+      </MenuItem>
+    </Menu>
+  );
+
+  const renderDashboardMenu = (
+    <Menu
+      anchorEl={dashboardAnchorEl}
+      anchorOrigin={{
+        vertical: "bottom",
+        horizontal: "right",
+      }}
+      keepMounted
+      transformOrigin={{
+        vertical: "top",
+        horizontal: "right",
+      }}
+      open={isDashboardMenuOpen}
+      onClose={handleDashboardMenuClose}
+    >
+      {userRoutes?.dashboards && Object.entries(userRoutes.dashboards).map(([key, path]) => (
+        <MenuItem key={key} onClick={() => { router.push(path); handleDashboardMenuClose(); }}>
+          <ListItemText>{key.charAt(0).toUpperCase() + key.slice(1).replace(/-/g, " ")}</ListItemText>
+        </MenuItem>
+      ))}
+    </Menu>
+  );
+
+
   // Check if the current route is allowed for the user group
   useEffect(() => {
     if (isMounted && userRoutes) {
       const currentPath = window.location.pathname;
-      const isRouteAllowed = Object.values(userRoutes).includes(currentPath);
+      const isRouteAllowed = Object.keys(userRoutes).some(routeKey => {
+        const routePath = userRoutes[routeKey as keyof typeof userRoutes];
+        return typeof routePath === "string" ? currentPath === routePath || currentPath.startsWith(routePath) : Object.values(routePath as Record<string, string>).some(subPath => currentPath.startsWith(subPath));
+      });
       if (!isRouteAllowed) {
         router.push(userRoutes.home);
       }
@@ -50,12 +197,6 @@ const ProtectedNavbar: React.FC = () => {
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
-  };
-
-  const logout = () => {
-    removeUserGroup();
-    window.localStorage.removeItem("auth-token");
-    window.location.pathname = "/";
   };
 
   // Render the navbar once the user group routes are loaded
@@ -89,12 +230,20 @@ const ProtectedNavbar: React.FC = () => {
               <IconButton
                 color="inherit"
                 aria-label="open drawer"
-                edge="start"
                 onClick={handleDrawerToggle}
-                sx={{ mr: 2, display: { sm: "none" } }}
+                sx={{ mr: 2, display: { xs: "none", sm: "none" } }}
               >
                 <MenuIcon />
               </IconButton>
+              <Link href={userRoutes.home} passHref>
+                <IconButton
+                  color="inherit"
+                  aria-label="home"
+                  sx={{ mr: 2, display: { xs: "none", sm: "block" } }}
+                >
+                  <HomeIcon />
+                </IconButton>
+              </Link>
               <Typography
                 variant="h6"
                 component="div"
@@ -103,31 +252,40 @@ const ProtectedNavbar: React.FC = () => {
                   display: { xs: "none", sm: "block", fontWeight: "bold" },
                 }}
               >
-                <Link href={userRoutes.home}>Home</Link>
+
               </Typography>
               <Box sx={{ display: { xs: "none", sm: "block" } }}>
-                <Button
-                  href={userRoutes.search}
-                  sx={{ color: "#fff", fontWeight: "bold" }}
-                >
-                  List Entries
-                </Button>
-                <Button
-                  href={userRoutes.form}
-                  sx={{ color: "#fff", fontWeight: "bold" }}
-                >
-                  New Entry
-                </Button>
-                <Button
-                  key="logout"
-                  sx={{ color: "#fff", fontWeight: "bold" }}
-                  onClick={logout}
-                >
-                  Logout
-                </Button>
+                <Box sx={{ display: "flex" }}>
+                  {userRoutes?.dashboards && (
+                    <Button
+                      startIcon={<QueryStatsIcon />}
+                      onClick={handleDashboardMenuOpen}
+                      sx={{ color: "#fff", fontWeight: "bold", fontSize: "1.25rem", textTransform: "none" }}
+                    >
+                      Dashboards
+                    </Button>
+                  )}
+                  {renderDashboardMenu}
+                  <Button
+                    onClick={handlePatientEncountersMenuOpen}
+                    sx={{ color: "#fff", fontWeight: "bold", fontSize: "1.25rem", textTransform: "none" }}
+                  >
+                    <AssignmentIcon sx={{ fontSize: "1.5rem", mr: 1 }} />
+                    {currentFormMenuButtonText}
+                  </Button>
+                  {renderPatientEncountersMenu}
+                  <Button
+                    onClick={handleAccountMenuOpen}
+                    sx={{ color: "#fff", fontWeight: "bold", fontSize: "1.25rem", textTransform: "none" }}
+                  >
+                    <AccountCircleIcon sx={{ fontSize: "1.5rem", mr: 1 }} />
+                    Account
+                  </Button>
+                </Box>
               </Box>
             </Toolbar>
           </AppBar>
+          {renderAccountMenu}
           <Box component="nav">
             <Drawer
               variant="temporary"
@@ -152,5 +310,23 @@ const ProtectedNavbar: React.FC = () => {
     );
   }
 };
+
+const buttonFormMenuTextByUserGroup = {
+  medical: "Patient Encounters",
+  sanctuary: "Intakes",
+};
+
+
+const formMenuItemsTextByUserGroup = {
+  medical: {
+    newEntry: "New Encounter",
+    listEntries: "List Encounters",
+  },
+  sanctuary: {
+    newEntry: "New Intake",
+    listEntries: "List Intakes",
+  },
+};
+
 
 export default ProtectedNavbar;
