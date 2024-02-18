@@ -1,8 +1,13 @@
-export const UserGroupRoutes = {
+import { GroupRoutes } from "../interfaces/DashboardRoutes";
+
+export const UserGroupRoutes: Record<UserGroupKey, GroupRoutes> = {
   medical: {
     home: "/medical/home",
     form: "/medical/form",
     search: "/medical/search",
+    dashboards: {
+      postEventSummary: "/medical/dashboards/postevent-summary",
+    },
   },
   sanctuary: {
     home: "/sanctuary/home",
@@ -11,4 +16,4 @@ export const UserGroupRoutes = {
   },
 };
 
-export type UserGroupKey = keyof typeof UserGroupRoutes;
+export type UserGroupKey = "medical" | "sanctuary";

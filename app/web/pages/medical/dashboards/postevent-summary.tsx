@@ -26,6 +26,7 @@ import { ChiefComplaintCountsTableRowData } from "../../../interfaces/ChiefCompl
 import { LengthOfStayCountsTableProps } from "../../../interfaces/LengthOfStayCountsTableProps";
 import { TopTenCommonPresentationsTableProps } from "../../../interfaces/TopTenCommonPresentationsTableProps";
 import { AcuityCountsData } from "../../../interfaces/AcuityCountsData";
+import ProtectedNavbar from "../../../components/ProtectedNavbar";
 
 
 /**
@@ -91,42 +92,45 @@ const MedicalPostEventSummaryDashboard = () => {
     }, [patientEncounters, selectedYear, setValue]);
 
     return (
-        <Container>
-            <FormProvider {...methods}>
-                <Grid container spacing={2} style={{ padding: 1 + "rem" }}>
-                    <Grid item xs={12}>
-                        <Typography variant="h3">Post-Event Summary {selectedYear}</Typography>
+        <>
+            <ProtectedNavbar />
+            <Container>
+                <FormProvider {...methods}>
+                    <Grid container spacing={2} style={{ padding: 1 + "rem" }}>
+                        <Grid item xs={12}>
+                            <Typography variant="h3">Post-Event Summary {selectedYear}</Typography>
+                        </Grid>
+                        <Grid item xs={12}>
+                            {RenderErrorAlerts(errors)}
+                            {RenderSubmitAlert(apiAlert)}
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={4}>
+                            <YearSelectionField control={control} />
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={4}>
+                            <PatientEncounterAcuityBarChart acuityCountsData={acuityCountsData} />
+                        </Grid>
+                        <Grid item xs={12} sm={3} md={4}>
+                            <ChiefComplaintEncounterCountsTable encounterCounts={chiefComplaintEncounterCountsData} />
+                        </Grid>
+                        <Grid item xs={12} md={8} lg={8}>
+                            <ChiefComplaintCountsTable rows={chiefComplaintCountRows} />
+                        </Grid>
+                        <Grid item xs={12} md={8} lg={8}>
+                            <LengthOfStayCountsTable {...lengthOfStayData} />
+                        </Grid>
+                        <Grid item xs={12} md={4} lg={4}>
+                            {commonPresentationData && (<CommonPresentationsAndTransportsTables
+                                commonPresentationsDataRed={commonPresentationData?.commonPresentationsDataRed}
+                                transportsDataRed={commonPresentationData?.transportsDataRed}
+                                commonPresentationsDataYellow={commonPresentationData?.commonPresentationsDataYellow}
+                                transportsDataYellow={commonPresentationData?.transportsDataYellow}
+                            />)}
+                        </Grid>
                     </Grid>
-                    <Grid item xs={12}>
-                        {RenderErrorAlerts(errors)}
-                        {RenderSubmitAlert(apiAlert)}
-                    </Grid>
-                    <Grid item xs={12} sm={6} md={4}>
-                        <YearSelectionField control={control} />
-                    </Grid>
-                    <Grid item xs={12} sm={6} md={4}>
-                        <PatientEncounterAcuityBarChart acuityCountsData={acuityCountsData} />
-                    </Grid>
-                    <Grid item xs={12} sm={3} md={4}>
-                        <ChiefComplaintEncounterCountsTable encounterCounts={chiefComplaintEncounterCountsData} />
-                    </Grid>
-                    <Grid item xs={12} md={8} lg={8}>
-                        <ChiefComplaintCountsTable rows={chiefComplaintCountRows} />
-                    </Grid>
-                    <Grid item xs={12} md={8} lg={8}>
-                        <LengthOfStayCountsTable {...lengthOfStayData} />
-                    </Grid>
-                    <Grid item xs={12} md={4} lg={4}>
-                        {commonPresentationData && (<CommonPresentationsAndTransportsTables
-                            commonPresentationsDataRed={commonPresentationData?.commonPresentationsDataRed}
-                            transportsDataRed={commonPresentationData?.transportsDataRed}
-                            commonPresentationsDataYellow={commonPresentationData?.commonPresentationsDataYellow}
-                            transportsDataYellow={commonPresentationData?.transportsDataYellow}
-                        />)}
-                    </Grid>
-                </Grid>
-            </FormProvider>
-        </Container>
+                </FormProvider>
+            </Container>
+        </>
     );
 };
 
