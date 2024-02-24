@@ -46,6 +46,7 @@ if ADMIN_MODE == 1:
 api.include_router(routes.login.router, prefix=API_PREFIX)
 api.include_router(routes.refresh_token.router, prefix=API_PREFIX)
 api.include_router(routes.patient_encounter.router, prefix=API_PREFIX)
+api.include_router(routes.intakes.router, prefix=API_PREFIX)
 
 # TODO: Implement health model with intelligent checks
 @api.get(f"{API_PREFIX}/health")
