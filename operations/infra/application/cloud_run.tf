@@ -115,7 +115,7 @@ resource "google_cloud_run_service" "api" {
           value = local.POSTGRES_DB 
         }
         env {
-          name = "POSTGRES_DB"
+          name = "POSTGRES_SANCTUARY_DB"
           value = local.POSTGRES_SANCTUARY_DB 
         } 
         env {
