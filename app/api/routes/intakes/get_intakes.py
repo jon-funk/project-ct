@@ -16,7 +16,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 @router.get(
-    f"/{SANCTUARY}/form",
+    f"/{SANCTUARY}/forms",
     status_code=200,
     response_model=List[IntakeResponseSchema],
     name=f"get-{SANCTUARY}-form",
