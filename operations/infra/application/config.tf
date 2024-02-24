@@ -46,5 +46,7 @@ resource "google_storage_bucket" "storage_bucket" {
 #See operations/README
 terraform {
  backend "gcs" {
+  bucket = "project-ct-beta-app-sb"
+  prefix = "terraform/state"
  }
 }

@@ -61,3 +61,13 @@ in "config.gcs.tfbackend".
 4. Run "terraform init" if using ENV variables, or "terraform init -backend-config=config.gcs.tfbackend"
 if providing variables in that file, followed by "terraform plan" and "terraform apply".
 Terraform should move the state files to the storage bucket.
+
+### Additional terraform changes
+
+To apply new changes to the infrastructure you need to ensure that Terraform finds the state file located in the storage bucket.
+
+- Make sure you have the correct project selected:
+  - `gcloud config get-value project` to view current project.
+  - `gcloud config set project PROJECT_ID` to select project.
+- Initialize terraform with `terraform init` or `terraform init -backend-config="bucket=name_of_bucket" -backend-config="prefix=path/of/state/file"` if terraform cannot find the state file.
+- Run `terraform plan` to view changes and then `terraform apply`

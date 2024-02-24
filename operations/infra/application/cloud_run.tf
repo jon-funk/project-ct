@@ -29,15 +29,30 @@ resource "google_sql_database_instance" "db-instance" {
   }
 }
 
+# Medical database
 resource "google_sql_database" "database" {
   name      = local.POSTGRES_DB
   instance  = "${google_sql_database_instance.db-instance.name}"
 }
 
+# Medical db user
 resource "google_sql_user" "users" {
   instance  = "${google_sql_database_instance.db-instance.name}"
   name      = local.POSTGRES_USER
   password  = var.POSTGRES_PASSWORD
+}
+
+# Sanctuary database
+resource "google_sql_database" "sanctuary_database" {
+  name      = local.POSTGRES_SANCTUARY_DB
+  instance  = "${google_sql_database_instance.db-instance.name}"
+}
+
+# Sanctuary db user
+resource "google_sql_user" "sanctuary_user" {
+  instance  = "${google_sql_database_instance.db-instance.name}"
+  name      = local.POSTGRES_SANCTUARY_USER
+  password  = var.POSTGRES_SANCTUARY_PASSWORD
 }
 
 #cloudrun service for the web container
@@ -80,8 +95,16 @@ resource "google_cloud_run_service" "api" {
           value = local.POSTGRES_USER
         }
         env {
+          name  = "POSTGRES_SANCTUARY_USER"
+          value = local.POSTGRES_SANCTUARY_USER
+        }
+        env {
           name = "POSTGRES_PASSWORD"
           value = var.POSTGRES_PASSWORD
+        }
+        env {
+          name = "POSTGRES_SANCTUARY_PASSWORD"
+          value = var.POSTGRES_SANCTUARY_PASSWORD
         }
         env {
           name = "POSTGRES_HOST"
@@ -90,6 +113,10 @@ resource "google_cloud_run_service" "api" {
         env {
           name = "POSTGRES_DB"
           value = local.POSTGRES_DB 
+        }
+        env {
+          name = "POSTGRES_SANCTUARY_DB"
+          value = local.POSTGRES_SANCTUARY_DB 
         } 
         env {
           name  = "POSTGRES_PORT"
