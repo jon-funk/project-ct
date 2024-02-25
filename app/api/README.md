@@ -51,7 +51,7 @@ To run API tests locally, run the following commands:
 
 ```bash
 docker-compose up --detach db 
-export POSTGRES_DB=example_test
+export TEST=TEST
 pytest
 ```
 
