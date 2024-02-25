@@ -89,7 +89,7 @@ services:
     env_file: app/api/.env
     environment:
       - POSTGRES_HOST=db
-      - POSTGRES_DB=example_test
+      - IS_TEST=test
     # run as module so basedir (root) is added to python path
     command: python -m pytest api/tests/
     volumes:
