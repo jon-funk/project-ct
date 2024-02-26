@@ -10,18 +10,18 @@ class IntakeSchema(BaseModel):
     """
 
     guest_rfid: Optional[str] = None
-    arrival_date: Optional[datetime] = None
-    arrival_time: Optional[datetime] = None
-    arrival_method: Optional[str] = None
+    arrival_date: datetime
+    arrival_time: datetime
+    arrival_method: str
     identified_gender: Optional[str] = None
     first_visit: Optional[bool] = None
-    presenting_complaint: Optional[str] = None
-    guest_consciousness_level: Optional[str] = None
-    guest_emotional_state: Optional[str] = None
-    substance_categories: Optional[str] = None
+    presenting_complaint: str
+    guest_consciousness_level: str
+    guest_emotional_state: str
+    substance_categories: str
     time_since_last_dose: Optional[int] = None
-    discharge_date: Optional[datetime] = None
-    discharge_time: Optional[datetime] = None
+    discharge_date: datetime
+    discharge_time: datetime
     discharge_method: Optional[str] = None
 
     class Config:
@@ -33,7 +33,7 @@ class IntakeResponseSchema(IntakeSchema):
     The intake response schema.
     """
 
-    intake_uuid: Optional[UUID] = None
+    intake_uuid: UUID
 
     class Config:
         orm_mode = True
