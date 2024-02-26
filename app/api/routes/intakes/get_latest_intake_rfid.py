@@ -43,5 +43,4 @@ def get_latest_intake_rfid(
         raise HTTPException(
             status_code=404, detail="Unable to find an entry with that RFID."
         )
-
     return IntakeResponseSchema.from_orm(intake)

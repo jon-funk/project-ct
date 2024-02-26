@@ -84,8 +84,22 @@ def get_latest_intake_by_guest_rfid(
     return None
 
 
-def get_all_intakes(db: Session) -> Optional[List[Intake]]:
-    return db.query(Intake).filter(Intake.deleted == False)
+def get_all_intakes(
+    db: Session, arrival_date_min: Optional[str], arrival_date_max: Optional[str]
+) -> Optional[List[Intake]]:
+
+    # Base query
+    query = db.query(Intake).filter(Intake.deleted == False)
+
+    # If arrival_date_min is provided, filter by arrival_date_min
+    if arrival_date_min:
+        query = query.filter(Intake.arrival_date >= arrival_date_min)
+
+    # If arrival_date_max is provided, filter by arrival_date_max
+    if arrival_date_max:
+        query = query.filter(Intake.arrival_date <= arrival_date_max)
+
+    return query.all()
 
 
 def create_intake(db: Session, data: Intake) -> Intake:

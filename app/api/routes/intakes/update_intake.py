@@ -26,7 +26,7 @@ LOGGER = logging.getLogger(__name__)
     name=f"update-{SANCTUARY}-form",
     tags=[SANCTUARY],
 )
-def update_intake(
+def update_intake_sanctuary(
     data: IntakeResponseSchema,
     db: Session = Depends(get_db),
 ) -> IntakeResponseSchema:
