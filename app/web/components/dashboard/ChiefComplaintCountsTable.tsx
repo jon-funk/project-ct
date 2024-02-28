@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { DataGrid, GridSortItem } from "@mui/x-data-grid";
 import { Box, Typography, Paper } from "@mui/material";
 import { ChiefComplaintCountsTableProps } from "../../interfaces/ChiefComplaintCountsTableProps";
+import { tableColorStylesLight } from "../../constants/colorPalettes";
 
 /**
  * Represents the Chief Complaint Counts table
@@ -24,19 +25,15 @@ export const ChiefComplaintCountsTable = ({ rows }: ChiefComplaintCountsTablePro
         <Paper
             elevation={0}
             sx={{
-                height: 1000,
-                width: 800,
+                width: "auto",
                 "& .MuiDataGrid-columnHeaders": {
-                    backgroundColor: "#0073e6",
-                    color: "white",
-                    fontSize: "1.1rem",
-                    fontWeight: "bold",
+                    ...tableColorStylesLight.subHeader,
                 },
                 "& .MuiDataGrid-row:nth-of-type(odd)": {
-                    backgroundColor: "#eff7fa",
+                    ...tableColorStylesLight.oddRow,
                 },
                 "& .MuiDataGrid-row:nth-of-type(even)": {
-                    backgroundColor: "#ffffff",
+                    ...tableColorStylesLight.evenRow,
                 },
                 "& .MuiDataGrid-columnHeaderTitle": {
                     whiteSpace: "normal",
@@ -48,7 +45,7 @@ export const ChiefComplaintCountsTable = ({ rows }: ChiefComplaintCountsTablePro
                 },
             }}
         >
-            <Typography variant="h5">Chief Complaint Counts</Typography>
+            <Typography variant="h5" align="center" sx={{ ...tableColorStylesLight.header, padding: "16px 0" }}>Chief Complaint Counts (Total: {totalChiefComplaint})</Typography>
             <DataGrid
                 rows={rows}
                 columns={columns}
@@ -56,11 +53,11 @@ export const ChiefComplaintCountsTable = ({ rows }: ChiefComplaintCountsTablePro
                 rowsPerPageOptions={[18]}
                 sortModel={sortModel}
                 paginationMode={showPagination ? "server" : "client"}
+                autoHeight
             />
             <Box sx={{ textAlign: "center", marginTop: "1rem", marginBottom: "1rem", padding: "10px, 0px, 10px, 0px" }}>
-                <Typography variant="body1">Total Chief Complaints: {totalChiefComplaint}</Typography>
             </Box>
-        </Paper>
+        </Paper >
     )
 
 };

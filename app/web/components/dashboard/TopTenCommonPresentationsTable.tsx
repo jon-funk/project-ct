@@ -1,6 +1,7 @@
 import React from "react";
 import { TopTenCommonPresentationsTableProps } from "../../interfaces/TopTenCommonPresentationsTableProps";
 import { CommonPresentationsTable } from "./CommonPresentationsTable";
+import { Grid } from "@mui/material";
 
 
 /**
@@ -15,10 +16,14 @@ export const CommonPresentationsAndTransportsTables = (props: TopTenCommonPresen
 
     return (
         <>
-            <CommonPresentationsTable commonPresentationsData={commonPresentationsDataRed} />
-            <CommonPresentationsTable commonPresentationsData={transportsDataRed} />
-            <CommonPresentationsTable commonPresentationsData={commonPresentationsDataYellow} />
-            <CommonPresentationsTable commonPresentationsData={transportsDataYellow} />
+            <Grid item xs={12} md={8} lg={8} xl={2}>
+                <CommonPresentationsTable commonPresentationsData={commonPresentationsDataRed} />
+                <CommonPresentationsTable commonPresentationsData={transportsDataRed} />
+            </Grid>
+            <Grid item xs={12} md={8} lg={8} xl={2}>
+                <CommonPresentationsTable commonPresentationsData={commonPresentationsDataYellow} />
+                <CommonPresentationsTable commonPresentationsData={transportsDataYellow} />
+            </Grid>
         </>
     );
 };

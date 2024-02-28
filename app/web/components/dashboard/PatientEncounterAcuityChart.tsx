@@ -39,10 +39,17 @@ export const PatientEncounterAcuityBarChart: React.FC<PatientEncounterAcuityBarC
         red: "#800020",
     };
 
+    const legendData = [
+        { color: barColors.white, label: "White" },
+        { color: barColors.green, label: "Green" },
+        { color: barColors.yellow, label: "Yellow" },
+        { color: barColors.red, label: "Red" },
+    ];
+
     return (
-        <Paper elevation={3} sx={{ padding: "1rem", minHeight: "300px", minWidth: "400px" }}>
-            <Typography variant="h5" gutterBottom>Patient Encounters by Acuity</Typography>
-            <svg width={width} height={height}>
+        <Paper elevation={3} sx={{ padding: "1rem", minHeight: `${height}px`, minWidth: `${width}px` }}>
+            <Typography variant="h5" gutterBottom sx={{ textAlign: "center", fontWeight: "bold" }}>Patient Encounters by Acuity</Typography>
+            <svg width={width} height={height} overflow={"visible"}>
                 <Group>
                     {acuityCountsData.map((d) => (<>
 
@@ -68,6 +75,27 @@ export const PatientEncounterAcuityBarChart: React.FC<PatientEncounterAcuityBarC
                     </>
                     ))}
                 </Group>
+                {/* Render the legend */}
+                <Group top={height - margin.bottom + 35}>
+                    {(() => {
+                        const legendWidth = legendData.length * 100;
+                        const startingX = (width - legendWidth) / 2;
+
+                        return legendData.map((legend, index) => (
+                            <Group key={index} left={startingX + index * 100}>
+                                <rect fill={legend.color} width={15} height={15} />
+                                <Text
+                                    x={20}
+                                    y={12}
+                                    style={{ fontSize: 12, fontFamily: "Arial" }}
+                                >
+                                    {legend.label}
+                                </Text>
+                            </Group>
+                        ));
+                    })()}
+                </Group>
+
             </svg>
         </Paper >
     );

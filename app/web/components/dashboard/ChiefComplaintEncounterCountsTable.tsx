@@ -1,7 +1,7 @@
 import React from "react";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
 import { ChiefComplaintEncounterCountsTableProps } from "../../interfaces/ChiefComplaintEncounterCountsTableProps";
-
+import { tableColorStylesLight } from "../../constants/colorPalettes";
 
 /**
  * Represents the table for the chief complaint encounter counts.
@@ -23,19 +23,23 @@ export const ChiefComplaintEncounterCountsTable: React.FC<ChiefComplaintEncounte
         <TableContainer component={Paper}>
             <Table sx={{ minWidth: 50 }} aria-label="simple table">
                 <TableHead>
-                    <TableRow>
-                        <TableCell colSpan={2} align="center">Chief Complaints across Patient Encounters</TableCell>
+                    <TableRow sx={{ ...tableColorStylesLight.header, "& > *": tableColorStylesLight.header }}>
+                        <TableCell colSpan={2} align="center" sx={{ ...tableColorStylesLight.header }}>Chief Complaints across Patient Encounters</TableCell>
                     </TableRow>
-                    <TableRow>
-                        <TableCell># of Complaints</TableCell>
-                        <TableCell align="right"># of Encounters</TableCell>
+                    <TableRow sx={{ ...tableColorStylesLight.subHeader, "& > *": tableColorStylesLight.subHeader }}>
+                        <TableCell align="center" ># of Complaints</TableCell>
+                        <TableCell align="center"># of Encounters</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {rows.map((row) => (
                         <TableRow
                             key={row.numberOfComplaints}
-                            sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                            sx={{
+                                "&:nth-of-type(odd)": tableColorStylesLight.oddRow,
+                                "&:nth-of-type(even)": tableColorStylesLight.evenRow,
+                                "&:last-child td, &:last-child th": { border: 0 }
+                            }}
                         >
                             <TableCell component="th" scope="row" align="center">
                                 {row.numberOfComplaints}
