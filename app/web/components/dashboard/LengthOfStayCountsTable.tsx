@@ -1,7 +1,7 @@
 import React from "react";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
 import { LengthOfStayCountsTableProps } from "../../interfaces/LengthOfStayCountsTableProps";
-
+import { tableColorStylesLight } from "../../constants/colorPalettes";
 
 /**
  * Represents the table for the length of stay counts.
@@ -18,7 +18,11 @@ export const LengthOfStayCountsTable: React.FC<LengthOfStayCountsTableProps> = (
         <TableContainer component={Paper}>
             <Table aria-label="customized table">
                 <TableHead>
-                    <TableRow>
+                    <TableRow sx={{ ...tableColorStylesLight.header, "& > *": tableColorStylesLight.header }}>
+
+                        <TableCell align="center" colSpan={6} sx={{ ...tableColorStylesLight.header }}>Length of Stay Counts</TableCell>
+                    </TableRow>
+                    <TableRow sx={{ ...tableColorStylesLight.subHeader, "& > *": tableColorStylesLight.subHeader }}>
                         <TableCell align="center">Length of Stay</TableCell>
                         <TableCell align="center">Total</TableCell>
                         <TableCell align="center">Rd</TableCell>
@@ -29,7 +33,13 @@ export const LengthOfStayCountsTable: React.FC<LengthOfStayCountsTableProps> = (
                 </TableHead>
                 <TableBody>
                     {rows.map((row: (string | number)[], index: number) => (
-                        <TableRow key={index}>
+                        <TableRow
+                            key={index}
+                            sx={{
+                                "&:nth-of-type(odd)": tableColorStylesLight.oddRow,
+                                "&:nth-of-type(even)": tableColorStylesLight.evenRow
+                            }}
+                        >
                             {row.map((cell, cellIndex) => (
                                 <TableCell key={cellIndex} align="center">
                                     {typeof cell === "number" ? cell.toFixed(0) : cell}
@@ -38,12 +48,15 @@ export const LengthOfStayCountsTable: React.FC<LengthOfStayCountsTableProps> = (
                         </TableRow>
                     ))}
                     {/* Quartiles Header */}
-                    <TableRow>
-                        <TableCell colSpan={6} align="left">Quartiles</TableCell>
+                    <TableRow sx={tableColorStylesLight.subHeader}>
+                        <TableCell colSpan={6} align="left" sx={tableColorStylesLight.subHeader}>Quartiles</TableCell>
                     </TableRow>
                     {/* Quantiles, Mean, etc. */}
                     {summaryRows.map((row: (string | number)[], index: number) => (
-                        <TableRow key={index}>
+                        <TableRow key={index} sx={{
+                            "&:nth-of-type(odd)": tableColorStylesLight.oddRow,
+                            "&:nth-of-type(even)": tableColorStylesLight.evenRow
+                        }}>
                             {row.map((cell, cellIndex) => (
                                 <TableCell key={cellIndex} align="center">
                                     {row[0] === "Mean" && typeof cell === "number" ? cell.toFixed(2) : cell}
