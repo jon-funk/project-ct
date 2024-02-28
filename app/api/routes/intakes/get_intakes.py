@@ -54,5 +54,4 @@ def get_intakes(
         )
 
     all_intakes = [IntakeResponseSchema.from_orm(e) for e in intakes]
-
     return all_intakes
