@@ -1478,6 +1478,17 @@
     classnames "^2.3.1"
     prop-types "^15.6.2"
 
+"@visx/legend@^3.5.0":
+  version "3.5.0"
+  resolved "https://registry.yarnpkg.com/@visx/legend/-/legend-3.5.0.tgz#a1ffe1fa7b47428ea22eaab312a1e0119a95b52b"
+  integrity sha512-bRQNF3M2VCTxTmRkRVjeQSDqvjgUT1CMU3T1apf2UmZJ7zo73anwqDBtSJx+csarDij0DbcoWvKY4NdTp7Uepg==
+  dependencies:
+    "@types/react" "*"
+    "@visx/group" "3.3.0"
+    "@visx/scale" "3.5.0"
+    classnames "^2.3.1"
+    prop-types "^15.5.10"
+
 "@visx/scale@3.5.0", "@visx/scale@^3.5.0":
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/@visx/scale/-/scale-3.5.0.tgz#c3db3863bbdd24d44781104ef5ee4cdc8df6f11d"

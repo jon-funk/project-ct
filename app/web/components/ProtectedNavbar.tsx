@@ -17,6 +17,7 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
+import { BoxProps } from "@mui/material/Box";
 import { UserGroupRoutes, UserGroupKey } from "../constants/routes";
 import { getUserGroupKey, removeUserGroup } from "../utils/authentication";
 import HomeIcon from "@mui/icons-material/Home";
@@ -28,6 +29,7 @@ import AddIcon from "@mui/icons-material/Add";
 import QueryStatsIcon from "@mui/icons-material/QueryStats";
 
 
+interface ProtectedNavbarProps extends BoxProps { }
 
 
 
@@ -36,7 +38,7 @@ import QueryStatsIcon from "@mui/icons-material/QueryStats";
  *
  * @returns JSX element representing the navbar.
  */
-const ProtectedNavbar: React.FC = () => {
+const ProtectedNavbar: React.FC<ProtectedNavbarProps> = (props) => {
 
   // Ensure the component is mounted before running any logic
   const [isMounted, setIsMounted] = useState(false);
@@ -224,8 +226,8 @@ const ProtectedNavbar: React.FC = () => {
 
     return (
       <>
-        <Box sx={{ display: "flex", pb: "60px" }}>
-          <AppBar component="nav">
+        <Box sx={{ display: "flex", pb: "60px", ...props.sx }}>
+          <AppBar component="nav" position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
             <Toolbar>
               <IconButton
                 color="inherit"
