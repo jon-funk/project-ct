@@ -24,10 +24,10 @@ import api.models
 target_metadata = BaseSanctuary.metadata
 
 # Environment based sqlalchemy url
-user = os.environ.get("POSTGRES_USER")
-password = os.environ.get("POSTGRES_PASSWORD")
+user = os.environ.get("POSTGRES_SANCTUARY_USER")
+password = os.environ.get("POSTGRES_SANCTUARY_PASSWORD")
 hostname = os.environ.get("POSTGRES_HOST")
-db = "sanctuary"
+db = os.environ.get("POSTGRES_SANCTUARY_DB")
 SQLALCHEMY_DATABASE_URL = f"postgresql+psycopg2://{user}:{password}@{hostname}/{db}"
 config.set_main_option("sqlalchemy.url", SQLALCHEMY_DATABASE_URL)
 
