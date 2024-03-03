@@ -24,7 +24,7 @@ def load_current_user(
     user from the database. Checks if user in in the right user_group. Raise validation exceptions otherwise.
     """
 
-    # Fetch the function based on user group and call it
+    # determine user credentials
     token = credentials.credentials
 
     try:
@@ -36,12 +36,14 @@ def load_current_user(
     except JWTError:
         raise get_credentials_exception()
 
+    # Fetch the function based on user group and call it
     if user_group in db_functions:
         db_generator = db_functions[user_group]()
         db = next(db_generator)
     else:
         raise HTTPException(status_code=400, detail="Invalid user group.")
 
+    # fetch user from db based on credentials
     user = get_user_by_email(db, email)
     if user is None:
         raise get_credentials_exception()
@@ -63,39 +65,6 @@ def get_user_group(
         raise get_credentials_exception()
 
     return user_group
-
-
-# Sanctuary load user function
-def load_current_sanctuary_user(
-    request: Request, credentials: HTTPAuthorizationCredentials = Security(security)
-) -> T.Any:
-    """
-    Try and decrypt a JSON token and return the corresponding
-    user from the database. Checks if user in in the right user_group. Raise validation exceptions otherwise.
-    """
-
-    token = credentials.credentials
-
-    try:
-        payload = jwt.decode(token, os.getenv("SECRET_KEY"), algorithms=["HS256"])
-        email: str = payload.get("sub")
-        user_group: str = payload.get("user_group")  # Extract user group from the token
-        if email is None or user_group != SANCTUARY:
-            raise get_credentials_exception()
-    except JWTError:
-        raise get_credentials_exception()
-
-    # Fetch the function based on user group and call it
-    if user_group in db_functions:
-        db = db_functions[user_group]()
-    else:
-        raise HTTPException(status_code=400, detail="Invalid user group.")
-
-    user = get_user_by_email(db, email)
-    if user is None:
-        raise get_credentials_exception()
-
-    return user
 
 
 def verify_password(password_hash: str, password: str) -> bool:
