@@ -66,7 +66,7 @@ function SanctuaryIntakeSearch(): React.JSX.Element {
     if (isError) {
         return (
             <>
-                <ProtectedNavbar />
+                <ProtectedNavbar navigationText="List Intakes" />
                 <Container>
                     {isError && (
                         <Typography
@@ -88,7 +88,7 @@ function SanctuaryIntakeSearch(): React.JSX.Element {
     } else {
         return (
             <>
-                <ProtectedNavbar />
+                <ProtectedNavbar navigationText="List Intakes" />
                 <Container>
                     <Typography
                         variant="h4"

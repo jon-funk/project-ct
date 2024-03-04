@@ -8,7 +8,7 @@ import ProtectedNavbar from "../../components/ProtectedNavbar";
 function SanctuaryHome(): JSX.Element {
     return (
         <Container maxWidth="md">
-            <ProtectedNavbar />
+            <ProtectedNavbar navigationText="Home" />
             <Typography variant="h1">Sanctuary Home</Typography>
         </Container>
     );

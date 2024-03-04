@@ -29,7 +29,9 @@ import AddIcon from "@mui/icons-material/Add";
 import QueryStatsIcon from "@mui/icons-material/QueryStats";
 
 
-interface ProtectedNavbarProps extends BoxProps { }
+interface ProtectedNavbarProps extends BoxProps {
+  navigationText?: string;
+}
 
 
 
@@ -247,14 +249,15 @@ const ProtectedNavbar: React.FC<ProtectedNavbarProps> = (props) => {
                 </IconButton>
               </Link>
               <Typography
-                variant="h6"
+                variant="body2"
                 component="div"
                 sx={{
                   flexGrow: 1,
                   display: { xs: "none", sm: "block", fontWeight: "bold" },
                 }}
               >
-
+                {/* Create nav bread crumbs */}
+                {userGroupKey.charAt(0).toUpperCase() + userGroupKey.slice(1).replace(/-/g, " ")} {" > "} {props.navigationText}
               </Typography>
               <Box sx={{ display: { xs: "none", sm: "block" } }}>
                 <Box sx={{ display: "flex" }}>
