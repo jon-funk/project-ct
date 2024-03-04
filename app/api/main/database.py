@@ -15,6 +15,8 @@ test = os.environ.get("IS_TEST")
 user = os.environ.get("POSTGRES_USER")
 password = os.environ.get("POSTGRES_PASSWORD")
 hostname = os.environ.get("POSTGRES_HOST")
+user_sanctuary = os.environ.get("POSTGRES_SANCTUARY_USER")
+pass_sanctuary = os.environ.get("POSTGRES_SANCTUARY_PASSWORD")
 port = str(os.environ.get("POSTGRES_PORT"))
 db_medical = os.environ.get("POSTGRES_DB")
 db_sanctuary = os.environ.get("POSTGRES_SANCTUARY_DB")
@@ -25,17 +27,14 @@ if test:
         f"postgresql+psycopg2://{user}:{password}@{hostname}:{port}/{db_medical}_test"
     )
 
-    SQLALCHEMY_DATABASE_URL_SANCTUARY = (
-        f"postgresql+psycopg2://{user}:{password}@{hostname}:{port}/{db_sanctuary}_test"
-    )
+    SQLALCHEMY_DATABASE_URL_SANCTUARY = f"postgresql+psycopg2://{user_sanctuary}:{pass_sanctuary}@{hostname}:{port}/{db_sanctuary}_test"
 else:
     SQLALCHEMY_DATABASE_URL = (
         f"postgresql+psycopg2://{user}:{password}@{hostname}:{port}/{db_medical}"
     )
+
     # Define engine for the 'sanctuary' database
-    SQLALCHEMY_DATABASE_URL_SANCTUARY = (
-        f"postgresql+psycopg2://{user}:{password}@{hostname}:{port}/{db_sanctuary}"
-    )
+    SQLALCHEMY_DATABASE_URL_SANCTUARY = f"postgresql+psycopg2://{user_sanctuary}:{pass_sanctuary}@{hostname}:{port}/{db_sanctuary}"
 
 
 engine_sanctuary = create_engine(SQLALCHEMY_DATABASE_URL_SANCTUARY)
