@@ -2,18 +2,22 @@ import { PatientEncounterRow } from "../interfaces/PatientEncounterRow";
 import { buildBearerTokenHeader } from "./authentication";
 import { SubmitAlert } from "../interfaces/SubmitAlert";
 import { ChiefComplaintCountsTableRowData } from "../interfaces/ChiefComplaintCountsTableProps";
-import { TriageAcuities } from "../constants/medicalForm";
+import { TriageAcuities, TriageAcuity } from "../constants/medicalForm";
 import { LengthOfStayCountsTableProps } from "../interfaces/LengthOfStayCountsTableProps";
 import { calculateQuartileStatistics } from "./statistics";
 import {
   initialRowsDataCCCount,
   initialSummaryRowsCCCount,
 } from "../constants/posteventDashboard";
-import { AggregatedDurations } from "../interfaces/PosteventDashboard";
+import {
+  AcuityCountPerDay,
+  AggregatedDurations,
+} from "../interfaces/PosteventDashboard";
 import { LosDuration } from "../interfaces/PosteventDashboard";
 import { RowDataCCCount } from "../interfaces/PosteventDashboard";
 import { UserGroupKeys } from "../constants/keys";
 import { AcuityCountsData } from "../interfaces/AcuityCountsData";
+import { ValidTriageAcuities } from "../constants/medicalForm";
 
 /**
  * Builds the API path with query parameters for the patient encounters
@@ -603,4 +607,74 @@ export function calculateAcuityCountsData(
     acuity,
     encounters,
   }));
+}
+
+export function calculatePatientEncountersByAcuityPerDay(
+  patientEncounters: PatientEncounterRow[]
+): AcuityCountPerDay {
+  const encountersByAcuityPerDay: AcuityCountPerDay = {};
+
+  // Tally counts for each acuity per day
+  patientEncounters.forEach((encounter) => {
+    const date = encounter.arrival_date.toISOString().split("T")[0];
+    const acuity = encounter.triage_acuity;
+
+    if (!encountersByAcuityPerDay[date]) {
+      encountersByAcuityPerDay[date] = {
+        countWhite: 0,
+        countGreen: 0,
+        countYellow: 0,
+        countRed: 0,
+        totalCounts: 0,
+        percWhite: 0,
+        percGreen: 0,
+        percYellow: 0,
+        percRed: 0,
+      };
+    }
+
+    if (isValidAcuity(acuity)) {
+      const key = getAcuityCountKey(acuity);
+      encountersByAcuityPerDay[date][key] += 1;
+      encountersByAcuityPerDay[date].totalCounts += 1;
+    } else {
+      console.warn(`Unknown acuity encountered: ${acuity}`);
+    }
+  });
+
+  // Calculate percentages for each acuity per day
+  Object.keys(encountersByAcuityPerDay).forEach((date) => {
+    const dayData = encountersByAcuityPerDay[date];
+    const total = dayData.totalCounts;
+
+    dayData.percWhite = (dayData.countWhite / total) * 100;
+    dayData.percGreen = (dayData.countGreen / total) * 100;
+    dayData.percYellow = (dayData.countYellow / total) * 100;
+    dayData.percRed = (dayData.countRed / total) * 100;
+  });
+
+  return encountersByAcuityPerDay;
+}
+
+function isValidAcuity(
+  value: string
+): value is (typeof ValidTriageAcuities)[number] {
+  return ValidTriageAcuities.includes(value as TriageAcuity);
+}
+
+function getAcuityCountKey(
+  acuity: TriageAcuity
+): keyof AcuityCountPerDay[string] {
+  switch (acuity) {
+    case "white":
+      return "countWhite";
+    case "green":
+      return "countGreen";
+    case "yellow":
+      return "countYellow";
+    case "red":
+      return "countRed";
+    default:
+      throw new Error(`Unknown acuity encountered: ${acuity}`);
+  }
 }

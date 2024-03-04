@@ -1461,6 +1461,20 @@
   resolved "https://registry.yarnpkg.com/@ungap/structured-clone/-/structured-clone-1.2.0.tgz#756641adb587851b5ccb3e095daf27ae581c8406"
   integrity sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==
 
+"@visx/axis@^3.8.0":
+  version "3.8.0"
+  resolved "https://registry.yarnpkg.com/@visx/axis/-/axis-3.8.0.tgz#4f40af3d50d5d975edf348b7699a83bd9bb53fa7"
+  integrity sha512-CFIxPnRlIWIz8N+5n4DTSOQQ2Yb0D35YPylEkmk/c7J4haLCEhyI44JaOg6OYOk6ofCOsu9Fqe6dFAOP+MP1IQ==
+  dependencies:
+    "@types/react" "*"
+    "@visx/group" "3.3.0"
+    "@visx/point" "3.3.0"
+    "@visx/scale" "3.5.0"
+    "@visx/shape" "3.5.0"
+    "@visx/text" "3.3.0"
+    classnames "^2.3.1"
+    prop-types "^15.6.0"
+
 "@visx/curve@3.3.0":
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/@visx/curve/-/curve-3.3.0.tgz#a5ed8f1511d404ef83c0b956ed5021088ac64b0e"
@@ -1489,6 +1503,11 @@
     classnames "^2.3.1"
     prop-types "^15.5.10"
 
+"@visx/point@3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@visx/point/-/point-3.3.0.tgz#7a705e09892ae45b4c9cf3155e9be3a3845460d8"
+  integrity sha512-03eBBIJarkmX79WbeEGTUZwmS5/MUuabbiM9KfkGS9pETBTWkp1DZtEHZdp5z34x5TDQVLSi0rk1Plg3/8RtDg==
+
 "@visx/scale@3.5.0", "@visx/scale@^3.5.0":
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/@visx/scale/-/scale-3.5.0.tgz#c3db3863bbdd24d44781104ef5ee4cdc8df6f11d"
@@ -1496,7 +1515,7 @@
   dependencies:
     "@visx/vendor" "3.5.0"
 
-"@visx/shape@^3.5.0":
+"@visx/shape@3.5.0", "@visx/shape@^3.5.0":
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/@visx/shape/-/shape-3.5.0.tgz#fa4bb7a9ed863360be541d75c434503246305e36"
   integrity sha512-DP3t9jBQ7dSE3e6ptA1xO4QAIGxO55GrY/6P+S6YREuQGjZgq20TLYLAsiaoPEzFSS4tp0m12ZTPivWhU2VBTw==
@@ -1514,7 +1533,7 @@
     lodash "^4.17.21"
     prop-types "^15.5.10"
 
-"@visx/text@^3.3.0":
+"@visx/text@3.3.0", "@visx/text@^3.3.0":
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/@visx/text/-/text-3.3.0.tgz#f53366a9c18bc448c6b8869527c0f75c9591e7a7"
   integrity sha512-fOimcsf0GtQE9whM5MdA/xIkHMaV29z7qNqNXysUDE8znSMKsN+ott7kSg2ljAEE89CQo3WKHkPNettoVsa84w==
@@ -4305,7 +4324,7 @@ prompts@^2.0.1:
     kleur "^3.0.3"
     sisteransi "^1.0.5"
 
-prop-types@^15.5.10, prop-types@^15.6.2, prop-types@^15.7.2, prop-types@^15.8.1:
+prop-types@^15.5.10, prop-types@^15.6.0, prop-types@^15.6.2, prop-types@^15.7.2, prop-types@^15.8.1:
   version "15.8.1"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.8.1.tgz#67d87bf1a694f48435cf332c24af10214a3140b5"
   integrity sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==
