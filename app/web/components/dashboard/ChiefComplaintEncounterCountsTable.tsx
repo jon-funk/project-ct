@@ -2,6 +2,7 @@ import React from "react";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
 import { ChiefComplaintEncounterCountsTableProps } from "../../interfaces/ChiefComplaintEncounterCountsTableProps";
 import { tableColorStylesLight } from "../../constants/colorPalettes";
+import { StyledTableCell } from "../StyledTableComponents";
 
 /**
  * Represents the table for the chief complaint encounter counts.
@@ -27,8 +28,8 @@ export const ChiefComplaintEncounterCountsTable: React.FC<ChiefComplaintEncounte
                         <TableCell colSpan={2} align="center" sx={{ ...tableColorStylesLight.header }}>Chief Complaints across Patient Encounters</TableCell>
                     </TableRow>
                     <TableRow sx={{ ...tableColorStylesLight.subHeader, "& > *": tableColorStylesLight.subHeader }}>
-                        <TableCell align="center" ># of Complaints</TableCell>
-                        <TableCell align="center"># of Encounters</TableCell>
+                        <StyledTableCell align="center"># of Complaints</StyledTableCell>
+                        <StyledTableCell align="center"># of Encounters</StyledTableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>

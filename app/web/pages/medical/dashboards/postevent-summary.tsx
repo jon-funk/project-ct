@@ -49,7 +49,7 @@ const MedicalPostEventSummaryDashboard = () => {
         watch, } = methods;
 
     const selectedYear = watch("selectedYear");
-    const [selectedView, setSelectedView] = useState<string>("summary");
+    const [selectedView, setSelectedView] = useState<string>("");
 
     const theme = useTheme();
     const breakpoints = {
@@ -84,7 +84,7 @@ const MedicalPostEventSummaryDashboard = () => {
     // When the year is selected, fetch the patient encounters for that year
     useEffect(() => {
 
-        if (selectedYear) {
+        if (selectedYear && selectedView === "") {
             setSelectedView("Summary");
         }
 
@@ -122,7 +122,7 @@ const MedicalPostEventSummaryDashboard = () => {
         };
 
         fetchPatientEncounters();
-    }, [patientEncounters, selectedYear, setValue]);
+    }, [patientEncounters, selectedYear, setValue, selectedView, setApiAlert]);
 
     return (
         <>
