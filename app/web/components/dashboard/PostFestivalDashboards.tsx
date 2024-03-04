@@ -10,6 +10,8 @@ import { LengthOfStayCountsTableProps } from "../../interfaces/LengthOfStayCount
 import { TopTenCommonPresentationsTableProps } from "../../interfaces/TopTenCommonPresentationsTableProps";
 import { AcuityCountsData } from "../../interfaces/AcuityCountsData";
 import { Box } from "@mui/material";
+import { AcuityCountPerDay } from "../../interfaces/PosteventDashboard";
+import { PatientEncounterCountByDayStackedBarChart } from "./PatientEncounterCountsByDay";
 
 interface PostFestivalSummaryProps {
     selectedYear: string;
@@ -28,9 +30,6 @@ export const PostFestivalSummaryComponent: React.FC<PostFestivalSummaryProps> = 
     commonPresentationData,
 }) => {
     return <Grid container spacing={2} style={{ padding: 1 + "rem" }}>
-        <Grid item xs={12}>
-        </Grid>
-
         <Grid>
             <Grid container direction="column" spacing={2}>
                 <Grid item>
@@ -64,9 +63,31 @@ export const SelectYearPrompt = () => (
 );
 
 
-export const PatientEncountersDashboardComponent = () => {
-    return <Box>
-    </Box>;
+export interface PatientEncountersDashboardComponentProps {
+    selectedYear: string;
+    acuityCountPerDay: AcuityCountPerDay;
+}
+
+
+export const PatientEncountersDashboardComponent: React.FC<PatientEncountersDashboardComponentProps> = (
+    {
+        acuityCountPerDay,
+    }
+) => {
+    return <>
+        <Grid container spacing={2} style={{ padding: 1 + "rem" }}>
+            <Grid>
+                <Grid container direction="column" spacing={2}>
+                    <Grid item>
+                        <PatientEncounterCountByDayStackedBarChart acuityCountPerDay={acuityCountPerDay} />
+                    </Grid>
+                    <Grid item>
+                        <PatientEncounterCountByDayStackedBarChart acuityCountPerDay={acuityCountPerDay} displayCounts={false} />
+                    </Grid>
+                </Grid>
+            </Grid>
+        </Grid>
+    </>
 };
 
 export const OffsiteTransportsDashboardComponent = () => {

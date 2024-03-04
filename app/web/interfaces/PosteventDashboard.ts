@@ -22,3 +22,18 @@ export interface ComplaintCount {
   complaint: string;
   count: number;
 }
+
+export type AcuityCountPerDay = Record<
+  string,
+  {
+    countWhite: number;
+    countGreen: number;
+    countYellow: number;
+    countRed: number;
+    totalCounts: number;
+    percWhite: number;
+    percGreen: number;
+    percYellow: number;
+    percRed: number;
+  }
+>;
