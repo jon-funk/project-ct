@@ -590,7 +590,13 @@ export function calculateAcuityCountsData(
   };
 
   patientEncounters.forEach((encounter) => {
-    acuityCounts[encounter.triage_acuity] += 1;
+    if (acuityCounts.hasOwnProperty(encounter.triage_acuity)) {
+      acuityCounts[encounter.triage_acuity] += 1;
+    } else {
+      console.error(
+        `ERROR: Encounter with unknown acuity: ${encounter.triage_acuity}`
+      );
+    }
   });
 
   return Object.entries(acuityCounts).map(([acuity, encounters]) => ({

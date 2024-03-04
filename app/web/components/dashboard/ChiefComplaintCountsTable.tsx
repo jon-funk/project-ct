@@ -59,7 +59,6 @@ export const ChiefComplaintCountsTable = ({ rows }: ChiefComplaintCountsTablePro
             </Box>
         </Paper >
     )
-
 };
 
 /**
