@@ -2,6 +2,7 @@ import React from "react";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
 import { LengthOfStayCountsTableProps } from "../../interfaces/LengthOfStayCountsTableProps";
 import { tableColorStylesLight } from "../../constants/colorPalettes";
+import { StyledTableCell } from "../StyledTableComponents";
 
 /**
  * Represents the table for the length of stay counts.
@@ -23,12 +24,12 @@ export const LengthOfStayCountsTable: React.FC<LengthOfStayCountsTableProps> = (
                         <TableCell align="center" colSpan={6} sx={{ ...tableColorStylesLight.header }}>Length of Stay Counts</TableCell>
                     </TableRow>
                     <TableRow sx={{ ...tableColorStylesLight.subHeader, "& > *": tableColorStylesLight.subHeader }}>
-                        <TableCell align="center">Length of Stay</TableCell>
-                        <TableCell align="center">Total</TableCell>
-                        <TableCell align="center">Rd</TableCell>
-                        <TableCell align="center">Yw</TableCell>
-                        <TableCell align="center">Gr</TableCell>
-                        <TableCell align="center">Wh</TableCell>
+                        <StyledTableCell align="center">Length of Stay</StyledTableCell>
+                        <StyledTableCell align="center">Total</StyledTableCell>
+                        <StyledTableCell align="center">Rd</StyledTableCell>
+                        <StyledTableCell align="center">Yw</StyledTableCell>
+                        <StyledTableCell align="center">Gr</StyledTableCell>
+                        <StyledTableCell align="center">Wh</StyledTableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -49,7 +50,7 @@ export const LengthOfStayCountsTable: React.FC<LengthOfStayCountsTableProps> = (
                     ))}
                     {/* Quartiles Header */}
                     <TableRow sx={tableColorStylesLight.subHeader}>
-                        <TableCell colSpan={6} align="left" sx={tableColorStylesLight.subHeader}>Quartiles</TableCell>
+                        <StyledTableCell align="left" colSpan={6}>Quartiles</StyledTableCell>
                     </TableRow>
                     {/* Quantiles, Mean, etc. */}
                     {summaryRows.map((row: (string | number)[], index: number) => (
