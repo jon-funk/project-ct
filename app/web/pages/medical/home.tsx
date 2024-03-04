@@ -8,7 +8,7 @@ function MedicalHome() {
   return (
     <>
       <Container>
-        <ProtectedNavbar />
+        <ProtectedNavbar navigationText="Home" />
         <Typography
           variant="h4"
           component="h4"

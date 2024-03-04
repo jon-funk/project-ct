@@ -102,7 +102,7 @@ function SanctuaryIntakeForm(): JSX.Element {
 
     return (
         <>
-            <ProtectedNavbar />
+            <ProtectedNavbar navigationText="New Intake Form" />
             <Container maxWidth="sm">
                 <Paper>
                     <FormProvider {...methods}>
