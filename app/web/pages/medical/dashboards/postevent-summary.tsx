@@ -7,7 +7,8 @@ import {
     calculatePostFestivalLengthOfStayData,
     calculateChiefComplaintEncounterCountsSummary,
     calculateCommonPresentationsAndTransports,
-    calculateAcuityCountsData
+    calculateAcuityCountsData,
+    calculatePatientEncountersByAcuityPerDay
 } from "../../../utils/postfestivalDashboard";
 import { fetchPatientEncountersData } from "../../../utils/postfestivalDashboard";
 import { MedicalDashboardConfigs } from "../../../constants/configs";
@@ -30,6 +31,7 @@ import {
     PatientLengthOfStayDashboardComponent
 } from "../../../components/dashboard/PostFestivalDashboards";
 import { SelectYearPrompt } from "../../../components/dashboard/PostFestivalDashboards";
+import { AcuityCountPerDay } from "../../../interfaces/PosteventDashboard";
 
 
 
@@ -80,6 +82,7 @@ const MedicalPostEventSummaryDashboard = () => {
     const [lengthOfStayData, setLengthOfStayData] = useState<LengthOfStayCountsTableProps>({ rows: [], summaryRows: [] });
     const [commonPresentationData, setCommonPresentationData] = useState<TopTenCommonPresentationsTableProps | null>(null);
     const [acuityCountsData, setAcuityCountsData] = useState<AcuityCountsData[]>([]);
+    const [acuityCountPerDay, setAcuityCountPerDay] = useState<AcuityCountPerDay>({});
 
     // When the year is selected, fetch the patient encounters for that year
     useEffect(() => {
@@ -113,6 +116,9 @@ const MedicalPostEventSummaryDashboard = () => {
 
                     const acuityCountsData = calculateAcuityCountsData(patientEncounters);
                     setAcuityCountsData(acuityCountsData);
+
+                    const patientEncounterAcuityCountsByDay = calculatePatientEncountersByAcuityPerDay(patientEncounters);
+                    setAcuityCountPerDay(patientEncounterAcuityCountsByDay);
 
                 } catch (error) {
                     console.error("Error fetching patient encounters: ", error);
@@ -154,7 +160,7 @@ const MedicalPostEventSummaryDashboard = () => {
                                     <SelectYearPrompt />
                                 )
                             ) : selectedView === "Patient Encounters" ? (
-                                <PatientEncountersDashboardComponent />
+                                <PatientEncountersDashboardComponent selectedYear={selectedYear} acuityCountPerDay={acuityCountPerDay} />
                             ) : selectedView === "Offsite Transports" ? (
                                 <OffsiteTransportsDashboardComponent />
                             ) : selectedView === "Patient Length of Stay Times" ? (

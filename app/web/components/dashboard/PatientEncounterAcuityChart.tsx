@@ -5,6 +5,7 @@ import { Bar } from "@visx/shape";
 import { Text } from "@visx/text";
 import { scaleBand, scaleLinear } from "@visx/scale";
 import { AcuityCountsData } from "../../interfaces/AcuityCountsData";
+import { triageColorStyles } from "../../constants/colorPalettes";
 
 
 /**
@@ -33,10 +34,10 @@ export const PatientEncounterAcuityBarChart: React.FC<PatientEncounterAcuityBarC
     });
 
     const barColors = {
-        white: "#d3d3d3",
-        green: "#008080",
-        yellow: "#ffbf00",
-        red: "#800020",
+        white: triageColorStyles.white.backgroundColor,
+        green: triageColorStyles.green.backgroundColor,
+        yellow: triageColorStyles.yellow.backgroundColor,
+        red: triageColorStyles.red.backgroundColor,
     };
 
     const legendData = [

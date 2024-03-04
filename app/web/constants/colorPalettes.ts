@@ -18,3 +18,22 @@ export const tableColorStylesLight = {
     backgroundColor: "#ffffff",
   },
 };
+
+export const triageColorStyles = {
+  red: {
+    backgroundColor: "#800020",
+    color: "white",
+  },
+  yellow: {
+    backgroundColor: "#ffbf00",
+    color: "black",
+  },
+  green: {
+    backgroundColor: "#008080",
+    color: "white",
+  },
+  white: {
+    backgroundColor: "#d3d3d3",
+    color: "black",
+  },
+};
