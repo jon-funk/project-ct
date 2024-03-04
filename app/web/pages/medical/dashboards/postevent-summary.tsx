@@ -126,7 +126,7 @@ const MedicalPostEventSummaryDashboard = () => {
 
     return (
         <>
-            <ProtectedNavbar sx={{ zIndex: 1300 }} />
+            <ProtectedNavbar sx={{ zIndex: 1300 }} navigationText={getNavigationText(selectedView as SelectedView, selectedYear)} />
             <Box sx={{ display: "flex" }}>
                 <PostEventDashboardSidebar control={control} methods={methods} onSelectView={setSelectedView} />
                 <Box
@@ -170,4 +170,17 @@ const MedicalPostEventSummaryDashboard = () => {
 
 export default ProtectedRoute(MedicalPostEventSummaryDashboard);
 
+type SelectedView = "Summary" | "Patient Encounters" | "Offsite Transports" | "Patient Length of Stay Times" | "";
 
+const viewToNavigationText: { [key in SelectedView]: string } = {
+    "Summary": "Dashboard > Post-Event > Summary",
+    "Patient Encounters": "Dashboard > Post-Event > Patient Encounters",
+    "Offsite Transports": "Dashboard > Post-Event > Offsite Transports",
+    "Patient Length of Stay Times": "Dashboard > Post-Event > Patient Length of Stay Times",
+    "": "Dashboard > Post-Event",
+};
+
+const getNavigationText = (selectedView: SelectedView, selectedYear: string | undefined) => {
+    const yearText = selectedYear ? ` for ${selectedYear}` : "";
+    return (viewToNavigationText[selectedView] || "Dashboard > Post-Event") + yearText;
+};

@@ -88,7 +88,7 @@ function MFPEForm(): JSX.Element {
 
   return (
     <>
-      <ProtectedNavbar />
+      <ProtectedNavbar navigationText="New Patient Encounter Entry" />
       <Container maxWidth="sm">
         <FormProvider {...methods}>
           <FormControl>

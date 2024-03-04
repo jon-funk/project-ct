@@ -75,7 +75,7 @@ function PatientEncounterSearch() {
   if (isError) {
     return (
       <>
-        <ProtectedNavbar />
+        <ProtectedNavbar navigationText="List Patient Encounters" />
         <Container>
           {isError && (
             <Typography
@@ -97,7 +97,7 @@ function PatientEncounterSearch() {
   } else {
     return (
       <>
-        <ProtectedNavbar />
+        <ProtectedNavbar navigationText="List Patient Encounters" />
         <Container>
           <Typography
             variant="h4"

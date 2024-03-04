@@ -21,7 +21,6 @@ interface PostFestivalSummaryProps {
 }
 
 export const PostFestivalSummaryComponent: React.FC<PostFestivalSummaryProps> = ({
-    selectedYear,
     acuityCountsData,
     chiefComplaintEncounterCountsData,
     chiefComplaintCountRows,
@@ -30,7 +29,6 @@ export const PostFestivalSummaryComponent: React.FC<PostFestivalSummaryProps> = 
 }) => {
     return <Grid container spacing={2} style={{ padding: 1 + "rem" }}>
         <Grid item xs={12}>
-            <Typography variant="h3">Post-Event Summary {selectedYear}</Typography>
         </Grid>
 
         <Grid>
@@ -68,18 +66,15 @@ export const SelectYearPrompt = () => (
 
 export const PatientEncountersDashboardComponent = () => {
     return <Box>
-        <Typography variant="h3">Patient Encounters</Typography>
     </Box>;
 };
 
 export const OffsiteTransportsDashboardComponent = () => {
     return <Box>
-        <Typography variant="h3">Offsite Transports</Typography>
     </Box>;
 }
 
 export const PatientLengthOfStayDashboardComponent = () => {
     return <Box>
-        <Typography variant="h3">Patient Length of Stay Times</Typography>
     </Box>;
 }
