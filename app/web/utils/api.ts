@@ -1,5 +1,6 @@
 import { PatientEncounterFormDataInterface } from "../interfaces/PatientEncounterFormDataInterface";
 import { UserGroupKeys } from "../constants/keys";
+import { IntakeFormDataInterface } from "../interfaces/IntakeFormDataInterface";
 
 /**
  * Set the error message to be displayed to the user. If the error is a string, return it.
@@ -354,5 +355,60 @@ export async function fetchPatientEncounters(
   } else {
     setErrorMessage("Unable to load data...");
     setIsErrorMessage(true);
+  }
+}
+
+/**
+ * Submit a single intake form to the API.
+ *
+ * @param formData Form data to be submitted.
+ * @param token The auth token of the user.
+ *
+ * @returns An empty string if the submission was successful, or an error message to be displayed to the user.
+ */
+export async function submitIntakeForm(
+  formData: IntakeFormDataInterface,
+  token: string
+): Promise<string> {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_HOSTNAME}/${UserGroupKeys.Sanctuary}/form`,
+      {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+        method: "POST",
+        mode: "cors",
+        credentials: "include",
+        body: JSON.stringify({
+          intake_uuid: formData.intake_uuid,
+          guest_rfid: formData.guest_rfid,
+          arrival_date: formData.arrival_date,
+          arrival_time: formData.arrival_time,
+          arrival_method: formData.arrival_method,
+          identified_gender: formData.identified_gender,
+          first_visit: formData.first_visit,
+          presenting_complaint: formData.presenting_complaint,
+          guest_consciousness_level: formData.guest_consciousness_level,
+          guest_emotional_state: formData.guest_emotional_state.join(", "),
+          substance_categories: formData.substance_categories.join(", "),
+          time_since_last_dose: formData.time_since_last_dose,
+          discharge_time: formData.departure_time,
+          discharge_date: formData.departure_date,
+          discharge_dest: formData.departure_dest,
+        }),
+      }
+    );
+
+    const response_data = await response.json();
+    if (response.ok) {
+      return "";
+    } else {
+      return setErrorMessage(response_data);
+    }
+  } catch (error) {
+    return setServerErrorMessage(error);
   }
 }

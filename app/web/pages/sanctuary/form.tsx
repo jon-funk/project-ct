@@ -21,6 +21,7 @@ import { SubmitAlert } from "../../interfaces/SubmitAlert";
 import { RenderErrorAlerts } from "../../components/RenderErrorAlerts";
 import { RenderSubmitAlert } from "../../components/RenderSubmitAlert";
 import { IntakeFormFields } from "../../components/intake_form/IntakeFormFields";
+import { submitIntakeForm } from "../../utils/api";
 
 export const MenuProps = {
     PaperProps: {
@@ -91,13 +92,55 @@ function SanctuaryIntakeForm(): JSX.Element {
     // Submit handler for the intake form
     const handleIntakeSubmit = async (data: IntakeFormDataInterface) => {
 
-        // TODO: Implement submission to the API. Ticket: https://mediform.atlassian.net/browse/MEDI-41
-        console.log("SUBMIT NOT IMPLEMENTED. Submit Data: ", data);
-        console.log("token: ", token);
-        setSubmitAlert({
-            type: "error",
-            message: "Submission not implemented! // TODO: Remove this line when submission is implemented.",
-        });
+        let errorMessage: string | null = null;
+
+        if (data.guest_emotional_state.includes("Other: Describe")) {
+            data.guest_emotional_state = data.guest_emotional_state.filter(
+                (state) => state !== "Other: Describe"
+            );
+            data.guest_emotional_state.push(`Other: ${data.guest_emotional_state_other}`);
+            delete data.guest_emotional_state_other;
+        }
+
+        if (data.substance_categories.includes("Other: Please describe substance")) {
+            data.substance_categories = data.substance_categories.filter(
+                (category) => category !== "Other: Please describe substance"
+            );
+            data.substance_categories.push(`Other: ${data.substance_categories_other}`);
+            delete data.substance_categories_other;
+        }
+
+        if (data.departure_dest.includes("Left event to go home via:") && data.departure_dest_other) {
+            data.departure_dest = `Left event to go home via: ${data.departure_dest_other}`;
+            delete data.departure_dest_other;
+        }
+
+        if (token) {
+            errorMessage = await submitIntakeForm(data, token);
+        } else {
+            console.warn("Error submiting intake. User token is null.");
+        }
+
+        if (!errorMessage) {
+            setSubmitAlert({
+                type: "success",
+                message: "Successfully submitted intake form!",
+            });
+
+            setTimeout(() => {
+                methods.reset();
+                window.scrollTo(0, 0);
+
+                // Clear the success alert after 2 seconds.
+                setSubmitAlert(null);
+            }, 2000);
+
+        } else {
+            setSubmitAlert({
+                type: "error",
+                message: errorMessage,
+            });
+        }
     };
 
     return (
