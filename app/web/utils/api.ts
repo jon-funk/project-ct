@@ -29,7 +29,7 @@ export function setErrorMessage(error: any) {
  * @param error The error object returned from the server.
  * @returns The error message to be displayed to the user.
  */
-function setServerErrorMessage(error: unknown) {
+export function setServerErrorMessage(error: unknown) {
   console.error("Error while trying to execute request to the API: ", error);
   return "Internal Server error, please try again later, or contact support.";
 }
