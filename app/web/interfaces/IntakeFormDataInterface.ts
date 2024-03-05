@@ -16,5 +16,5 @@ export interface IntakeFormDataInterface {
   departure_time: Date;
   departure_date: Date;
   departure_dest: string;
-  departure_dest_other: string;
+  departure_dest_other?: string;
 }
