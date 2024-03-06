@@ -9,7 +9,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { DataGrid } from "@mui/x-data-grid";
 import { SlideTransition } from "../../components/SlideTransition";
 import { SanctuaryModifyIntakeForm } from "../../components/intake_form/SanctuaryModifyIntakeForm";
-import { fetchFakeSanctuaryIntakes } from "../../utils/api_sanctuary";
+import { fetchSanctuaryIntakes } from "../../utils/api_sanctuary";
 
 
 /**
@@ -40,8 +40,7 @@ function SanctuaryIntakeSearch(): React.JSX.Element {
     useEffect(() => {
         const token = `Bearer ${window.localStorage.getItem("auth-token")}`;
         if (sanctuaryIntakes.length === 0) {
-            // TODO: Replace with fetchSanctuaryIntakes when API is ready
-            fetchFakeSanctuaryIntakes(token, setSanctuaryIntakes, setIsErrorMessage, setErrorMessage);
+            fetchSanctuaryIntakes(token, setSanctuaryIntakes, setIsErrorMessage, setErrorMessage);
         }
     }, [sanctuaryIntakes]);
 
@@ -58,9 +57,9 @@ function SanctuaryIntakeSearch(): React.JSX.Element {
         { field: "guest_emotional_state", headerName: "Guest Emotional State", width: 250 },
         { field: "substance_categories", headerName: "Substance Categories", width: 250 },
         { field: "time_since_last_dose", headerName: "Time Since Last Dose", width: 250 },
-        { field: "departure_date", headerName: "Departure Date", width: 250 },
-        { field: "departure_time", headerName: "Departure Time", width: 250 },
-        { field: "departure_dest", headerName: "Departure Destination", width: 250 },
+        { field: "departure_date", headerName: "Discharge Date", width: 250 },
+        { field: "departure_time", headerName: "Discharge Time", width: 250 },
+        { field: "departure_dest", headerName: "Discharge Destination", width: 250 },
     ];
 
     if (isError) {

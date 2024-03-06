@@ -1,5 +1,9 @@
-import { IntakeFormDataInterface } from "../interfaces/IntakeFormDataInterface";
+import {
+  IntakeFormDataInterface,
+  APIIntakeFormData,
+} from "../interfaces/IntakeFormDataInterface";
 import { UserGroupKeys } from "../constants/keys";
+import { setErrorMessage, setServerErrorMessage } from "./api";
 // TODO: Refactor API calls to dynamically determine user group. Ticket: https://mediform.atlassian.net/browse/MEDI-42
 
 /**
@@ -20,7 +24,7 @@ export async function fetchSanctuaryIntakes(
 ) {
   try {
     const response = await fetch(
-      `${process.env.REACT_APP_API_URL}/${UserGroupKeys.Sanctuary}/intakes`,
+      `${process.env.NEXT_PUBLIC_HOSTNAME}/${UserGroupKeys.Sanctuary}/forms`,
       {
         method: "GET",
         mode: "cors",
@@ -51,7 +55,15 @@ export async function fetchSanctuaryIntakes(
       );
     }
 
-    const data = await response.json();
+    let data = await response.json();
+
+    data = data.map((item: APIIntakeFormData) => ({
+      ...item,
+      departure_date: item.discharge_date,
+      departure_time: item.discharge_time,
+      departure_dest: item.discharge_method,
+    }));
+
     setSanctuaryIntakes(data);
   } catch (error) {
     setIsErrorMessage(true);
@@ -67,82 +79,139 @@ export async function fetchSanctuaryIntakes(
 }
 
 /**
- * TODO: Remove this function once API is ready
- * Returns mock data for the Sanctuary Intakes table
+ * Deletes an intake form for sanctuary by making a DELETE request to the API.
+ *
+ * @param uuid - UUID of the form to delete
+ * @param token - JWT token for authentication
+ * @returns Error message if there is an error, otherwise an empty string if request is successful.
  */
-export async function fetchFakeSanctuaryIntakes(
-  token: string,
-  setSanctuaryIntakes: React.Dispatch<
-    React.SetStateAction<IntakeFormDataInterface[]>
-  >,
-  setIsErrorMessage: React.Dispatch<React.SetStateAction<boolean>>,
-  setErrorMessage: React.Dispatch<React.SetStateAction<string>>
+export async function deleteSanctuaryIntakeForm(uuid: string, token: string) {
+  try {
+    const url =
+      `${process.env.NEXT_PUBLIC_HOSTNAME}/${UserGroupKeys.Sanctuary}/form?uuid=` +
+      encodeURIComponent(uuid);
+    const response = await fetch(url, {
+      headers: {
+        Accept: "application/json",
+        Authorization: token,
+      },
+      method: "DELETE",
+      mode: "cors",
+      credentials: "include",
+    });
+
+    if (response.ok) {
+      // Delete response doesn't have any content
+      return "";
+    } else {
+      const error_data = await response.json();
+      return setErrorMessage(error_data);
+    }
+  } catch (error) {
+    return setServerErrorMessage(error);
+  }
+}
+
+export async function updateSanctuaryIntakeForm(
+  formUUID: string,
+  formData: IntakeFormDataInterface,
+  token: string
 ) {
-  console.log(
-    "fetchFakeSanctuaryIntakes:",
-    token,
-    setIsErrorMessage,
-    setErrorMessage
-  );
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_HOSTNAME}/${UserGroupKeys.Sanctuary}/form`,
+      {
+        method: "PUT",
+        mode: "cors",
+        credentials: "include",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          intake_uuid: formData.intake_uuid,
+          guest_rfid: formData.guest_rfid,
+          arrival_date: formData.arrival_date,
+          arrival_time: formData.arrival_time,
+          arrival_method: formData.arrival_method,
+          identified_gender: formData.identified_gender,
+          first_visit: formData.first_visit,
+          presenting_complaint: formData.presenting_complaint,
+          guest_consciousness_level: formData.guest_consciousness_level,
+          guest_emotional_state: formData.guest_emotional_state.join(", "),
+          substance_categories: formData.substance_categories.join(", "),
+          time_since_last_dose: formData.time_since_last_dose,
+          discharge_time: formData.departure_time,
+          discharge_date: formData.departure_date,
+          discharge_method: formData.departure_dest,
+        }),
+      }
+    );
 
-  const mockSanctuaryIntakes = [
-    {
-      intake_uuid: "uuid-123",
-      guest_rfid: "rfid-001",
-      arrival_date: new Date("2024-01-01"),
-      arrival_time: new Date("2024-01-01T08:00:00"),
-      arrival_method: "Self",
-      identified_gender: "Male",
-      first_visit: true,
-      presenting_complaint: "Headache",
-      guest_consciousness_level: "Alert/Awake",
-      guest_emotional_state: ["Cooperative", "Happy"],
-      substance_categories: ["Alcohol", "Cannabis"],
-      time_since_last_dose: 5,
-      departure_time: new Date("2024-01-02T09:00:00"),
-      departure_date: new Date("2024-01-02"),
-      departure_dest: "Returned to event on their own (cleared)",
-      departure_dest_other: "",
-    },
-    {
-      intake_uuid: "uuid-456",
-      guest_rfid: "rfid-002",
-      arrival_date: new Date("2024-01-05"),
-      arrival_time: new Date("2024-01-05T10:30:00"),
-      arrival_method: "Friends",
-      identified_gender: "Female",
-      first_visit: false,
-      presenting_complaint: "Dizziness",
-      guest_consciousness_level: "Drowsy but responds to verbal commands",
-      guest_emotional_state: ["Confused"],
-      guest_emotional_state_other: "Overwhelmed",
-      substance_categories: ["MDMA (Molly)"],
-      substance_categories_other: "Prescription meds",
-      time_since_last_dose: 12,
-      departure_time: new Date("2024-01-06T11:00:00"),
-      departure_date: new Date("2024-01-06"),
-      departure_dest: "Transferred to Main Medical",
-      departure_dest_other: "",
-    },
-    {
-      intake_uuid: "uuid-789",
-      guest_rfid: "rfid-003",
-      arrival_date: new Date("2024-01-10"),
-      arrival_time: new Date("2024-01-10T16:45:00"),
-      arrival_method: "Transfer from Medical",
-      identified_gender: "Non-binary",
-      first_visit: true,
-      presenting_complaint: "Abdominal pain",
-      guest_consciousness_level: "Unconscious",
-      guest_emotional_state: ["Agitated", "Scared"],
-      substance_categories: ["Ketamine", "Cocaine"],
-      time_since_last_dose: 3,
-      departure_time: new Date("2024-01-11T17:30:00"),
-      departure_date: new Date("2024-01-11"),
-      departure_dest: "Left event to go home via: Please describe below",
-      departure_dest_other: "Taxi",
-    },
-  ];
+    if (response.ok) {
+      return "";
+    } else {
+      const error_data = await response.json();
+      return setErrorMessage(error_data);
+    }
+  } catch (error) {
+    return setServerErrorMessage(error);
+  }
+}
 
-  setSanctuaryIntakes(mockSanctuaryIntakes);
+/**
+ * Submit a single intake form to the API.
+ *
+ * @param formData Form data to be submitted.
+ * @param token The auth token of the user.
+ *
+ * @returns An empty string if the submission was successful, or an error message to be displayed to the user.
+ */
+
+export async function submitIntakeForm(
+  formData: IntakeFormDataInterface,
+  token: string
+): Promise<string> {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_HOSTNAME}/${UserGroupKeys.Sanctuary}/form`,
+      {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+        method: "POST",
+        mode: "cors",
+        credentials: "include",
+        body: JSON.stringify({
+          intake_uuid: formData.intake_uuid,
+          guest_rfid: formData.guest_rfid,
+          arrival_date: formData.arrival_date,
+          arrival_time: formData.arrival_time,
+          arrival_method: formData.arrival_method,
+          identified_gender: formData.identified_gender,
+          first_visit: formData.first_visit,
+          presenting_complaint: formData.presenting_complaint,
+          guest_consciousness_level: formData.guest_consciousness_level,
+          guest_emotional_state: formData.guest_emotional_state.join(", "),
+          substance_categories: formData.substance_categories.join(", "),
+          time_since_last_dose: formData.time_since_last_dose,
+          discharge_time: formData.departure_time,
+          discharge_date: formData.departure_date,
+          discharge_method: formData.departure_dest,
+        }),
+      }
+    );
+
+    const response_data = await response.json();
+    if (response.ok) {
+      return "";
+    } else {
+      return setErrorMessage(response_data);
+    }
+  } catch (error) {
+    return setServerErrorMessage(error);
+  }
 }
