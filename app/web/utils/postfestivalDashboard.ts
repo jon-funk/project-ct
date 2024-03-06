@@ -613,9 +613,12 @@ export function calculatePatientEncountersByAcuityPerDay(
   patientEncounters: PatientEncounterRow[]
 ): AcuityCountPerDay {
   const encountersByAcuityPerDay: AcuityCountPerDay = {};
+  const sortedEncounters = patientEncounters.sort(
+    (a, b) => a.arrival_date.getTime() - b.arrival_date.getTime()
+  );
 
   // Tally counts for each acuity per day
-  patientEncounters.forEach((encounter) => {
+  sortedEncounters.forEach((encounter) => {
     const date = encounter.arrival_date.toISOString().split("T")[0];
     const acuity = encounter.triage_acuity;
 
