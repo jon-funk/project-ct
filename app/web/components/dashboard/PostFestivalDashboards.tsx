@@ -1,5 +1,5 @@
 import React from "react";
-import { Typography, Grid } from "@mui/material";
+import { Box, Typography, Grid } from "@mui/material";
 import { ChiefComplaintCountsTable } from "./ChiefComplaintCountsTable";
 import { PatientEncounterAcuityBarChart } from "./PatientEncounterAcuityChart";
 import { ChiefComplaintEncounterCountsTable } from "./ChiefComplaintEncounterCountsTable";
@@ -9,9 +9,9 @@ import { ChiefComplaintCountsTableRowData } from "../../interfaces/ChiefComplain
 import { LengthOfStayCountsTableProps } from "../../interfaces/LengthOfStayCountsTableProps";
 import { TopTenCommonPresentationsTableProps } from "../../interfaces/TopTenCommonPresentationsTableProps";
 import { AcuityCountsData } from "../../interfaces/AcuityCountsData";
-import { Box } from "@mui/material";
 import { AcuityCountPerDay } from "../../interfaces/PosteventDashboard";
-import { PatientEncounterCountByDayStackedBarChart } from "./PatientEncounterCountsByDay";
+import { PatientEncounterCountByDayStackedBarChart, PatientEncounterCountByDayTable } from "./PatientEncounterCountsByDay";
+import { triageColorStyles } from "../../constants/colorPalettes";
 
 interface PostFestivalSummaryProps {
     selectedYear: string;
@@ -75,16 +75,19 @@ export const PatientEncountersDashboardComponent: React.FC<PatientEncountersDash
     }
 ) => {
     return <>
-        <Grid container spacing={2} style={{ padding: 1 + "rem" }}>
-            <Grid>
-                <Grid container direction="column" spacing={2}>
-                    <Grid item>
-                        <PatientEncounterCountByDayStackedBarChart acuityCountPerDay={acuityCountPerDay} />
-                    </Grid>
-                    <Grid item>
-                        <PatientEncounterCountByDayStackedBarChart acuityCountPerDay={acuityCountPerDay} displayCounts={false} />
-                    </Grid>
-                </Grid>
+        <Grid container spacing={2} style={{ padding: "1rem", justifyContent: "center" }}>
+            <Grid item xs={12} md={6} lg={3} sx={{ maxWidth: "400px" }}>
+                <PatientEncounterCountByDayStackedBarChart acuityCountPerDay={acuityCountPerDay} />
+            </Grid>
+            <Grid item xs={12} md={6} lg={3} sx={{ maxWidth: "400px" }}>
+                <PatientEncounterCountByDayStackedBarChart acuityCountPerDay={acuityCountPerDay} displayCounts={false} />
+            </Grid>
+
+            <Grid item xs={12} lg={2} sx={{ maxWidth: "400px" }}>
+                <PatientEncounterCountByDayTable acuityCountPerDay={acuityCountPerDay} />
+            </Grid>
+            <Grid item xs={2}>
+                <TriageAcuityLegend triageColorStyles={triageColorStyles} />
             </Grid>
         </Grid>
     </>
@@ -98,4 +101,46 @@ export const OffsiteTransportsDashboardComponent = () => {
 export const PatientLengthOfStayDashboardComponent = () => {
     return <Box>
     </Box>;
+}
+
+interface TriageColorStyle {
+    backgroundColor: string;
+    color: string;
+}
+
+interface TriageAcuityLegendProps {
+    triageColorStyles: { [key: string]: TriageColorStyle };
+    legendStyle?: React.CSSProperties;
+}
+
+export const TriageAcuityLegend: React.FC<TriageAcuityLegendProps> = ({ triageColorStyles }) => {
+
+    const boxHeight = 25;
+    const boxWidth = 75;
+    const spaceBetweenBoxes = 5;
+    const titlePaddingTop = 10;
+    const svgWidth = Math.max(200, boxWidth);
+
+    const svgHeight = Object.keys(triageColorStyles).length * (boxHeight + spaceBetweenBoxes) + titlePaddingTop * 2;
+
+    return (
+        <svg width={svgWidth} height={svgHeight} style={{ display: "block", margin: "auto" }}>
+            {/* Title */}
+            <text x={svgWidth / 2} y={titlePaddingTop} textAnchor="middle" fontWeight="bold" fontSize="16">
+                Triage Acuity Legend
+            </text>
+            {/* Legend boxes */}
+            {Object.keys(triageColorStyles).map((level, index) => {
+                const yPosition = index * (boxHeight + spaceBetweenBoxes) + titlePaddingTop * 2;
+                return (
+                    <g key={level} transform={`translate(${(svgWidth - boxWidth) / 2}, ${yPosition})`}>
+                        <rect width={boxWidth} height={boxHeight} fill={triageColorStyles[level].backgroundColor} stroke="black" />
+                        <text x={boxWidth / 2} y={boxHeight / 2} textAnchor="middle" dy="0.35em" fill={triageColorStyles[level].color}>
+                            {level.charAt(0).toUpperCase() + level.slice(1)}
+                        </text>
+                    </g>
+                );
+            })}
+        </svg>
+    );
 }
