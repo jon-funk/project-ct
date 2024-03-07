@@ -30,10 +30,11 @@ interface PostEventDashboardSidebarProps {
     control: Control<MedicalPostEventSummaryDashboardConfig>;
     methods: UseFormReturn<MedicalPostEventSummaryDashboardConfig>;
     onSelectView: (view: string) => void; // Add this line
+    selectedView: string;
 }
 
 
-const PostEventDashboardSidebar: React.FC<PostEventDashboardSidebarProps> = ({ control, methods, onSelectView }) => {
+const PostEventDashboardSidebar: React.FC<PostEventDashboardSidebarProps> = ({ control, methods, onSelectView, selectedView }) => {
 
     return (
         <ThemeProvider theme={theme}>
@@ -61,7 +62,7 @@ const PostEventDashboardSidebar: React.FC<PostEventDashboardSidebarProps> = ({ c
                             </ListItemText>
                         </ListItem>
                         {["Summary", "Patient Encounters", "Offsite Transports", "Patient Length of Stay Times"].map((text) => (
-                            <ListItemButton key={text} onClick={() => onSelectView(text)}>
+                            <ListItemButton key={text} onClick={() => onSelectView(text)} sx={{ backgroundColor: text === selectedView ? "rgba(255, 255, 255, 0.2)" : "transparent", }}>
                                 <ListItemText primary={text} />
                             </ListItemButton>
                         ))}

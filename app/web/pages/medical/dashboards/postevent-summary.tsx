@@ -134,7 +134,7 @@ const MedicalPostEventSummaryDashboard = () => {
         <>
             <ProtectedNavbar sx={{ zIndex: 1300 }} navigationText={getNavigationText(selectedView as SelectedView, selectedYear)} />
             <Box sx={{ display: "flex" }}>
-                <PostEventDashboardSidebar control={control} methods={methods} onSelectView={setSelectedView} />
+                <PostEventDashboardSidebar control={control} methods={methods} onSelectView={setSelectedView} selectedView={selectedView} />
                 <Box
                     component="main"
                     sx={{ flexGrow: 1, bgcolor: "background.default", p: 3 }}
