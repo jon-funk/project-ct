@@ -76,14 +76,14 @@ export const PatientEncountersDashboardComponent: React.FC<PatientEncountersDash
 ) => {
     return <>
         <Grid container spacing={2} style={{ padding: "1rem", justifyContent: "center" }}>
-            <Grid item xs={12} md={6} lg={3} sx={{ maxWidth: "400px" }}>
+            <Grid item xs={12} md={6} lg={5} xl={3} sx={{ maxWidth: "400px" }}>
                 <PatientEncounterCountByDayStackedBarChart acuityCountPerDay={acuityCountPerDay} />
             </Grid>
-            <Grid item xs={12} md={6} lg={3} sx={{ maxWidth: "400px" }}>
+            <Grid item xs={12} md={6} lg={5} xl={3} sx={{ maxWidth: "400px" }}>
                 <PatientEncounterCountByDayStackedBarChart acuityCountPerDay={acuityCountPerDay} displayCounts={false} />
             </Grid>
 
-            <Grid item xs={12} lg={2} sx={{ maxWidth: "400px" }}>
+            <Grid item xs={12} md={6} lg={4} xl={2} sx={{ maxWidth: "400px" }}>
                 <PatientEncounterCountByDayTable acuityCountPerDay={acuityCountPerDay} />
             </Grid>
             <Grid item xs={2}>
