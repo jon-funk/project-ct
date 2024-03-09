@@ -7,7 +7,7 @@ import faker
 
 from api.constants import MEDICAL
 from api.models.user import create_user
-from api.main.database import SessionLocal
+from api.main.database import SessionLocalMedical
 from api.tests.conftest import generate_user_data
 
 MIN_PASSWORD_LENGTH = int(os.getenv("MIN_PASSWORD_LENGTH", 8))
@@ -22,7 +22,7 @@ def create_db_user():
     """Fixture to create a unique user in the database. Deletes the users after the test is done."""
     created_users = []
 
-    db = SessionLocal()
+    db = SessionLocalMedical()
 
     def _create_user(email, password, user_group=MEDICAL):
         user = create_user(db, email=email, password=password)
@@ -64,7 +64,7 @@ def test_valid_login(client: TestClient, create_db_user, sample_user) -> None:
     """
     Test that a created user is able to login successfully
     """
-    db = SessionLocal()
+    db = SessionLocalMedical()
 
     # Use the fixture to create a unique user
     user = create_db_user(**sample_user)
