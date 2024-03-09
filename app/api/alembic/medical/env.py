@@ -16,11 +16,11 @@ fileConfig(config.config_file_name)
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-from api.main.database import Base
+from api.main.database import BaseMedical
 # Populates Base.metadata by importing all models
 import api.models
 
-target_metadata = Base.metadata
+target_metadata = BaseMedical.metadata
 
 # Environment based sqlalchemy url
 user = os.environ.get("POSTGRES_USER")
