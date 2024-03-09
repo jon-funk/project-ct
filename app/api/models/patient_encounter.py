@@ -8,12 +8,13 @@ from sqlalchemy import Column, DateTime, Integer, String, Boolean
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Session
 
-from api.main.database import Base
+from api.main.database import BaseMedical
 from api.models.mixins import BasicMetrics
 
 logger = logging.getLogger(__name__)
 
-class PatientEncounter(Base, BasicMetrics):
+
+class PatientEncounter(BaseMedical, BasicMetrics):
     __tablename__ = "patient_encounters"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)

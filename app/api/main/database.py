@@ -23,13 +23,13 @@ db_sanctuary = os.environ.get("POSTGRES_SANCTUARY_DB")
 
 
 if test:
-    SQLALCHEMY_DATABASE_URL = (
+    SQLALCHEMY_DATABASE_URL_MEDICAL = (
         f"postgresql+psycopg2://{user}:{password}@{hostname}:{port}/{db_medical}_test"
     )
 
     SQLALCHEMY_DATABASE_URL_SANCTUARY = f"postgresql+psycopg2://{user_sanctuary}:{pass_sanctuary}@{hostname}:{port}/{db_sanctuary}_test"
 else:
-    SQLALCHEMY_DATABASE_URL = (
+    SQLALCHEMY_DATABASE_URL_MEDICAL = (
         f"postgresql+psycopg2://{user}:{password}@{hostname}:{port}/{db_medical}"
     )
 
@@ -38,27 +38,25 @@ else:
 
 
 engine_sanctuary = create_engine(SQLALCHEMY_DATABASE_URL_SANCTUARY)
+if not database_exists(engine_sanctuary.url):  # Check if the db exists
+    create_database(engine_sanctuary.url)  # Create new DB
 SessionLocalSanctuary = sessionmaker(
     autocommit=False, autoflush=False, bind=engine_sanctuary
 )
 
 
-# TODO: rename "example" database to medical
-# Engine for the 'medical' database
-engine_example = create_engine(SQLALCHEMY_DATABASE_URL)
-if not database_exists(engine_example.url):  # Check if the db exists
-    create_database(engine_example.url)  # Create new DB
+engine_medical = create_engine(SQLALCHEMY_DATABASE_URL_MEDICAL)
+if not database_exists(engine_medical.url):  # Check if the db exists
+    create_database(engine_medical.url)  # Create new DB
 
-# TODO: Rename sessionLocal to sessionLocalMedical
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine_example)
+SessionLocalMedical = sessionmaker(autocommit=False, autoflush=False, bind=engine_medical)
 
-# TODO: rename this to MedicalBase
-Base = declarative_base()
+BaseMedical = declarative_base()
 BaseSanctuary = declarative_base()
 
 
 def get_db_medical() -> Generator:
-    db = SessionLocal()
+    db = SessionLocalMedical()
     try:
         yield db
     finally:
@@ -74,7 +72,7 @@ def get_db_sanctuary() -> Generator:
 
 # TODO: Replace all instances of get_db with get_db medical
 def get_db() -> Generator:
-    db = SessionLocal()
+    db = SessionLocalMedical()
     try:
         yield db
     finally:
@@ -86,10 +84,10 @@ db_functions = {
 }
 
 def create_all_tables() -> None:
-    Base.metadata.create_all(engine_example, checkfirst=True)
+    BaseMedical.metadata.create_all(engine_medical, checkfirst=True)
     BaseSanctuary.metadata.create_all(engine_sanctuary, checkfirst=True)
 
 
 def drop_all_tables(check_first: bool = False) -> None:
-    Base.metadata.drop_all(engine_example, checkfirst=check_first)
+    BaseMedical.metadata.drop_all(engine_medical, checkfirst=check_first)
     BaseSanctuary.metadata.drop_all(engine_sanctuary, checkfirst=check_first)

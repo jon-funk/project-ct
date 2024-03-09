@@ -9,7 +9,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 
-from api.main.database import Base, BaseSanctuary
+from api.main.database import BaseMedical, BaseSanctuary
 from api.models.mixins import BasicMetrics
 from api.constants import MEDICAL, SANCTUARY
 from api.config import load_env
@@ -25,9 +25,11 @@ class User(BasicMetrics):
 class UserSanctuary(User, BaseSanctuary):
     __tablename__ = "users"
 
+
 # For medical
-class UserMedical(User, Base):
+class UserMedical(User, BaseMedical):
     __tablename__ = "users"
+
 
 # constant for accessing User Class
 USER_GROUPS = {MEDICAL: UserMedical, SANCTUARY: UserSanctuary}
