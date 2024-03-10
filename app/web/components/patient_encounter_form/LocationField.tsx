@@ -27,9 +27,9 @@ export function LocationField({ control }: FormFieldProps<PatientEncounterFormDa
             labelId="location-select-label"
             label="Location"
             defaultValue="Main Medical"
+            disabled={true}
           >
             <MenuItem value="Main Medical">Main Medical</MenuItem>
-            <MenuItem value="Harm Reduction">Harm Reduction</MenuItem>
           </Select>
         )}
       />
