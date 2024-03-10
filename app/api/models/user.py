@@ -14,12 +14,14 @@ from api.models.mixins import BasicMetrics
 from api.constants import MEDICAL, SANCTUARY
 from api.config import load_env
 
+
 class User(BasicMetrics):
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     user_uuid = Column(UUID(as_uuid=True), default=uuid.uuid4, unique=True)
     email = Column(String)
     hashed_password = Column(String)
+
 
 # for Sanctuary
 class UserSanctuary(User, BaseSanctuary):
@@ -33,6 +35,7 @@ class UserMedical(User, BaseMedical):
 
 # constant for accessing User Class
 USER_GROUPS = {MEDICAL: UserMedical, SANCTUARY: UserSanctuary}
+
 
 def get_user_by_email(db: Session, email: str) -> Union[User, None]:
 
@@ -75,5 +78,5 @@ def get_user_group_from_db(db: Session) -> str:
 
     load_env()
     # Determine user group based on environment variable and URL
-    user_group = MEDICAL if os.environ.get("POSTGRES_DB") in url else SANCTUARY
+    user_group = MEDICAL if os.environ.get("POSTGRES_MEDICAL_DB") in url else SANCTUARY
     return user_group

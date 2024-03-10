@@ -17,18 +17,19 @@ fileConfig(config.config_file_name)
 # add your model's MetaData object here
 # for 'autogenerate' support
 from api.main.database import BaseMedical
+
 # Populates Base.metadata by importing all models
 import api.models
 
 target_metadata = BaseMedical.metadata
 
 # Environment based sqlalchemy url
-user = os.environ.get("POSTGRES_USER")
-password = os.environ.get("POSTGRES_PASSWORD")
+user = os.environ.get("POSTGRES_MEDICAL_USER")
+password = os.environ.get("POSTGRES_MEDICAL_PASSWORD")
 hostname = os.environ.get("POSTGRES_HOST")
-db = os.environ.get("POSTGRES_DB")
+db = os.environ.get("POSTGRES_MEDICAL_DB")
 SQLALCHEMY_DATABASE_URL = f"postgresql+psycopg2://{user}:{password}@{hostname}/{db}"
-config.set_main_option('sqlalchemy.url', SQLALCHEMY_DATABASE_URL)
+config.set_main_option("sqlalchemy.url", SQLALCHEMY_DATABASE_URL)
 
 
 def run_migrations_offline():
@@ -69,8 +70,7 @@ def run_migrations_online():
     )
 
     with connectable.connect() as connection:
-        context.configure(connection=connection,
-                          target_metadata=target_metadata)
+        context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():
             context.run_migrations()
