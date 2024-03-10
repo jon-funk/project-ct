@@ -8,7 +8,7 @@ resource "random_id" "suffix" {
 resource "google_sql_database_instance" "db-instance" {
   provider = google-beta
 
-  name              = "${local.POSTGRES_DB}-instance-${random_id.suffix.hex}"
+  name              = "${local.POSTGRES_MEDICAL_DB}-instance-${random_id.suffix.hex}"
   database_version  = "POSTGRES_14"
   region            = var.region
   deletion_protection = true
@@ -29,18 +29,19 @@ resource "google_sql_database_instance" "db-instance" {
   }
 }
 
-# Medical database
-resource "google_sql_database" "database" {
-  name      = local.POSTGRES_DB
-  instance  = "${google_sql_database_instance.db-instance.name}"
-}
-
-# Medical db user TODO: Remove after migration
+# Medical db owner
 resource "google_sql_user" "users" {
   instance  = "${google_sql_database_instance.db-instance.name}"
   name      = local.POSTGRES_USER
   password  = var.POSTGRES_PASSWORD
 }
+
+# Medical database
+resource "google_sql_database" "database" {
+  name      = local.POSTGRES_MEDICAL_DB
+  instance  = "${google_sql_database_instance.db-instance.name}"
+}
+
 
 # Medical db user
 resource "google_sql_user" "medical_user" {
@@ -97,25 +98,18 @@ resource "google_cloud_run_service" "api" {
         ports {
           container_port = 5000
         }
-        env { # TODO: Remove after migration
-          name  = "POSTGRES_USER"
-          value = local.POSTGRES_USER
-        }
+
         env {
           name  = "POSTGRES_MEDICAL_USER"
-          value = local.POSTGRES_USER
+          value = local.POSTGRES_MEDICAL_USER
         }
         env {
           name  = "POSTGRES_SANCTUARY_USER"
           value = local.POSTGRES_SANCTUARY_USER
         }
-        env { # TODO: Remove after migration
-          name = "POSTGRES_PASSWORD"
-          value = var.POSTGRES_PASSWORD
-        }
         env {
           name = "POSTGRES_MEDICAL_PASSWORD"
-          value = var.POSTGRES_PASSWORD
+          value = var.POSTGRES_MEDICAL_PASSWORD
         }
         env {
           name = "POSTGRES_SANCTUARY_PASSWORD"
@@ -127,11 +121,7 @@ resource "google_cloud_run_service" "api" {
         }
         env {
           name = "POSTGRES_MEDICAL_DB"
-          value = local.POSTGRES_DB 
-        }
-        env { # TODO: Remove after migration
-          name = "POSTGRES_DB"
-          value = local.POSTGRES_DB 
+          value = local.POSTGRES_MEDICAL_DB 
         }
         env {
           name = "POSTGRES_SANCTUARY_DB"
