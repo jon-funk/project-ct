@@ -29,7 +29,6 @@ export function LocationField({ control }: FormFieldProps<PatientEncounterFormDa
             defaultValue="Main Medical"
           >
             <MenuItem value="Main Medical">Main Medical</MenuItem>
-            <MenuItem value="Harm Reduction">Harm Reduction</MenuItem>
           </Select>
         )}
       />
