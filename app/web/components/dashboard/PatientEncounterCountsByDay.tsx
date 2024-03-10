@@ -8,7 +8,7 @@ import { triageColorStyles } from "../../constants/colorPalettes";
 import { AxisBottom, AxisLeft } from "@visx/axis";
 import { timeParse, timeFormat } from "d3-time-format";
 import { Table, TableBody, TableCell, TableHead, TableRow, Box, TableContainer, Paper, Typography } from "@mui/material";
-import { tableColorStylesLight } from "../../constants/colorPalettes";
+import { tableColorStylesLight, offsiteTransportColorStyles } from "../../constants/colorPalettes";
 import { StyledTableCell } from "../StyledTableComponents";
 
 
@@ -304,4 +304,99 @@ const formatDate = (dateString: string) => {
             day: "numeric",
         }
     );
-}
+};
+
+export const OffsiteTransportBreakdownSideBarChart: React.FC<{
+    offsiteTransportCounts: { ambulance: number, private: number, nonEmergency: number }
+}> = ({ offsiteTransportCounts }) => {
+    const chartWidth = 400;
+    const chartHeight = 200;
+
+    const margin = { top: 20, bottom: 10, left: 80, right: 50 };
+
+    const yScale = scaleBand({
+        range: [0, chartHeight - margin.top - margin.bottom],
+        round: true,
+        domain: Object.keys(offsiteTransportCounts),
+        padding: 0.5,
+    });
+
+    const xScale = scaleLinear({
+        range: [0, chartWidth - margin.left - margin.right],
+        round: true,
+        domain: [0, Math.max(...Object.values(offsiteTransportCounts))],
+    });
+
+    return (
+        <Paper elevation={3} sx={{ padding: "1rem", minHeight: `${chartHeight}px`, minWidth: `${chartWidth}px` }}>
+            <Typography variant="h5" gutterBottom sx={{ textAlign: "center", fontWeight: "bold" }}>
+                Offsite Transport Breakdown
+            </Typography>
+            <svg width={chartWidth} height={chartHeight} overflow="visible">
+                <Group left={margin.left} top={margin.top}>
+                    {Object.entries(offsiteTransportCounts).map(([transportType, count]) => {
+                        const y = yScale(transportType);
+                        if (y === undefined) {
+                            console.error(`y is undefined for transportType: ${transportType}`);
+                            return null;
+                        }
+                        const barWidth = xScale(count);
+                        return (<>
+                            <rect
+                                key={transportType}
+                                x={0}
+                                y={y}
+                                height={yScale.bandwidth()}
+                                width={barWidth}
+                                fill={offsiteTransportColorStyles[transportType].backgroundColor}
+                                stroke="black"
+                                strokeWidth={1}
+                            />
+                            <text
+                                x={barWidth + 5}
+                                y={y + yScale.bandwidth() / 2}
+                                dy=".35em"
+                                fill="#000"
+                                fontSize={12}
+                                textAnchor="start"
+                            >{count}</text>
+                        </>
+
+                        );
+                    })}
+                </Group>
+                <AxisLeft
+                    scale={yScale}
+                    top={margin.top}
+                    left={margin.left}
+                    stroke="#000"
+                    tickStroke="#000"
+                    tickLabelProps={() => ({
+                        fill: "#000",
+                        fontSize: 12,
+                        textAnchor: "end",
+                        style: { textTransform: "capitalize" }
+                    })}
+                />
+                <AxisBottom
+                    scale={xScale}
+                    top={chartHeight - margin.bottom}
+                    left={margin.left}
+                    tickValues={xScale.ticks().filter(Number.isInteger)}
+                    tickFormat={(value) => {
+                        const numericValue = typeof value === "number" ? value : (value as { valueOf: () => number }).valueOf();
+                        return numericValue.toString();
+                    }}
+                    stroke="#000"
+                    tickStroke="#000"
+                    tickLabelProps={() => ({
+                        fill: "#000",
+                        fontSize: 12,
+                        textAnchor: "middle",
+                    })}
+                />
+            </svg>
+        </Paper>
+    );
+};
+

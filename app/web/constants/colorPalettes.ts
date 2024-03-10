@@ -37,3 +37,25 @@ export const triageColorStyles = {
     color: "black",
   },
 };
+
+type OffsiteTransportColorStyles = {
+  [key: string]: {
+    backgroundColor: string;
+    color: string;
+  };
+};
+
+export const offsiteTransportColorStyles: OffsiteTransportColorStyles = {
+  ambulance: {
+    backgroundColor: "#87ceeb",
+    color: "black",
+  },
+  private: {
+    backgroundColor: "#5c5c00",
+    color: "white",
+  },
+  nonEmergency: {
+    backgroundColor: "#ff7f50",
+    color: "black",
+  },
+};
