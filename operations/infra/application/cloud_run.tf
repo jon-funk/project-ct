@@ -35,11 +35,18 @@ resource "google_sql_database" "database" {
   instance  = "${google_sql_database_instance.db-instance.name}"
 }
 
-# Medical db user
+# Medical db user TODO: Remove after migration
 resource "google_sql_user" "users" {
   instance  = "${google_sql_database_instance.db-instance.name}"
   name      = local.POSTGRES_USER
   password  = var.POSTGRES_PASSWORD
+}
+
+# Medical db user
+resource "google_sql_user" "medical_user" {
+  instance  = "${google_sql_database_instance.db-instance.name}"
+  name      = local.POSTGRES_MEDICAL_USER
+  password  = var.POSTGRES_MEDICAL_PASSWORD
 }
 
 # Sanctuary database
@@ -90,16 +97,24 @@ resource "google_cloud_run_service" "api" {
         ports {
           container_port = 5000
         }
-        env {
+        env { # TODO: Remove after migration
           name  = "POSTGRES_USER"
+          value = local.POSTGRES_USER
+        }
+        env {
+          name  = "POSTGRES_MEDICAL_USER"
           value = local.POSTGRES_USER
         }
         env {
           name  = "POSTGRES_SANCTUARY_USER"
           value = local.POSTGRES_SANCTUARY_USER
         }
-        env {
+        env { # TODO: Remove after migration
           name = "POSTGRES_PASSWORD"
+          value = var.POSTGRES_PASSWORD
+        }
+        env {
+          name = "POSTGRES_MEDICAL_PASSWORD"
           value = var.POSTGRES_PASSWORD
         }
         env {
@@ -111,6 +126,10 @@ resource "google_cloud_run_service" "api" {
           value = var.POSTGRES_HOST
         }
         env {
+          name = "POSTGRES_MEDICAL_DB"
+          value = local.POSTGRES_DB 
+        }
+        env { # TODO: Remove after migration
           name = "POSTGRES_DB"
           value = local.POSTGRES_DB 
         }

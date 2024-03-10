@@ -97,11 +97,11 @@ def postgres_is_running() -> bool:
     """
     try:
         connection = psycopg2.connect(
-            database=os.getenv("POSTGRES_DB"),
+            database=os.getenv("POSTGRES_MEDICAL_DB"),
             host=os.getenv("POSTGRES_HOST"),
             port=str(os.getenv("POSTGRES_PORT")),
-            password=os.getenv("POSTGRES_PASSWORD"),
-            user=os.getenv("POSTGRES_USER"),
+            password=os.getenv("POSTGRES_MEDICAL_PASSWORD"),
+            user=os.getenv("POSTGRES_MEDICAL_USER"),
             connect_timeout=1,
         )
         connection.close()
