@@ -12,6 +12,8 @@ import {
 import {
   AcuityCountPerDay,
   AggregatedDurations,
+  OffsiteTransportCountTotals,
+  OffsiteTransportEntry,
 } from "../interfaces/PosteventDashboard";
 import { LosDuration } from "../interfaces/PosteventDashboard";
 import { RowDataCCCount } from "../interfaces/PosteventDashboard";
@@ -680,4 +682,98 @@ function getAcuityCountKey(
     default:
       throw new Error(`Unknown acuity encountered: ${acuity}`);
   }
+}
+
+export function calculateOffsiteTransportCounts(
+  patientEncounters: PatientEncounterRow[]
+): OffsiteTransportCountTotals {
+  const offsiteTransportCounts = {
+    ambulance: 0,
+    private: 0,
+    nonEmergency: 0,
+  };
+
+  patientEncounters.forEach((encounter) => {
+    if (encounter.departure_dest?.toLowerCase().includes("hospital-private")) {
+      offsiteTransportCounts.private += 1;
+    } else if (
+      encounter.departure_dest?.toLowerCase().includes("hospital-ambulance")
+    ) {
+      offsiteTransportCounts.ambulance += 1;
+    } else if (
+      encounter.departure_dest
+        ?.toLowerCase()
+        .includes("hospital-non-emergency-vehicle")
+    ) {
+      offsiteTransportCounts.nonEmergency += 1;
+    }
+  });
+
+  return offsiteTransportCounts;
+}
+
+export function generateOffsiteTransportList(
+  patientEncounters: PatientEncounterRow[]
+): OffsiteTransportEntry[] {
+  const offsiteTransports: OffsiteTransportEntry[] = [];
+
+  patientEncounters.forEach((encounter) => {
+    if (
+      encounter.departure_dest?.toLowerCase().includes("hospital") &&
+      encounter.departure_date &&
+      encounter.departure_time
+    ) {
+      offsiteTransports.push({
+        id: encounter.patient_encounter_uuid,
+        date: encounter.departure_date.toISOString().split("T")[0],
+        timeLeft: encounter.departure_time
+          .toISOString()
+          .split("T")[1]
+          .slice(0, 5),
+        method: getTransportMethod(encounter.departure_dest),
+        chiefComplaint: encounter.chief_complaints.join(", "),
+      });
+    }
+  });
+
+  offsiteTransports.sort((a, b) => {
+    if (a.date === b.date) {
+      return a.timeLeft > b.timeLeft ? -1 : 1;
+    }
+    return a.date > b.date ? -1 : 1;
+  });
+
+  return offsiteTransports;
+}
+
+function getTransportMethod(departureDest: string): string {
+  if (departureDest.toLowerCase().includes("hospital-ambulance")) {
+    return "Ambulance";
+  } else if (departureDest.toLowerCase().includes("hospital-private")) {
+    return "Private Vehicle";
+  } else if (departureDest.toLowerCase().includes("non-emergency")) {
+    return "Non-Emergency Vehicle";
+  } else {
+    return "";
+  }
+}
+
+export function calculateOffsiteTransportsPerDay(
+  offsiteTransports: OffsiteTransportEntry[]
+): Record<string, Record<string, number>> {
+  const transportsPerDay: Record<string, Record<string, number>> = {};
+
+  offsiteTransports.forEach((transport) => {
+    if (!transportsPerDay[transport.date]) {
+      transportsPerDay[transport.date] = {};
+    }
+
+    if (!transportsPerDay[transport.date][transport.method]) {
+      transportsPerDay[transport.date][transport.method] = 1;
+    } else {
+      transportsPerDay[transport.date][transport.method]++;
+    }
+  });
+
+  return transportsPerDay;
 }
