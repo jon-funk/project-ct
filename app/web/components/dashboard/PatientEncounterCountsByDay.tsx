@@ -1,6 +1,6 @@
 import React from "react";
-import { AcuityCountPerDay } from "../../interfaces/PosteventDashboard";
-import { scaleBand, scaleLinear } from "@visx/scale";
+import { AcuityCountPerDay, OffsiteTransportEntry } from "../../interfaces/PosteventDashboard";
+import { scaleBand, scaleLinear, scaleOrdinal } from "@visx/scale";
 import { Text } from "@visx/text";
 import { Group } from "@visx/group";
 import { BarStack } from "@visx/shape";
@@ -10,6 +10,7 @@ import { timeParse, timeFormat } from "d3-time-format";
 import { Table, TableBody, TableCell, TableHead, TableRow, Box, TableContainer, Paper, Typography } from "@mui/material";
 import { tableColorStylesLight, offsiteTransportColorStyles } from "../../constants/colorPalettes";
 import { StyledTableCell } from "../StyledTableComponents";
+import { DataGrid } from "@mui/x-data-grid";
 
 
 
@@ -307,8 +308,13 @@ const formatDate = (dateString: string) => {
 };
 
 export const OffsiteTransportBreakdownSideBarChart: React.FC<{
-    offsiteTransportCounts: { ambulance: number, private: number, nonEmergency: number }
+    offsiteTransportCounts: { ambulance: number, private: number, nonEmergency: number } | null
 }> = ({ offsiteTransportCounts }) => {
+
+    if (!offsiteTransportCounts) {
+        return null;
+    }
+
     const chartWidth = 400;
     const chartHeight = 200;
 
@@ -400,3 +406,231 @@ export const OffsiteTransportBreakdownSideBarChart: React.FC<{
     );
 };
 
+
+export const OffsiteTransportList: React.FC<{ offsiteTransportEntries: OffsiteTransportEntry[] | null }> = ({ offsiteTransportEntries }) => {
+
+    if (!offsiteTransportEntries) {
+        return null;
+    }
+
+    const columns = [
+        { field: "date", headerName: "Date", width: 150 },
+        { field: "timeLeft", headerName: "Time Left", width: 100 },
+        { field: "method", headerName: "Method", width: 150 },
+        { field: "chiefComplaint", headerName: "Chief Complaint", width: 350 },
+    ];
+
+    return (
+        <Paper
+            elevation={0}
+            sx={{
+                width: "auto",
+                "& .MuiDataGrid-columnHeaders": {
+                    ...tableColorStylesLight.subHeader,
+                },
+                "& .MuiDataGrid-row:nth-of-type(odd)": {
+                    ...tableColorStylesLight.oddRow,
+                },
+                "& .MuiDataGrid-row:nth-of-type(even)": {
+                    ...tableColorStylesLight.evenRow,
+                },
+                "& .MuiDataGrid-columnHeaderTitle": {
+                    whiteSpace: "normal",
+                    lineHeight: "normal",
+                    wordBreak: "break-word",
+                },
+                "& .MuiDataGrid-footerContainer": {
+                    borderTop: "none",
+                },
+            }}
+        >
+            <Typography variant="h5" align="center" sx={{ ...tableColorStylesLight.header, padding: "16px 0" }}>Offsite Transport List</Typography>
+            <DataGrid
+                rows={offsiteTransportEntries}
+                columns={columns}
+                pageSize={5}
+                rowsPerPageOptions={[5]}
+                autoHeight
+                disableSelectionOnClick
+            />
+        </Paper>
+    );
+};
+
+type TransportTypes = "Ambulance" | "Private Vehicle";
+
+type TransportData = {
+    [key in TransportTypes]?: number;
+};
+
+type DayData = {
+    date: string;
+    totalCount: number;
+} & TransportData;
+
+
+export const OffsiteTransportStackedBarChart: React.FC<{ offsiteTransportsPerDayCount: Record<string, Record<string, number>> | null }> = ({ offsiteTransportsPerDayCount }) => {
+    if (!offsiteTransportsPerDayCount) {
+        return null;
+    }
+
+    const allTransportTypes = ["Ambulance", "Private Vehicle"];
+    console.log("offsiteTransportsPerDayCount: ", offsiteTransportsPerDayCount)
+
+    // Convert data to an array format that can be used with visx
+    const data: DayData[] = Object.keys(offsiteTransportsPerDayCount).map(date => {
+        const dayData = offsiteTransportsPerDayCount[date];
+        const transportData: TransportData = allTransportTypes.reduce<TransportData>((accumulator, currentType) => {
+            accumulator[currentType as TransportTypes] = dayData[currentType] ?? 0;
+            return accumulator;
+        }, {});
+
+        // Calculate the total count for the day
+        const totalCount = Object.values(transportData).reduce((total, count) => total + (count ?? 0), 0);
+
+        return {
+            date,
+            ...transportData,
+            totalCount,
+        };
+    });
+
+    const parseDate = timeParse("%Y-%m-%d");
+    const formatDate = timeFormat("%b %d");
+    const formatAxisDate = (date: string) => {
+        const d = parseDate(date);
+        return d ? formatDate(d) : date;
+    };
+
+
+    // Define the dimensions and margins of the chart
+    const width = 400;
+    const height = 300;
+    const margin = { top: 20, bottom: 90, left: 60, right: 20 };
+
+    // Define scales
+    const dateScale = scaleBand({
+        range: [0, width - margin.left - margin.right],
+        round: true,
+        domain: data.map(d => d.date),
+        padding: 0.2,
+    });
+
+    const maxCount = Math.max(
+        ...data.map(d =>
+            allTransportTypes.reduce((total, type) => total + (d[type as TransportTypes] || 0), 0)
+        )
+    );
+    const transportScale = scaleLinear({
+        domain: [0, maxCount],
+        range: [height - margin.bottom - margin.top, 0],
+        round: true,
+    });
+
+
+    const colorScale = scaleOrdinal({
+        domain: ["Ambulance", "Private Vehicle"],
+        range: [offsiteTransportColorStyles.ambulance.backgroundColor, offsiteTransportColorStyles.private.backgroundColor],
+    });
+
+    dateScale.rangeRound([margin.left, width - margin.right]);
+    transportScale.range([height - margin.bottom, margin.top]);
+
+    const yTickValues = [];
+    for (let i = 0; i <= maxCount; i++) {
+        yTickValues.push(i);
+    }
+
+    return (
+        <Paper style={{ width, height }}>
+            <Typography variant="h5" gutterBottom sx={{ textAlign: "center", fontWeight: "bold" }}>
+                Offsite Transports by Day
+            </Typography>
+            <svg width={width} height={height} overflow={"visible"}>
+                <Group>
+                    <BarStack
+                        data={data}
+                        keys={colorScale.domain()}
+                        x={d => d.date}
+                        xScale={dateScale}
+                        yScale={transportScale}
+                        color={colorScale}
+                    >
+                        {barStacks =>
+                            barStacks.map(barStack => (
+                                <>
+                                    {barStack.bars.map(bar => (
+                                        <rect
+                                            key={`bar-stack-${barStack.index}-${bar.index}`}
+                                            x={bar.x}
+                                            y={bar.y}
+                                            height={bar.height}
+                                            width={bar.width}
+                                            fill={bar.color}
+                                            stroke="black"
+                                            strokeWidth={1}
+                                        />
+                                    ))}
+                                </>
+                            ))
+                        }
+                    </BarStack>
+                    {data.map(d => {
+                        const x = (dateScale(d.date) ?? 0) + dateScale.bandwidth() / 2;
+                        const y = transportScale(d.totalCount) - 10;
+
+                        return (
+                            <text
+                                key={`total-${d.date}`}
+                                x={x}
+                                y={y}
+                                fill="black"
+                                fontSize="12"
+                                textAnchor="middle"
+                                alignmentBaseline="baseline"
+                            >
+                                {d.totalCount}
+                            </text>
+                        );
+                    })}
+
+                    <AxisLeft
+                        scale={transportScale}
+                        left={margin.left}
+                        label={"Count"}
+                        tickValues={yTickValues}
+                        tickLabelProps={() => ({
+                            fill: "#000",
+                            fontSize: 12,
+                            textAnchor: "end",
+                        })}
+                        labelProps={{
+                            fontSize: 14,
+                            fill: "#000",
+                            textAnchor: "middle",
+                        }}
+                    />
+
+                    <AxisBottom
+                        top={height - margin.bottom}
+                        scale={dateScale}
+                        tickFormat={formatAxisDate}
+                        label={"Day"}
+                        tickLabelProps={() => ({
+                            fill: "#000",
+                            fontSize: 12,
+                            textAnchor: "end",
+                        })}
+                        labelProps={{
+                            fontSize: 14,
+                            fill: "#000",
+                            textAnchor: "middle",
+                        }}
+                    />
+
+
+                </Group>
+            </svg>
+        </Paper>
+    );
+};

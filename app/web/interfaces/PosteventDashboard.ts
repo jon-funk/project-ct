@@ -37,3 +37,17 @@ export type AcuityCountPerDay = Record<
     percRed: number;
   }
 >;
+
+export type OffsiteTransportCountTotals = {
+  ambulance: number;
+  private: number;
+  nonEmergency: number;
+};
+
+export type OffsiteTransportEntry = {
+  id: string;
+  date: string;
+  timeLeft: string;
+  method: string;
+  chiefComplaint: string;
+};

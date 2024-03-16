@@ -8,7 +8,11 @@ import {
     calculateChiefComplaintEncounterCountsSummary,
     calculateCommonPresentationsAndTransports,
     calculateAcuityCountsData,
-    calculatePatientEncountersByAcuityPerDay
+    calculatePatientEncountersByAcuityPerDay,
+    calculateOffsiteTransportCounts,
+    generateOffsiteTransportList,
+    calculateOffsiteTransportsPerDay,
+
 } from "../../../utils/postfestivalDashboard";
 import { fetchPatientEncountersData } from "../../../utils/postfestivalDashboard";
 import { MedicalDashboardConfigs } from "../../../constants/configs";
@@ -31,7 +35,7 @@ import {
     PatientLengthOfStayDashboardComponent
 } from "../../../components/dashboard/PostFestivalDashboards";
 import { SelectYearPrompt } from "../../../components/dashboard/PostFestivalDashboards";
-import { AcuityCountPerDay } from "../../../interfaces/PosteventDashboard";
+import { AcuityCountPerDay, OffsiteTransportCountTotals, OffsiteTransportEntry } from "../../../interfaces/PosteventDashboard";
 
 
 
@@ -83,6 +87,9 @@ const MedicalPostEventSummaryDashboard = () => {
     const [commonPresentationData, setCommonPresentationData] = useState<TopTenCommonPresentationsTableProps | null>(null);
     const [acuityCountsData, setAcuityCountsData] = useState<AcuityCountsData[]>([]);
     const [acuityCountPerDay, setAcuityCountPerDay] = useState<AcuityCountPerDay>({});
+    const [offsiteTransportCounts, setOffsiteTransportCounts] = useState<OffsiteTransportCountTotals | null>(null);
+    const [offsiteTransportEntries, setOffsiteTransportEntries] = useState<OffsiteTransportEntry[]>([]);
+    const [offsiteTransportsPerDayCount, setOffsiteTransportsPerDayCount] = useState<Record<string, Record<string, number>>>({});
 
     // When the year is selected, fetch the patient encounters for that year
     useEffect(() => {
@@ -91,8 +98,15 @@ const MedicalPostEventSummaryDashboard = () => {
             setSelectedView("Summary");
         }
 
+        if (!selectedYear) {
+            return;
+        }
+
         const fetchPatientEncounters = async () => {
             if (selectedYear) {
+
+                console.log("selectedYear: ", selectedYear);
+
                 // Get start and end dates for the selected year and set them in the form
                 const { festivalStartDate, festivalEndDate } = MedicalDashboardConfigs[selectedYear];
                 setValue("festivalStartDate", festivalStartDate);
@@ -101,34 +115,49 @@ const MedicalPostEventSummaryDashboard = () => {
                     const fetchedPatientEncounters = await fetchPatientEncountersData(festivalStartDate, festivalEndDate, setApiAlert);
                     setPatientEncounters(fetchedPatientEncounters);
 
-                    // Calculate the data for the dashboard
-                    const chiefComplaintEncounterCountsData = calculateChiefComplaintEncounterCountsData(patientEncounters);
-                    setChiefComplaintEncounterCountsData(chiefComplaintEncounterCountsData);
-
-                    const chiefComplaintCountRows = calculateChiefComplaintEncounterCountsSummary(patientEncounters);
-                    setChiefComplaintCountRows(chiefComplaintCountRows);
-
-                    const lengthOfStayData = calculatePostFestivalLengthOfStayData(patientEncounters);
-                    setLengthOfStayData(lengthOfStayData);
-
-                    const commonPresentationData = calculateCommonPresentationsAndTransports(patientEncounters);
-                    setCommonPresentationData(commonPresentationData);
-
-                    const acuityCountsData = calculateAcuityCountsData(patientEncounters);
-                    setAcuityCountsData(acuityCountsData);
-
-                    const patientEncounterAcuityCountsByDay = calculatePatientEncountersByAcuityPerDay(patientEncounters);
-                    setAcuityCountPerDay(patientEncounterAcuityCountsByDay);
-
                 } catch (error) {
-                    console.error("Error fetching patient encounters: ", error);
                     setApiAlert({ type: "error", message: "Error fetching patient encounters" });
                 }
             }
         };
 
         fetchPatientEncounters();
-    }, [patientEncounters, selectedYear, setValue, selectedView, setApiAlert]);
+    }, [selectedYear, setValue, selectedView, setApiAlert]);
+
+
+    useEffect(() => {
+        if (patientEncounters.length > 0) {
+
+            const chiefComplaintEncounterCountsData = calculateChiefComplaintEncounterCountsData(patientEncounters);
+            setChiefComplaintEncounterCountsData(chiefComplaintEncounterCountsData);
+
+            const chiefComplaintCountRows = calculateChiefComplaintEncounterCountsSummary(patientEncounters);
+            setChiefComplaintCountRows(chiefComplaintCountRows);
+
+            const lengthOfStayData = calculatePostFestivalLengthOfStayData(patientEncounters);
+            setLengthOfStayData(lengthOfStayData);
+
+            const commonPresentationData = calculateCommonPresentationsAndTransports(patientEncounters);
+            setCommonPresentationData(commonPresentationData);
+
+            const acuityCountsData = calculateAcuityCountsData(patientEncounters);
+            setAcuityCountsData(acuityCountsData);
+
+            const patientEncounterAcuityCountsByDay = calculatePatientEncountersByAcuityPerDay(patientEncounters);
+            setAcuityCountPerDay(patientEncounterAcuityCountsByDay);
+
+            const offsiteTransportCounts = calculateOffsiteTransportCounts(patientEncounters);
+            setOffsiteTransportCounts(offsiteTransportCounts);
+
+            const offsiteTransportList = generateOffsiteTransportList(patientEncounters);
+            setOffsiteTransportEntries(offsiteTransportList);
+
+            const offsiteTransportsPerDayCount = calculateOffsiteTransportsPerDay(offsiteTransportList);
+            setOffsiteTransportsPerDayCount(offsiteTransportsPerDayCount);
+        }
+    }
+        , [patientEncounters]);
+
 
     return (
         <>
@@ -162,7 +191,7 @@ const MedicalPostEventSummaryDashboard = () => {
                             ) : selectedView === "Patient Encounters" ? (
                                 <PatientEncountersDashboardComponent selectedYear={selectedYear} acuityCountPerDay={acuityCountPerDay} />
                             ) : selectedView === "Offsite Transports" ? (
-                                <OffsiteTransportsDashboardComponent />
+                                <OffsiteTransportsDashboardComponent offsiteTransportCounts={offsiteTransportCounts} offsiteTransportEntries={offsiteTransportEntries} offsiteTransportsPerDayCount={offsiteTransportsPerDayCount} />
                             ) : selectedView === "Patient Length of Stay Times" ? (
                                 <PatientLengthOfStayDashboardComponent />
                             ) : <SelectYearPrompt />}

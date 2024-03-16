@@ -9,8 +9,8 @@ import { ChiefComplaintCountsTableRowData } from "../../interfaces/ChiefComplain
 import { LengthOfStayCountsTableProps } from "../../interfaces/LengthOfStayCountsTableProps";
 import { TopTenCommonPresentationsTableProps } from "../../interfaces/TopTenCommonPresentationsTableProps";
 import { AcuityCountsData } from "../../interfaces/AcuityCountsData";
-import { AcuityCountPerDay } from "../../interfaces/PosteventDashboard";
-import { PatientEncounterCountByDayStackedBarChart, PatientEncounterCountByDayTable, OffsiteTransportBreakdownSideBarChart } from "./PatientEncounterCountsByDay";
+import { AcuityCountPerDay, OffsiteTransportCountTotals, OffsiteTransportEntry } from "../../interfaces/PosteventDashboard";
+import { PatientEncounterCountByDayStackedBarChart, PatientEncounterCountByDayTable, OffsiteTransportBreakdownSideBarChart, OffsiteTransportList, OffsiteTransportStackedBarChart } from "./PatientEncounterCountsByDay";
 import { triageColorStyles, offsiteTransportColorStyles } from "../../constants/colorPalettes";
 
 interface PostFestivalSummaryProps {
@@ -93,22 +93,25 @@ export const PatientEncountersDashboardComponent: React.FC<PatientEncountersDash
     </>
 };
 
-export const OffsiteTransportsDashboardComponent = () => {
+export interface OffsiteTransportsDashboardComponentProps {
+    offsiteTransportCounts: OffsiteTransportCountTotals | null;
+    offsiteTransportEntries: OffsiteTransportEntry[] | null;
+    offsiteTransportsPerDayCount: Record<string, Record<string, number>> | null;
+}
 
-    const offsiteTransportCounts = {
-        ambulance: 3,
-        private: 4,
-        nonEmergency: 7,
-    }
+export const OffsiteTransportsDashboardComponent: React.FC<OffsiteTransportsDashboardComponentProps> = ({ offsiteTransportCounts, offsiteTransportEntries, offsiteTransportsPerDayCount }) => {
 
-    return <Grid container spacing={2} style={{ padding: "1rem", justifyContent: "center" }}>
-        <Grid item xs={12} md={6} lg={5} xl={3} sx={{ maxWidth: "400px" }}>
+
+    return <Grid container spacing={2} style={{ padding: 1 + "rem" }}>
+        <Grid item xs={12} md={8} lg={7} xl={6} sx={{ maxWidth: "400px" }}>
             <OffsiteTransportBreakdownSideBarChart offsiteTransportCounts={offsiteTransportCounts} />
         </Grid>
-        <Grid item xs={12} md={6} lg={5} xl={3} sx={{ maxWidth: "400px" }}>
+        <Grid item xs={12} md={9} lg={8} xl={7} sx={{ maxWidth: "800px" }}>
+            <OffsiteTransportList offsiteTransportEntries={offsiteTransportEntries} />
         </Grid>
 
-        <Grid item xs={12} md={6} lg={4} xl={2} sx={{ maxWidth: "400px" }}>
+        <Grid item xs={12} md={8} lg={7} xl={6} sx={{ maxWidth: "400px" }}>
+            <OffsiteTransportStackedBarChart offsiteTransportsPerDayCount={offsiteTransportsPerDayCount} />
         </Grid>
         <Grid item xs={2}>
             <OffsiteTransportLegend transportColorStyles={offsiteTransportColorStyles} />
