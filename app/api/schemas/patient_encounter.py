@@ -4,10 +4,11 @@ from typing import Optional
 from pydantic import BaseModel
 
 
-class PatientEncounterSchema(BaseModel):
+class BasePatientEncounterSchema(BaseModel):
     """
-    An encounter with a given patient.
+    A base schema for patient encounters, excluding patient RFID.
     """
+
     age: Optional[int]
     arrival_method: str
     arrival_date: datetime
@@ -23,16 +24,24 @@ class PatientEncounterSchema(BaseModel):
     handover_too: str
     location: str
     on_shift: bool
-    patient_rfid: Optional[str]
     qr_code: Optional[str]
     triage_acuity: str
 
     class Config:
         orm_mode = True
 
-class PatientEncounterResponseSchema(PatientEncounterSchema):
+
+class PatientEncounterSchema(BasePatientEncounterSchema):
     """
-    The patient encounter response schema.
+    An encounter with a given patient, including patient RFID.
+    """
+
+    patient_rfid: Optional[str]
+
+
+class PatientEncounterResponseSchema(BasePatientEncounterSchema):
+    """
+    The patient encounter response schema, without patient RFID.
     """
     # document uuid is created server-side when a document is created
     patient_encounter_uuid: Optional[UUID]

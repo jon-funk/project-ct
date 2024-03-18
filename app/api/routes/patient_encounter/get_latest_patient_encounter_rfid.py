@@ -1,6 +1,6 @@
 import logging
 
-from fastapi import Depends, HTTPException
+from fastapi import Depends, HTTPException, Request
 
 from sqlalchemy.orm import Session
 
@@ -22,12 +22,14 @@ LOGGER = logging.getLogger(__name__)
     tags=[MEDICAL],
 )
 def get_latest_patient_encounter_rfid(
-    patient_rfid: str,
+    request: Request,
     db: Session = Depends(get_db),
 ) -> PatientEncounterResponseSchema:
     """
     Retrieve a patient encounter from the database with the provided RFID.
     """
+    patient_rfid = request.headers.get('patient_rfid')  
+
     try:
         encounter = get_latest_patient_encounter_by_patient_rfid(db, patient_rfid)
     except Exception as err:

@@ -320,7 +320,7 @@ def test_soft_delete(
 
 @pytest.mark.needs(postgres=True)
 def test_get_latest_patient_encounter_by_rfid(
-    client: TestClient, auth_header: str
+    client: TestClient, auth_header: dict
 ) -> None:
     """
     Test that we are able to get the latest patient encounter by RFID
@@ -343,11 +343,11 @@ def test_get_latest_patient_encounter_by_rfid(
     response = client.post(f"/api/{MEDICAL}/form", headers=auth_header, json=encounter2)
     assert response.status_code == 200, "Unable to submit the second patient encounter."
 
+    # Headers now need to include the RFID
+    headers_with_rfid = {**auth_header, "patient_rfid": valid_rfid}
+
     # Test valid RFID retrieval
-    doc_url = f"/api/{MEDICAL}/latest-form-rfid?" + urlencode(
-        {"patient_rfid": valid_rfid}
-    )
-    response = client.get(doc_url, headers=auth_header)
+    response = client.get(f"/api/{MEDICAL}/latest-form-rfid", headers=headers_with_rfid)
     resp_data = response.json()
     assert response.status_code == 200, "Should have found entry."
     assert (
@@ -355,8 +355,8 @@ def test_get_latest_patient_encounter_by_rfid(
     ), "Not the latest patient encounter."
 
     # Test invalid RFID
-    doc_url = f"/api/{MEDICAL}/latest-form-rfid?" + urlencode(
-        {"patient_rfid": "invalid_rfid"}
+    headers_with_invalid_rfid = {**auth_header, "patient_rfid": "invalid_rfid"}
+    response = client.get(
+        f"/api/{MEDICAL}/latest-form-rfid", headers=headers_with_invalid_rfid
     )
-    response = client.get(doc_url, headers=auth_header)
     assert response.status_code == 404, "Should not have found entry for invalid RFID."
