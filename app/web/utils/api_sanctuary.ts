@@ -132,6 +132,7 @@ export async function updateSanctuaryIntakeForm(
         body: JSON.stringify({
           intake_uuid: formData.intake_uuid,
           guest_rfid: formData.guest_rfid,
+          document_num: formData.document_num,
           arrival_date: formData.arrival_date,
           arrival_time: formData.arrival_time,
           arrival_method: formData.arrival_method,
@@ -145,6 +146,7 @@ export async function updateSanctuaryIntakeForm(
           discharge_time: formData.departure_time,
           discharge_date: formData.departure_date,
           discharge_method: formData.departure_dest,
+          comment: formData.comment,
         }),
       }
     );
@@ -188,6 +190,7 @@ export async function submitIntakeForm(
         body: JSON.stringify({
           intake_uuid: formData.intake_uuid,
           guest_rfid: formData.guest_rfid,
+          document_num: formData.document_num,
           arrival_date: formData.arrival_date,
           arrival_time: formData.arrival_time,
           arrival_method: formData.arrival_method,
@@ -201,6 +204,7 @@ export async function submitIntakeForm(
           discharge_time: formData.departure_time,
           discharge_date: formData.departure_date,
           discharge_method: formData.departure_dest,
+          comment: formData.comment,
         }),
       }
     );

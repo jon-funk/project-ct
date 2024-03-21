@@ -26,9 +26,6 @@ export function SubstanceCategoryField({ control, errors }: FormFieldProps<Intak
         <Controller
             name="substance_categories"
             control={control}
-            rules={{
-                required: "Substance category is required",
-            }}
             render={({ field }) => (
                 <Select
                     {...field}

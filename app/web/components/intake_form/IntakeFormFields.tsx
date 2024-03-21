@@ -17,6 +17,8 @@ import { ArrivalMethodField } from "./ArrivalMethodField";
 import { ArrivalTimeField } from "./ArrivalTimeField";
 import { ArrivalDateField } from "./ArrivalDateField";
 import { GuestRFIDField } from "./GuestRFIDField";
+import { DocumentNumberField } from "./DocumentNumberField";
+import { CommentsField } from "./CommentsField";
 
 
 /**
@@ -34,8 +36,11 @@ export const IntakeFormFields: React.FC<IntakeFormFieldsProps> = ({
     enableDepartureNotes
 }) => (
     <>
-        <Grid item xs={12}>
+        <Grid item xs={6}>
             {GuestRFIDField({ control, errors })}
+        </Grid>
+        <Grid item xs={6}>
+            {DocumentNumberField({ control, errors })}
         </Grid>
         <Grid item xs={6}>
             {ArrivalDateField({ control, errors })}
@@ -81,6 +86,9 @@ export const IntakeFormFields: React.FC<IntakeFormFieldsProps> = ({
         </Grid>
         <Grid item xs={12}>
             {DepartureNotesField({ control, errors, enableField: enableDepartureNotes })}
+        </Grid>
+        <Grid item xs={12}>
+            {CommentsField({ control, errors })}
         </Grid>
     </>
 );
