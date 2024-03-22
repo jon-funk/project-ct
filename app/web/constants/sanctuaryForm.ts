@@ -3,6 +3,7 @@ import { IntakeFormDataInterface } from "../interfaces/IntakeFormDataInterface";
 export const IntakeFormDataDefaults: IntakeFormDataInterface = {
   intake_uuid: "",
   guest_rfid: "",
+  document_num: "",
   arrival_date: new Date(),
   arrival_time: new Date(),
   arrival_method: "",
@@ -19,6 +20,7 @@ export const IntakeFormDataDefaults: IntakeFormDataInterface = {
   departure_date: new Date(),
   departure_dest: "",
   departure_dest_other: "",
+  comment: "",
 };
 
 export const GuestConsciousnessLevelsOptions = [

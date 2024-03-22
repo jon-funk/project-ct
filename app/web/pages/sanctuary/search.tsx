@@ -47,6 +47,7 @@ function SanctuaryIntakeSearch(): React.JSX.Element {
     const columns = [
         { field: "intake_uuid", headerName: "UUID", width: 200 },
         { field: "guest_rfid", headerName: "Guest RFID", width: 150 },
+        { field: "document_num", headerName: "Document Number", width: 200 },
         { field: "arrival_date", headerName: "Arrival Date", width: 100 },
         { field: "arrival_time", headerName: "Arrival Time", width: 150 },
         { field: "arrival_method", headerName: "Arrival Method", width: 150 },
@@ -60,6 +61,7 @@ function SanctuaryIntakeSearch(): React.JSX.Element {
         { field: "departure_date", headerName: "Discharge Date", width: 250 },
         { field: "departure_time", headerName: "Discharge Time", width: 250 },
         { field: "departure_dest", headerName: "Discharge Destination", width: 250 },
+        { field: "comment", headerName: "Comment", width: 250 },
     ];
 
     if (isError) {

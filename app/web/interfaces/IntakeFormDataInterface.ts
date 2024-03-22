@@ -1,6 +1,7 @@
 export interface IntakeFormDataInterface {
   intake_uuid: string;
   guest_rfid: string;
+  document_num: string;
   arrival_date: Date;
   arrival_time: Date;
   arrival_method: string;
@@ -17,10 +18,12 @@ export interface IntakeFormDataInterface {
   departure_date: Date;
   departure_dest: string;
   departure_dest_other?: string;
+  comment: string;
 }
 
 export interface APIIntakeFormData {
   guest_rfid: string;
+  document_num: string;
   arrival_date: string;
   arrival_time: string;
   arrival_method: string;
@@ -35,4 +38,5 @@ export interface APIIntakeFormData {
   discharge_time: string;
   discharge_method: string;
   intake_uuid: string;
+  comment: string;
 }
