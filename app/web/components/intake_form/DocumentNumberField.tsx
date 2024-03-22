@@ -25,7 +25,7 @@ export function DocumentNumberField({ control, errors }: FormFieldProps<IntakeFo
             label="Document Number"
             variant="outlined"
             placeholder="1234"
-            helperText="eg. 1000"
+            helperText="Enter the document number, e.g., 1234."
             error={Boolean(errors?.document_num)}
           />
         )}
