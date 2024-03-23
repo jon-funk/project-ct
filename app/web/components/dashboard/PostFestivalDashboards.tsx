@@ -165,9 +165,6 @@ export const LengthOfStayDashboardComponent: React.FC<LengthOfStayDashboardProps
         boxStroke: "#000000",
     };
 
-    console.log("losBoxPlotData:", losBoxPlotData);
-
-
     return <Grid container spacing={2} style={{ padding: 1 + "rem" }} >
         <Grid item xs={12} md={8} lg={8} xl={4}>
             <LengthOfStayWhiskerBoxPlot boxPlotData={losBoxPlotData.all} style={styleLosAll} />

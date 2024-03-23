@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           setUser(true);
         }
       } else {
-        console.log("auth token was not retrieved from local storage");
+        console.warn("auth token was not retrieved from local storage");
       }
       setLoading(false);
     }

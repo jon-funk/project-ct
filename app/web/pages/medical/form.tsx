@@ -70,7 +70,7 @@ function MFPEForm(): JSX.Element {
     if (token) {
       errorMessage = await submitPatientEncounterForm(data, token);
     } else {
-      console.log("token is null");
+      console.warn("token is null");
     }
 
     if (!errorMessage) {

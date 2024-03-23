@@ -113,8 +113,6 @@ const MedicalPostEventSummaryDashboard = () => {
         const fetchPatientEncounters = async () => {
             if (selectedYear) {
 
-                console.log("selectedYear: ", selectedYear);
-
                 // Get start and end dates for the selected year and set them in the form
                 const { festivalStartDate, festivalEndDate } = MedicalDashboardConfigs[selectedYear];
                 setValue("festivalStartDate", festivalStartDate);

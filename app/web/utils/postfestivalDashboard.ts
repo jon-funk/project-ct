@@ -21,9 +21,7 @@ import { RowDataCCCount } from "../interfaces/PosteventDashboard";
 import { UserGroupKeys } from "../constants/keys";
 import { AcuityCountsData } from "../interfaces/AcuityCountsData";
 import { ValidTriageAcuities } from "../constants/medicalForm";
-import { format, utcToZonedTime } from "date-fns-tz";
-
-const sourceTimezone = "America/Los_Angeles";
+import { format } from "date-fns-tz";
 
 /**
  * Builds the API path with query parameters for the patient encounters
@@ -87,28 +85,29 @@ export async function fetchPatientEncountersData(
       const encounter = response_data[i];
 
       // Split the chief complaints into an array
-      encounter.chief_complaints = encounter.chief_complaints.split(",");
+      const complaintsArray = encounter.chief_complaints.split(", ");
+      encounter.chief_complaints = [];
+      encounter.chief_complaint_other = "";
+
+      complaintsArray.forEach((complaint: string) => {
+        if (complaint.startsWith("Other: ")) {
+          encounter.chief_complaint_other = complaint.substring(
+            "Other: ".length
+          );
+          encounter.chief_complaints.push("Other");
+        } else {
+          encounter.chief_complaints.push(complaint);
+        }
+      });
 
       // Convert the date and time strings into Date objects
-      encounter.arrival_date = utcToZonedTime(
-        new Date(encounter.arrival_date),
-        sourceTimezone
-      );
-      encounter.arrival_time = utcToZonedTime(
-        new Date(encounter.arrival_time),
-        sourceTimezone
-      );
+      encounter.arrival_date = new Date(`${encounter.arrival_date}Z`);
+      encounter.arrival_time = new Date(`${encounter.arrival_time}Z`);
       if (encounter.departure_date !== null) {
-        encounter.departure_date = utcToZonedTime(
-          new Date(encounter.departure_date),
-          sourceTimezone
-        );
+        encounter.departure_date = new Date(`${encounter.departure_date}Z`);
       }
       if (encounter.departure_time !== null) {
-        encounter.departure_time = utcToZonedTime(
-          new Date(encounter.departure_time),
-          sourceTimezone
-        );
+        encounter.departure_time = new Date(`${encounter.departure_time}Z`);
       }
 
       response_data[i] = encounter;
@@ -827,12 +826,14 @@ export function calculatePatientLosBoxPlotData(
     const arrivalDate = new Date(encounter.arrival_date);
     const arrivalTime = new Date(encounter.arrival_time);
     const arrivalDateTime = new Date(
-      arrivalDate.getFullYear(),
-      arrivalDate.getMonth(),
-      arrivalDate.getDate(),
-      arrivalTime.getHours(),
-      arrivalTime.getMinutes(),
-      arrivalTime.getSeconds()
+      Date.UTC(
+        arrivalDate.getUTCFullYear(),
+        arrivalDate.getUTCMonth(),
+        arrivalDate.getUTCDate(),
+        arrivalTime.getUTCHours(),
+        arrivalTime.getUTCMinutes(),
+        arrivalTime.getUTCSeconds()
+      )
     );
 
     let departureDateTime;
@@ -840,18 +841,20 @@ export function calculatePatientLosBoxPlotData(
       const departureDate = new Date(encounter.departure_date);
       const departureTime = new Date(encounter.departure_time);
       departureDateTime = new Date(
-        departureDate.getFullYear(),
-        departureDate.getMonth(),
-        departureDate.getDate(),
-        departureTime.getHours(),
-        departureTime.getMinutes(),
-        departureTime.getSeconds()
+        Date.UTC(
+          departureDate.getUTCFullYear(),
+          departureDate.getUTCMonth(),
+          departureDate.getUTCDate(),
+          departureTime.getUTCHours(),
+          departureTime.getUTCMinutes(),
+          departureTime.getUTCSeconds()
+        )
       );
     } else {
       departureDateTime = undefined;
     }
 
-    const dayString = format(arrivalDateTime, "MMM dd"); // Ensure the format function here handles timezones correctly
+    const dayString = format(arrivalDateTime, "MMM dd");
 
     const los = getLengthOfStay(arrivalDateTime, departureDateTime);
 
