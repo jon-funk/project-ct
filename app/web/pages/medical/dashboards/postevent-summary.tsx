@@ -12,6 +12,7 @@ import {
     calculateOffsiteTransportCounts,
     generateOffsiteTransportList,
     calculateOffsiteTransportsPerDay,
+    calculatePatientLosBoxPlotData,
 
 } from "../../../utils/postfestivalDashboard";
 import { fetchPatientEncountersData } from "../../../utils/postfestivalDashboard";
@@ -32,10 +33,10 @@ import {
     PostFestivalSummaryComponent,
     PatientEncountersDashboardComponent,
     OffsiteTransportsDashboardComponent,
-    PatientLengthOfStayDashboardComponent
+    LengthOfStayDashboardComponent
 } from "../../../components/dashboard/PostFestivalDashboards";
 import { SelectYearPrompt } from "../../../components/dashboard/PostFestivalDashboards";
-import { AcuityCountPerDay, OffsiteTransportCountTotals, OffsiteTransportEntry } from "../../../interfaces/PosteventDashboard";
+import { AcuityCountPerDay, LengthOfStayDashboardData, OffsiteTransportCountTotals, OffsiteTransportEntry } from "../../../interfaces/PosteventDashboard";
 
 
 
@@ -90,6 +91,13 @@ const MedicalPostEventSummaryDashboard = () => {
     const [offsiteTransportCounts, setOffsiteTransportCounts] = useState<OffsiteTransportCountTotals | null>(null);
     const [offsiteTransportEntries, setOffsiteTransportEntries] = useState<OffsiteTransportEntry[]>([]);
     const [offsiteTransportsPerDayCount, setOffsiteTransportsPerDayCount] = useState<Record<string, Record<string, number>>>({});
+    const [losBoxPlotData, setLosBoxPlotData] = useState<LengthOfStayDashboardData>({
+        all: [],
+        red: [],
+        yellow: [],
+        green: [],
+        white: [],
+    });
 
     // When the year is selected, fetch the patient encounters for that year
     useEffect(() => {
@@ -154,6 +162,9 @@ const MedicalPostEventSummaryDashboard = () => {
 
             const offsiteTransportsPerDayCount = calculateOffsiteTransportsPerDay(offsiteTransportList);
             setOffsiteTransportsPerDayCount(offsiteTransportsPerDayCount);
+
+            const losBoxPlotData = calculatePatientLosBoxPlotData(patientEncounters);
+            setLosBoxPlotData(losBoxPlotData);
         }
     }
         , [patientEncounters]);
@@ -192,8 +203,8 @@ const MedicalPostEventSummaryDashboard = () => {
                                 <PatientEncountersDashboardComponent selectedYear={selectedYear} acuityCountPerDay={acuityCountPerDay} />
                             ) : selectedView === "Offsite Transports" ? (
                                 <OffsiteTransportsDashboardComponent offsiteTransportCounts={offsiteTransportCounts} offsiteTransportEntries={offsiteTransportEntries} offsiteTransportsPerDayCount={offsiteTransportsPerDayCount} />
-                            ) : selectedView === "Patient Length of Stay Times" ? (
-                                <PatientLengthOfStayDashboardComponent />
+                            ) : selectedView === "Length of Stay" ? (
+                                <LengthOfStayDashboardComponent losBoxPlotData={losBoxPlotData} />
                             ) : <SelectYearPrompt />}
                         </FormProvider>
                     </Container>
@@ -205,13 +216,13 @@ const MedicalPostEventSummaryDashboard = () => {
 
 export default ProtectedRoute(MedicalPostEventSummaryDashboard);
 
-type SelectedView = "Summary" | "Patient Encounters" | "Offsite Transports" | "Patient Length of Stay Times" | "";
+type SelectedView = "Summary" | "Patient Encounters" | "Offsite Transports" | "Length of Stay" | "";
 
 const viewToNavigationText: { [key in SelectedView]: string } = {
     "Summary": "Dashboard > Post-Event > Summary",
     "Patient Encounters": "Dashboard > Post-Event > Patient Encounters",
     "Offsite Transports": "Dashboard > Post-Event > Offsite Transports",
-    "Patient Length of Stay Times": "Dashboard > Post-Event > Patient Length of Stay Times",
+    "Length of Stay": "Dashboard > Post-Event > Length of Stay",
     "": "Dashboard > Post-Event",
 };
 

@@ -12,6 +12,7 @@ import {
 import {
   AcuityCountPerDay,
   AggregatedDurations,
+  LengthOfStayDashboardData,
   OffsiteTransportCountTotals,
   OffsiteTransportEntry,
 } from "../interfaces/PosteventDashboard";
@@ -20,6 +21,9 @@ import { RowDataCCCount } from "../interfaces/PosteventDashboard";
 import { UserGroupKeys } from "../constants/keys";
 import { AcuityCountsData } from "../interfaces/AcuityCountsData";
 import { ValidTriageAcuities } from "../constants/medicalForm";
+import { format, utcToZonedTime } from "date-fns-tz";
+
+const sourceTimezone = "America/Los_Angeles";
 
 /**
  * Builds the API path with query parameters for the patient encounters
@@ -86,14 +90,27 @@ export async function fetchPatientEncountersData(
       encounter.chief_complaints = encounter.chief_complaints.split(",");
 
       // Convert the date and time strings into Date objects
-      encounter.arrival_date = new Date(`${encounter.arrival_date}Z`);
-      encounter.arrival_time = new Date(`${encounter.arrival_time}Z`);
+      encounter.arrival_date = utcToZonedTime(
+        new Date(encounter.arrival_date),
+        sourceTimezone
+      );
+      encounter.arrival_time = utcToZonedTime(
+        new Date(encounter.arrival_time),
+        sourceTimezone
+      );
       if (encounter.departure_date !== null) {
-        encounter.departure_date = new Date(`${encounter.departure_date}Z`);
+        encounter.departure_date = utcToZonedTime(
+          new Date(encounter.departure_date),
+          sourceTimezone
+        );
       }
       if (encounter.departure_time !== null) {
-        encounter.departure_time = new Date(`${encounter.departure_time}Z`);
+        encounter.departure_time = utcToZonedTime(
+          new Date(encounter.departure_time),
+          sourceTimezone
+        );
       }
+
       response_data[i] = encounter;
     }
     if (response.ok) {
@@ -776,4 +793,94 @@ export function calculateOffsiteTransportsPerDay(
   });
 
   return transportsPerDay;
+}
+
+export function calculatePatientLosBoxPlotData(
+  patientEncounters: PatientEncounterRow[]
+): LengthOfStayDashboardData {
+  // Helper to get LOS in minutes
+  const getLengthOfStay = (arrival: Date, departure: Date | undefined) => {
+    if (!departure || isNaN(departure.getTime())) {
+      return null;
+    }
+    return (departure.getTime() - arrival.getTime()) / (1000 * 60);
+  };
+
+  // Create a map for each acuity level
+  const losData: LengthOfStayDashboardData = {
+    all: [],
+    red: [],
+    yellow: [],
+    green: [],
+    white: [],
+  };
+
+  const isValidAcuity = (
+    key: string
+  ): key is keyof LengthOfStayDashboardData => {
+    return ["all", "red", "yellow", "green", "white"].includes(key);
+  };
+
+  // Group LOS by days and acuity
+  patientEncounters.forEach((encounter) => {
+    // Convert the date and time strings into Date objects
+    const arrivalDate = new Date(encounter.arrival_date);
+    const arrivalTime = new Date(encounter.arrival_time);
+    const arrivalDateTime = new Date(
+      arrivalDate.getFullYear(),
+      arrivalDate.getMonth(),
+      arrivalDate.getDate(),
+      arrivalTime.getHours(),
+      arrivalTime.getMinutes(),
+      arrivalTime.getSeconds()
+    );
+
+    let departureDateTime;
+    if (encounter.departure_date && encounter.departure_time) {
+      const departureDate = new Date(encounter.departure_date);
+      const departureTime = new Date(encounter.departure_time);
+      departureDateTime = new Date(
+        departureDate.getFullYear(),
+        departureDate.getMonth(),
+        departureDate.getDate(),
+        departureTime.getHours(),
+        departureTime.getMinutes(),
+        departureTime.getSeconds()
+      );
+    } else {
+      departureDateTime = undefined;
+    }
+
+    const dayString = format(arrivalDateTime, "MMM dd"); // Ensure the format function here handles timezones correctly
+
+    const los = getLengthOfStay(arrivalDateTime, departureDateTime);
+
+    if (los !== null) {
+      // Insert into 'all' category
+      if (!losData.all.some((entry) => entry.day === dayString)) {
+        losData.all.push({ day: dayString, data: [] });
+      }
+      losData.all.find((entry) => entry.day === dayString)?.data.push(los);
+
+      // Insert into respective acuity category
+      const acuityCategory = encounter.triage_acuity.toLowerCase();
+      if (isValidAcuity(acuityCategory)) {
+        if (!losData[acuityCategory].some((entry) => entry.day === dayString)) {
+          losData[acuityCategory].push({ day: dayString, data: [] });
+        }
+        losData[acuityCategory]
+          .find((entry) => entry.day === dayString)
+          ?.data.push(los);
+      }
+    }
+  });
+
+  // Sort the data by days for consistency in plotting
+  Object.keys(losData).forEach((acuityLevel) => {
+    losData[acuityLevel as keyof LengthOfStayDashboardData].sort(
+      (a, b) => new Date(a.day).getTime() - new Date(b.day).getTime()
+    );
+  });
+
+  return losData;
 }
