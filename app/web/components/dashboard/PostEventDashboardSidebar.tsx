@@ -61,7 +61,7 @@ const PostEventDashboardSidebar: React.FC<PostEventDashboardSidebarProps> = ({ c
                                 </FormProvider>
                             </ListItemText>
                         </ListItem>
-                        {["Summary", "Patient Encounters", "Offsite Transports", "Patient Length of Stay Times"].map((text) => (
+                        {["Summary", "Patient Encounters", "Offsite Transports", "Length of Stay"].map((text) => (
                             <ListItemButton key={text} onClick={() => onSelectView(text)} sx={{ backgroundColor: text === selectedView ? "rgba(255, 255, 255, 0.2)" : "transparent", }}>
                                 <ListItemText primary={text} />
                             </ListItemButton>

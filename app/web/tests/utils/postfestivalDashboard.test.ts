@@ -8,6 +8,7 @@ import {
   aggregateComplaints,
   calculateCommonPresentationsAndTransports,
   calculateAcuityCountsData,
+  calculatePatientLosBoxPlotData,
 } from "../../utils/postfestivalDashboard";
 import { PatientEncounterRow } from "../../interfaces/PatientEncounterRow";
 import { generateFakePatientEncounter } from "../__fixtures__/patientEncounters";
@@ -15,6 +16,7 @@ import { TriageAcuities } from "../../constants/medicalForm";
 import { initialRowsDataCCCount } from "../../constants/posteventDashboard";
 import { RowDataCCCount } from "../../interfaces/PosteventDashboard";
 import { describe } from "node:test";
+import { format, utcToZonedTime } from "date-fns-tz";
 
 describe("calculateChiefComplaintEncounterCountsData", () => {
   it("correctly calculates encounter counts for varying numbers of chief complaints", () => {
@@ -651,4 +653,208 @@ describe("calculateAcuityCountsData", () => {
   ].sort((a, b) => a.acuity.localeCompare(b.acuity));
 
   expect(result).toEqual(expected);
+});
+
+describe("calculatePatientLosBoxPlotData", () => {
+  const timeZone = "UTC";
+
+  it("correctly calculates the length of stay box plot data for all four acuities across different days", () => {
+    const patientEncounters: PatientEncounterRow[] = [
+      generateFakePatientEncounter(1, {
+        arrival_date: new Date("2024-02-12T08:00:00Z"),
+        arrival_time: new Date("2024-02-12T08:00:00Z"),
+        departure_date: new Date("2024-02-12T08:10:00Z"),
+        departure_time: new Date("2024-02-12T08:10:00Z"),
+        triage_acuity: TriageAcuities.Red,
+      }),
+
+      generateFakePatientEncounter(1, {
+        arrival_date: new Date("2024-02-13T08:00:00Z"),
+        arrival_time: new Date("2024-02-13T08:00:00Z"),
+        departure_date: new Date("2024-02-13T08:10:00Z"),
+        departure_time: new Date("2024-02-13T08:10:00Z"),
+        triage_acuity: TriageAcuities.Green,
+      }),
+      generateFakePatientEncounter(1, {
+        arrival_date: new Date("2024-02-14T09:00:00Z"),
+        arrival_time: new Date("2024-02-14T09:00:00Z"),
+        departure_date: new Date("2024-02-14T10:30:00Z"),
+        departure_time: new Date("2024-02-14T10:30:00Z"),
+        triage_acuity: TriageAcuities.Yellow,
+      }),
+      generateFakePatientEncounter(1, {
+        arrival_date: new Date("2024-02-15T09:00:00Z"),
+        arrival_time: new Date("2024-02-15T09:00:00Z"),
+        departure_date: new Date("2024-02-15T10:30:00Z"),
+        departure_time: new Date("2024-02-15T10:30:00Z"),
+        triage_acuity: TriageAcuities.White,
+      }),
+    ];
+
+    const result = calculatePatientLosBoxPlotData(patientEncounters);
+
+    expect(result.all.length).toBe(4);
+    expect(result.red.length).toBe(1);
+    expect(result.yellow.length).toBe(1);
+    expect(result.green.length).toBe(1);
+    expect(result.white.length).toBe(1);
+  });
+
+  it("correctly calculates the length of stay box plot data for all four acuities on the same day", () => {
+    const patientEncounters: PatientEncounterRow[] = [
+      generateFakePatientEncounter(1, {
+        arrival_date: new Date("2024-02-12T08:00:00Z"),
+        arrival_time: new Date("2024-02-12T08:00:00Z"),
+        departure_date: new Date("2024-02-12T08:10:00Z"),
+        departure_time: new Date("2024-02-12T08:10:00Z"),
+        triage_acuity: TriageAcuities.Red,
+      }),
+
+      generateFakePatientEncounter(1, {
+        arrival_date: new Date("2024-02-12T08:00:00Z"),
+        arrival_time: new Date("2024-02-12T08:00:00Z"),
+        departure_date: new Date("2024-02-12T08:10:00Z"),
+        departure_time: new Date("2024-02-12T08:10:00Z"),
+        triage_acuity: TriageAcuities.Green,
+      }),
+      generateFakePatientEncounter(1, {
+        arrival_date: new Date("2024-02-12T09:00:00Z"),
+        arrival_time: new Date("2024-02-12T09:00:00Z"),
+        departure_date: new Date("2024-02-12T10:30:00Z"),
+        departure_time: new Date("2024-02-12T10:30:00Z"),
+        triage_acuity: TriageAcuities.Yellow,
+      }),
+      generateFakePatientEncounter(1, {
+        arrival_date: new Date("2024-02-12T09:00:00Z"),
+        arrival_time: new Date("2024-02-12T09:00:00Z"),
+        departure_date: new Date("2024-02-12T10:30:00Z"),
+        departure_time: new Date("2024-02-12T10:30:00Z"),
+        triage_acuity: TriageAcuities.White,
+      }),
+    ];
+
+    const result = calculatePatientLosBoxPlotData(patientEncounters);
+
+    expect(result.all.length).toBe(1);
+    expect(result.red.length).toBe(1);
+    expect(result.yellow.length).toBe(1);
+    expect(result.green.length).toBe(1);
+    expect(result.white.length).toBe(1);
+  });
+
+  it("correctly calculates the length of stay box plot data for all four acuities on the same day with unknown departure times", () => {
+    const patientEncounters: PatientEncounterRow[] = [
+      generateFakePatientEncounter(1, {
+        arrival_date: new Date("2024-02-12T08:00:00Z"),
+        arrival_time: new Date("2024-02-12T08:00:00Z"),
+        departure_date: undefined,
+        departure_time: undefined,
+        triage_acuity: TriageAcuities.Red,
+      }),
+
+      generateFakePatientEncounter(1, {
+        arrival_date: new Date("2024-02-12T08:00:00Z"),
+        arrival_time: new Date("2024-02-12T08:00:00Z"),
+        departure_date: undefined,
+        departure_time: undefined,
+        triage_acuity: TriageAcuities.Green,
+      }),
+      generateFakePatientEncounter(1, {
+        arrival_date: new Date("2024-02-12T09:00:00Z"),
+        arrival_time: new Date("2024-02-12T09:00:00Z"),
+        departure_date: undefined,
+        departure_time: undefined,
+        triage_acuity: TriageAcuities.Yellow,
+      }),
+      generateFakePatientEncounter(1, {
+        arrival_date: new Date("2024-02-12T09:00:00Z"),
+        arrival_time: new Date("2024-02-12T09:00:00Z"),
+        departure_date: undefined,
+        departure_time: undefined,
+        triage_acuity: TriageAcuities.White,
+      }),
+    ];
+
+    const result = calculatePatientLosBoxPlotData(patientEncounters);
+
+    expect(result.all.length).toBe(0);
+    expect(result.red.length).toBe(0);
+    expect(result.yellow.length).toBe(0);
+    expect(result.green.length).toBe(0);
+    expect(result.white.length).toBe(0);
+  });
+
+  it("handles encounters that start and end at midnight correctly", () => {
+    const arrivalDateTime = utcToZonedTime(
+      new Date("2024-02-12T00:00:00Z"),
+      timeZone
+    );
+    const patientEncounters: PatientEncounterRow[] = [
+      generateFakePatientEncounter(1, {
+        arrival_date: arrivalDateTime,
+        arrival_time: arrivalDateTime,
+        departure_date: utcToZonedTime(
+          new Date("2024-02-12T00:10:00Z"),
+          timeZone
+        ),
+        departure_time: utcToZonedTime(
+          new Date("2024-02-12T00:10:00Z"),
+          timeZone
+        ),
+        triage_acuity: TriageAcuities.Red,
+      }),
+
+      generateFakePatientEncounter(1, {
+        arrival_date: arrivalDateTime,
+        arrival_time: arrivalDateTime,
+        departure_date: utcToZonedTime(
+          new Date("2024-02-12T00:10:00Z"),
+          timeZone
+        ),
+        departure_time: utcToZonedTime(
+          new Date("2024-02-12T00:10:00Z"),
+          timeZone
+        ),
+        triage_acuity: TriageAcuities.Green,
+      }),
+      generateFakePatientEncounter(1, {
+        arrival_date: arrivalDateTime,
+        arrival_time: arrivalDateTime,
+        departure_date: utcToZonedTime(
+          new Date("2024-02-12T00:10:00Z"),
+          timeZone
+        ),
+        departure_time: utcToZonedTime(
+          new Date("2024-02-12T00:10:00Z"),
+          timeZone
+        ),
+        triage_acuity: TriageAcuities.Yellow,
+      }),
+      generateFakePatientEncounter(1, {
+        arrival_date: arrivalDateTime,
+        arrival_time: arrivalDateTime,
+        departure_date: utcToZonedTime(
+          new Date("2024-02-12T00:10:00Z"),
+          timeZone
+        ),
+        departure_time: utcToZonedTime(
+          new Date("2024-02-12T00:10:00Z"),
+          timeZone
+        ),
+        triage_acuity: TriageAcuities.White,
+      }),
+    ];
+
+    const result = calculatePatientLosBoxPlotData(patientEncounters);
+
+    const expectedDayString = format(arrivalDateTime, "MMM dd", { timeZone });
+
+    expect(result.all.length).toBe(1);
+    expect(result.all[0].day).toBe(expectedDayString);
+    expect(result.all[0].data).toEqual([10, 10, 10, 10]);
+    expect(result.red[0].data).toEqual([10]);
+    expect(result.yellow[0].data).toEqual([10]);
+    expect(result.green[0].data).toEqual([10]);
+    expect(result.white[0].data).toEqual([10]);
+  });
 });

@@ -51,3 +51,20 @@ export type OffsiteTransportEntry = {
   method: string;
   chiefComplaint: string;
 };
+
+export interface BoxPlotData {
+  day: string;
+  data: number[];
+}
+
+export interface LengthOfStayDashboardData {
+  all: BoxPlotData[];
+  red: BoxPlotData[];
+  yellow: BoxPlotData[];
+  green: BoxPlotData[];
+  white: BoxPlotData[];
+}
+
+export interface LengthOfStayDashboardProps {
+  losBoxPlotData: LengthOfStayDashboardData;
+}

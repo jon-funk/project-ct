@@ -213,15 +213,15 @@ def generate_dates_and_times(
 
     # Define length of stay based on triage_acuity
     if triage_acuity == "white":
-        length_of_stay = timedelta(minutes=10)
+        length_of_stay = timedelta(minutes=random.randint(8, 12))
     elif triage_acuity == "green":
-        length_of_stay = timedelta(minutes=15)
+        length_of_stay = timedelta(minutes=random.randint(8, 18))
     elif triage_acuity == "yellow":
-        length_of_stay = timedelta(hours=random.randint(1, 15))
+        length_of_stay = timedelta(minutes=random.randint(30, 240))
     elif triage_acuity == "red":
-        length_of_stay = timedelta(hours=random.randint(3, 20))
+        length_of_stay = timedelta(minutes=random.randint(30, 240))
     else:
-        length_of_stay = timedelta(hours=random.randint(1, 4))
+        length_of_stay = timedelta(minutes=random.randint(10, 240))
 
     # Calculate departure datetime
     departure_date_time = arrival_date_time + length_of_stay

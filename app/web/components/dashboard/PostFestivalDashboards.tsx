@@ -11,7 +11,9 @@ import { TopTenCommonPresentationsTableProps } from "../../interfaces/TopTenComm
 import { AcuityCountsData } from "../../interfaces/AcuityCountsData";
 import { AcuityCountPerDay, OffsiteTransportCountTotals, OffsiteTransportEntry } from "../../interfaces/PosteventDashboard";
 import { PatientEncounterCountByDayStackedBarChart, PatientEncounterCountByDayTable, OffsiteTransportBreakdownSideBarChart, OffsiteTransportList, OffsiteTransportStackedBarChart } from "./PatientEncounterCountsByDay";
-import { triageColorStyles, offsiteTransportColorStyles } from "../../constants/colorPalettes";
+import { triageColorStyles, offsiteTransportColorStyles, tableColorStylesLight } from "../../constants/colorPalettes";
+import { LengthOfStayWhiskerBoxPlot } from "./LengthOfStayComponents";
+import { LengthOfStayDashboardProps } from "../../interfaces/PosteventDashboard";
 
 interface PostFestivalSummaryProps {
     selectedYear: string;
@@ -119,9 +121,70 @@ export const OffsiteTransportsDashboardComponent: React.FC<OffsiteTransportsDash
     </Grid>
 }
 
-export const PatientLengthOfStayDashboardComponent = () => {
-    return <Box>
-    </Box>;
+
+export const LengthOfStayDashboardComponent: React.FC<LengthOfStayDashboardProps> = ({ losBoxPlotData }) => {
+
+    // Styles for the box plots
+    const styleLosAll = {
+        title: "All Acuity Levels",
+        titleColor: tableColorStylesLight.subHeader.color,
+        titleBackground: tableColorStylesLight.subHeader.backgroundColor,
+        boxFill: tableColorStylesLight.subHeader.backgroundColor,
+        boxStroke: "#000000",
+    };
+
+    const styleLosRed = {
+        title: "Red Acuity Level",
+        titleColor: triageColorStyles.red.color,
+        titleBackground: triageColorStyles.red.backgroundColor,
+        boxFill: triageColorStyles.red.backgroundColor,
+        boxStroke: "#000000",
+    };
+
+    const styleLosYellow = {
+        title: "Yellow Acuity Level",
+        titleColor: triageColorStyles.yellow.color,
+        titleBackground: triageColorStyles.yellow.backgroundColor,
+        boxFill: triageColorStyles.yellow.backgroundColor,
+        boxStroke: "#000000",
+    };
+
+    const styleLosGreen = {
+        title: "Green Acuity Level",
+        titleColor: triageColorStyles.green.color,
+        titleBackground: triageColorStyles.green.backgroundColor,
+        boxFill: triageColorStyles.green.backgroundColor,
+        boxStroke: "#000000",
+    };
+
+    const styleLosWhite = {
+        title: "White Acuity Level",
+        titleColor: triageColorStyles.white.color,
+        titleBackground: triageColorStyles.white.backgroundColor,
+        boxFill: triageColorStyles.white.backgroundColor,
+        boxStroke: "#000000",
+    };
+
+    console.log("losBoxPlotData:", losBoxPlotData);
+
+
+    return <Grid container spacing={2} style={{ padding: 1 + "rem" }} >
+        <Grid item xs={12} md={8} lg={8} xl={4}>
+            <LengthOfStayWhiskerBoxPlot boxPlotData={losBoxPlotData.all} style={styleLosAll} />
+        </Grid>
+        <Grid item xs={12} md={8} lg={8} xl={4}>
+            <LengthOfStayWhiskerBoxPlot boxPlotData={losBoxPlotData.red} style={styleLosRed} />
+        </Grid>
+        <Grid item xs={12} md={8} lg={8} xl={4}>
+            <LengthOfStayWhiskerBoxPlot boxPlotData={losBoxPlotData.yellow} style={styleLosYellow} />
+        </Grid>
+        <Grid item xs={12} md={8} lg={8} xl={4}>
+            <LengthOfStayWhiskerBoxPlot boxPlotData={losBoxPlotData.green} style={styleLosGreen} />
+        </Grid>
+        <Grid item xs={12} md={8} lg={8} xl={4}>
+            <LengthOfStayWhiskerBoxPlot boxPlotData={losBoxPlotData.white} style={styleLosWhite} />
+        </Grid>
+    </Grid >
 }
 
 interface ColorStyle {
@@ -165,6 +228,7 @@ export const TriageAcuityLegend: React.FC<TriageAcuityLegendProps> = ({ triageCo
         </svg>
     );
 }
+
 
 interface OffsiteTransportLegendProps {
     transportColorStyles: { [key: string]: ColorStyle };
