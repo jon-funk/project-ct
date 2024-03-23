@@ -12,7 +12,7 @@ import { AcuityCountsData } from "../../interfaces/AcuityCountsData";
 import { AcuityCountPerDay, OffsiteTransportCountTotals, OffsiteTransportEntry } from "../../interfaces/PosteventDashboard";
 import { PatientEncounterCountByDayStackedBarChart, PatientEncounterCountByDayTable, OffsiteTransportBreakdownSideBarChart, OffsiteTransportList, OffsiteTransportStackedBarChart } from "./PatientEncounterCountsByDay";
 import { triageColorStyles, offsiteTransportColorStyles, tableColorStylesLight } from "../../constants/colorPalettes";
-import { LengthOfStayWhiskerBoxPlot } from "./LengthOfStayComponents";
+import { LengthOfStayWhiskerBoxPlot, LengthOfStayMedianTable, LengthOfStayTransportsList } from "./LengthOfStayComponents";
 import { LengthOfStayDashboardProps } from "../../interfaces/PosteventDashboard";
 
 interface PostFestivalSummaryProps {
@@ -34,10 +34,10 @@ export const PostFestivalSummaryComponent: React.FC<PostFestivalSummaryProps> = 
     return <Grid container spacing={2} style={{ padding: 1 + "rem" }}>
         <Grid>
             <Grid container direction="column" spacing={2}>
-                <Grid item>
+                <Grid item xs="auto">
                     <PatientEncounterAcuityBarChart acuityCountsData={acuityCountsData} />
                 </Grid>
-                <Grid item>
+                <Grid item xs="auto">
                     <ChiefComplaintEncounterCountsTable encounterCounts={chiefComplaintEncounterCountsData} />
                 </Grid>
             </Grid>
@@ -77,18 +77,18 @@ export const PatientEncountersDashboardComponent: React.FC<PatientEncountersDash
     }
 ) => {
     return <>
-        <Grid container spacing={2} style={{ padding: "1rem", justifyContent: "center" }}>
-            <Grid item xs={12} md={6} lg={5} xl={3} sx={{ maxWidth: "400px" }}>
+        <Grid container spacing={2} style={{ padding: "1rem", justifyContent: "left" }}>
+            <Grid item xs="auto" sx={{ maxWidth: "400px" }}>
                 <PatientEncounterCountByDayStackedBarChart acuityCountPerDay={acuityCountPerDay} />
             </Grid>
-            <Grid item xs={12} md={6} lg={5} xl={3} sx={{ maxWidth: "400px" }}>
+            <Grid item xs="auto" sx={{ maxWidth: "400px" }}>
                 <PatientEncounterCountByDayStackedBarChart acuityCountPerDay={acuityCountPerDay} displayCounts={false} />
             </Grid>
 
-            <Grid item xs={12} md={6} lg={4} xl={2} sx={{ maxWidth: "400px" }}>
+            <Grid item xs="auto" sx={{ maxWidth: "400px" }}>
                 <PatientEncounterCountByDayTable acuityCountPerDay={acuityCountPerDay} />
             </Grid>
-            <Grid item xs={2}>
+            <Grid item xs="auto">
                 <TriageAcuityLegend triageColorStyles={triageColorStyles} />
             </Grid>
         </Grid>
@@ -105,24 +105,24 @@ export const OffsiteTransportsDashboardComponent: React.FC<OffsiteTransportsDash
 
 
     return <Grid container spacing={2} style={{ padding: 1 + "rem" }}>
-        <Grid item xs={12} md={8} lg={7} xl={6} sx={{ maxWidth: "400px" }}>
+        <Grid item xs="auto" sx={{ maxWidth: "400px" }}>
             <OffsiteTransportBreakdownSideBarChart offsiteTransportCounts={offsiteTransportCounts} />
         </Grid>
         <Grid item xs={12} md={9} lg={8} xl={7} sx={{ maxWidth: "800px" }}>
             <OffsiteTransportList offsiteTransportEntries={offsiteTransportEntries} />
         </Grid>
 
-        <Grid item xs={12} md={8} lg={7} xl={6} sx={{ maxWidth: "400px" }}>
+        <Grid item xs="auto" sx={{ maxWidth: "400px" }}>
             <OffsiteTransportStackedBarChart offsiteTransportsPerDayCount={offsiteTransportsPerDayCount} />
         </Grid>
-        <Grid item xs={2}>
+        <Grid item xs="auto">
             <OffsiteTransportLegend transportColorStyles={offsiteTransportColorStyles} />
         </Grid>
     </Grid>
 }
 
 
-export const LengthOfStayDashboardComponent: React.FC<LengthOfStayDashboardProps> = ({ losBoxPlotData }) => {
+export const LengthOfStayDashboardComponent: React.FC<LengthOfStayDashboardProps> = ({ losBoxPlotData, losMedianData, transportLosListData }) => {
 
     // Styles for the box plots
     const styleLosAll = {
@@ -165,23 +165,67 @@ export const LengthOfStayDashboardComponent: React.FC<LengthOfStayDashboardProps
         boxStroke: "#000000",
     };
 
-    return <Grid container spacing={2} style={{ padding: 1 + "rem" }} >
-        <Grid item xs={12} md={8} lg={8} xl={4}>
-            <LengthOfStayWhiskerBoxPlot boxPlotData={losBoxPlotData.all} style={styleLosAll} />
-        </Grid>
-        <Grid item xs={12} md={8} lg={8} xl={4}>
-            <LengthOfStayWhiskerBoxPlot boxPlotData={losBoxPlotData.red} style={styleLosRed} />
-        </Grid>
-        <Grid item xs={12} md={8} lg={8} xl={4}>
-            <LengthOfStayWhiskerBoxPlot boxPlotData={losBoxPlotData.yellow} style={styleLosYellow} />
-        </Grid>
-        <Grid item xs={12} md={8} lg={8} xl={4}>
-            <LengthOfStayWhiskerBoxPlot boxPlotData={losBoxPlotData.green} style={styleLosGreen} />
-        </Grid>
-        <Grid item xs={12} md={8} lg={8} xl={4}>
-            <LengthOfStayWhiskerBoxPlot boxPlotData={losBoxPlotData.white} style={styleLosWhite} />
-        </Grid>
-    </Grid >
+    // Table styles for the median tablea
+    const styleMedianTableRed = {
+        title: "Red",
+        titleColor: triageColorStyles.red.color,
+        titleBackground: triageColorStyles.red.backgroundColor,
+    };
+
+    const styleMedianTableYellow = {
+        title: "Yellow",
+        titleColor: triageColorStyles.yellow.color,
+        titleBackground: triageColorStyles.yellow.backgroundColor,
+    };
+
+    const styleMedianTableGreen = {
+        title: "Green",
+        titleColor: triageColorStyles.green.color,
+        titleBackground: triageColorStyles.green.backgroundColor,
+    };
+
+    const styleMedianTableWhite = {
+        title: "White",
+        titleColor: triageColorStyles.white.color,
+        titleBackground: triageColorStyles.white.backgroundColor,
+    };
+
+    return (<>
+        <Grid container spacing={2} justifyContent="left" style={{ padding: 1 + "rem" }} >
+            <Grid item xs="auto">
+                <LengthOfStayWhiskerBoxPlot boxPlotData={losBoxPlotData.all} style={styleLosAll} />
+            </Grid>
+            <Grid item xs="auto">
+                <LengthOfStayWhiskerBoxPlot boxPlotData={losBoxPlotData.red} style={styleLosRed} />
+            </Grid>
+            <Grid item xs="auto">
+                <LengthOfStayWhiskerBoxPlot boxPlotData={losBoxPlotData.yellow} style={styleLosYellow} />
+            </Grid>
+            <Grid item xs="auto">
+                <LengthOfStayWhiskerBoxPlot boxPlotData={losBoxPlotData.green} style={styleLosGreen} />
+            </Grid>
+            <Grid item xs="auto">
+                <LengthOfStayWhiskerBoxPlot boxPlotData={losBoxPlotData.white} style={styleLosWhite} />
+            </Grid>
+            <Grid item xs="auto">
+                <LengthOfStayMedianTable tableData={losMedianData.red.tableData} acuityMedianMinutes={losMedianData.red.acuityMedianMinutes} style={styleMedianTableRed} />
+            </Grid>
+            <Grid item xs="auto">
+                <LengthOfStayMedianTable tableData={losMedianData.yellow.tableData} acuityMedianMinutes={losMedianData.yellow.acuityMedianMinutes} style={styleMedianTableYellow} />
+            </Grid>
+            <Grid item xs="auto">
+                <LengthOfStayMedianTable tableData={losMedianData.green.tableData} acuityMedianMinutes={losMedianData.green.acuityMedianMinutes} style={styleMedianTableGreen} />
+            </Grid>
+            <Grid item xs="auto">
+                <LengthOfStayMedianTable tableData={losMedianData.white.tableData} acuityMedianMinutes={losMedianData.white.acuityMedianMinutes} style={styleMedianTableWhite} />
+            </Grid>
+            <Grid item xs={12} md={8} lg={8} xl={4}>
+                <LengthOfStayTransportsList data={transportLosListData} />
+            </Grid >
+        </Grid >
+    </>);
+
+
 }
 
 interface ColorStyle {

@@ -16,11 +16,11 @@ export const CommonPresentationsAndTransportsTables = (props: TopTenCommonPresen
 
     return (
         <>
-            <Grid item xs={12} md={8} lg={8} xl={2}>
+            <Grid item xs="auto">
                 <CommonPresentationsTable commonPresentationsData={commonPresentationsDataRed} />
                 <CommonPresentationsTable commonPresentationsData={transportsDataRed} />
             </Grid>
-            <Grid item xs={12} md={8} lg={8} xl={2}>
+            <Grid item xs="auto">
                 <CommonPresentationsTable commonPresentationsData={commonPresentationsDataYellow} />
                 <CommonPresentationsTable commonPresentationsData={transportsDataYellow} />
             </Grid>

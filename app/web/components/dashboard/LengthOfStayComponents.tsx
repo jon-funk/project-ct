@@ -1,19 +1,13 @@
 import React from "react";
-import { Paper, Typography } from "@mui/material";
+import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import { BoxPlot } from "@visx/stats";
 import { Group } from "@visx/group";
 import { scaleBand, scaleLinear } from "@visx/scale";
 import { AxisLeft, AxisBottom } from "@visx/axis";
-import { BoxPlotData } from "../../interfaces/PosteventDashboard";
+import { BoxPlotData, LengthOfStayMedianRow, LengthOfStayTransportsListProps, LengthOfStayStyle } from "../../interfaces/PosteventDashboard";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { tableColorStylesLight } from "../../constants/colorPalettes";
 
-
-export interface LengthOfStayStyle {
-    title: string;
-    titleColor: string;
-    titleBackground: string;
-    boxFill: string;
-    boxStroke: string;
-}
 
 export const LengthOfStayWhiskerBoxPlot: React.FC<{ boxPlotData: BoxPlotData[], style: LengthOfStayStyle }> = ({ boxPlotData: dataByDay, style }) => {
 
@@ -147,3 +141,95 @@ function calculateQuartiles(data: number[]) {
 
     return { firstQuartile, median, thirdQuartile };
 }
+
+
+export const LengthOfStayMedianTable: React.FC<{ tableData: LengthOfStayMedianRow[]; acuityMedianMinutes: number; style: LengthOfStayStyle }> = ({ tableData, acuityMedianMinutes, style }) => {
+
+    const titleText = style.title;
+    const titleColor = style.titleColor;
+    const titleBackground = style.titleBackground;
+
+
+
+    return (
+        <Paper sx={{ width: "auto", overflow: "hidden", display: "inline-block" }}>
+            <Typography
+                variant="h6"
+                sx={{
+                    padding: 2,
+                    backgroundColor: titleBackground,
+                    color: titleColor,
+                    textAlign: "center"
+                }}
+            >
+                {titleText} Median LOS: {acuityMedianMinutes} mins
+            </Typography>
+            <TableContainer sx={{ maxHeight: 440 }}>
+                <Table stickyHeader aria-label="sticky table">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>Chief Complaint</TableCell>
+                            <TableCell align="right">Median LOS (minutes)</TableCell>
+                            <TableCell align="right">Hospital</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {tableData.map((row, index) => (
+                            <TableRow key={index} hover role="checkbox" tabIndex={-1}>
+                                <TableCell>{row.chiefComplaint}</TableCell>
+                                <TableCell align="right">{row.medianLosMinutes}</TableCell>
+                                <TableCell align="right">{row.hospital}</TableCell>
+                            </TableRow>
+                        ))}
+
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        </Paper>
+    );
+}
+
+export const LengthOfStayTransportsList: React.FC<LengthOfStayTransportsListProps> = ({ data }) => {
+
+    const columns: GridColDef[] = [
+        { field: "triage_acuity", headerName: "Acuity", minWidth: 100, flex: 0.5 },
+        { field: "chief_complaint", headerName: "Chief Complaint", minWidth: 200, flex: 2 },
+        { field: "length_of_stay", headerName: "Length of Stay", minWidth: 100, flex: 1 },
+    ];
+
+    return (
+        <Paper
+            elevation={0}
+            sx={{
+                width: "auto",
+                "& .MuiDataGrid-columnHeaders": {
+                    ...tableColorStylesLight.subHeader,
+                },
+                "& .MuiDataGrid-row:nth-of-type(odd)": {
+                    ...tableColorStylesLight.oddRow,
+                },
+                "& .MuiDataGrid-row:nth-of-type(even)": {
+                    ...tableColorStylesLight.evenRow,
+                },
+                "& .MuiDataGrid-columnHeaderTitle": {
+                    whiteSpace: "normal",
+                    lineHeight: "normal",
+                    wordBreak: "break-word",
+                },
+                "& .MuiDataGrid-footerContainer": {
+                    borderTop: "none",
+                },
+            }}
+        >
+            <Typography variant="h5" align="center" sx={{ ...tableColorStylesLight.header, padding: "16px 0" }}>Offsite Transports List</Typography>
+
+            <DataGrid
+                rows={data}
+                columns={columns}
+                autoHeight
+                getRowId={(row) => row.patient_encounter_uuid}
+                hideFooter
+            />
+        </Paper>
+    );
+};

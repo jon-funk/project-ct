@@ -13,6 +13,8 @@ import {
     generateOffsiteTransportList,
     calculateOffsiteTransportsPerDay,
     calculatePatientLosBoxPlotData,
+    calculatePatientLosMedianTableData,
+    calculateTransportLosListData
 
 } from "../../../utils/postfestivalDashboard";
 import { fetchPatientEncountersData } from "../../../utils/postfestivalDashboard";
@@ -36,7 +38,7 @@ import {
     LengthOfStayDashboardComponent
 } from "../../../components/dashboard/PostFestivalDashboards";
 import { SelectYearPrompt } from "../../../components/dashboard/PostFestivalDashboards";
-import { AcuityCountPerDay, LengthOfStayDashboardData, OffsiteTransportCountTotals, OffsiteTransportEntry } from "../../../interfaces/PosteventDashboard";
+import { AcuityCountPerDay, LengthOfStayDashboardData, LengthOfStayMedianTableAllData, LengthOfStayTransportItem, OffsiteTransportCountTotals, OffsiteTransportEntry, defaultLosMedianTableAllData } from "../../../interfaces/PosteventDashboard";
 
 
 
@@ -98,6 +100,8 @@ const MedicalPostEventSummaryDashboard = () => {
         green: [],
         white: [],
     });
+    const [losMedianData, setLosMedianData] = useState<LengthOfStayMedianTableAllData>(defaultLosMedianTableAllData);
+    const [transportLosListData, setTransportLosListData] = useState<LengthOfStayTransportItem[]>([]);
 
     // When the year is selected, fetch the patient encounters for that year
     useEffect(() => {
@@ -163,6 +167,13 @@ const MedicalPostEventSummaryDashboard = () => {
 
             const losBoxPlotData = calculatePatientLosBoxPlotData(patientEncounters);
             setLosBoxPlotData(losBoxPlotData);
+
+            const losMedianTableData = calculatePatientLosMedianTableData(patientEncounters);
+            setLosMedianData(losMedianTableData);
+
+            const transportLosListData = calculateTransportLosListData(patientEncounters);
+            setTransportLosListData(transportLosListData);
+
         }
     }
         , [patientEncounters]);
@@ -202,7 +213,7 @@ const MedicalPostEventSummaryDashboard = () => {
                             ) : selectedView === "Offsite Transports" ? (
                                 <OffsiteTransportsDashboardComponent offsiteTransportCounts={offsiteTransportCounts} offsiteTransportEntries={offsiteTransportEntries} offsiteTransportsPerDayCount={offsiteTransportsPerDayCount} />
                             ) : selectedView === "Length of Stay" ? (
-                                <LengthOfStayDashboardComponent losBoxPlotData={losBoxPlotData} />
+                                <LengthOfStayDashboardComponent losBoxPlotData={losBoxPlotData} losMedianData={losMedianData} transportLosListData={transportLosListData} />
                             ) : <SelectYearPrompt />}
                         </FormProvider>
                     </Container>

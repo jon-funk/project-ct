@@ -13,6 +13,9 @@ import {
   AcuityCountPerDay,
   AggregatedDurations,
   LengthOfStayDashboardData,
+  LengthOfStayMedianTableAllData,
+  LengthOfStayMedianTableData,
+  LengthOfStayTransportItem,
   OffsiteTransportCountTotals,
   OffsiteTransportEntry,
 } from "../interfaces/PosteventDashboard";
@@ -22,6 +25,7 @@ import { UserGroupKeys } from "../constants/keys";
 import { AcuityCountsData } from "../interfaces/AcuityCountsData";
 import { ValidTriageAcuities } from "../constants/medicalForm";
 import { format } from "date-fns-tz";
+import { differenceInMinutes } from "date-fns";
 
 /**
  * Builds the API path with query parameters for the patient encounters
@@ -886,4 +890,191 @@ export function calculatePatientLosBoxPlotData(
   });
 
   return losData;
+}
+
+export function calculatePatientLosMedianTableData(
+  patientEncounters: PatientEncounterRow[]
+): LengthOfStayMedianTableAllData {
+  // Helper function to calculate the median LOS from an array of LOS values
+  const calculateMedian = (losArray: number[]): number => {
+    const sortedLos = [...losArray].sort((a, b) => a - b);
+    const mid = Math.floor(sortedLos.length / 2);
+    return sortedLos.length % 2 !== 0
+      ? sortedLos[mid]
+      : (sortedLos[mid - 1] + sortedLos[mid]) / 2;
+  };
+
+  // Function to combine date and time into a single Date object, keeping time in UTC
+  const combineDateAndTime = (date: Date, time: Date): Date => {
+    return new Date(
+      Date.UTC(
+        date.getUTCFullYear(),
+        date.getUTCMonth(),
+        date.getUTCDate(),
+        time.getUTCHours(),
+        time.getUTCMinutes(),
+        time.getUTCSeconds()
+      )
+    );
+  };
+
+  // Group encounters by acuity level and then by chief complaint
+  const groupedByAcuity: Record<
+    TriageAcuity,
+    Record<string, { losMinutes: number[]; hospitalTransfers: number }>
+  > = {
+    red: {},
+    yellow: {},
+    green: {},
+    white: {},
+  };
+
+  patientEncounters.forEach((encounter) => {
+    const {
+      chief_complaints,
+      arrival_date,
+      arrival_time,
+      departure_date,
+      departure_time,
+    } = encounter;
+
+    // Skip if departure date or time is missing
+    if (!departure_date || !departure_time) return;
+
+    // Combine arrival and departure dates and times
+    const arrivalDateTime = combineDateAndTime(arrival_date, arrival_time);
+    const departureDateTime = combineDateAndTime(
+      departure_date,
+      departure_time
+    );
+
+    // Calculate the length of stay in minutes
+    const losMinutes = differenceInMinutes(departureDateTime, arrivalDateTime);
+
+    // Check if departure destination includes "hospital" (case-insensitive)
+    const isHospitalTransfer = encounter.departure_dest
+      .toLowerCase()
+      .includes("hospital");
+
+    chief_complaints.forEach((complaint) => {
+      const triage_acuity = encounter.triage_acuity.toLowerCase();
+
+      // Ensure triage_acuity is a valid key before proceeding
+      if (!ValidTriageAcuities.includes(triage_acuity as TriageAcuity)) {
+        return;
+      }
+      // Initialize the arrays if they don't exist yet
+      const acuityKey = triage_acuity as TriageAcuity;
+      if (!groupedByAcuity[acuityKey][complaint]) {
+        groupedByAcuity[acuityKey][complaint] = {
+          losMinutes: [],
+          hospitalTransfers: 0,
+        };
+      }
+      // Add the LOS in minutes to the array for this acuity level and chief complaint
+      groupedByAcuity[acuityKey][complaint].losMinutes.push(losMinutes);
+
+      if (isHospitalTransfer) {
+        groupedByAcuity[acuityKey][complaint].hospitalTransfers += 1;
+      }
+    });
+  });
+
+  // Calculate the median LOS for each chief complaint within each acuity level
+  const calculateTableDataForAcuity = (
+    acuityData: Record<
+      string,
+      { losMinutes: number[]; hospitalTransfers: number }
+    >
+  ): LengthOfStayMedianTableData => {
+    const tableData = Object.entries(acuityData).map(
+      ([chiefComplaint, data]) => ({
+        chiefComplaint,
+        medianLosMinutes: calculateMedian(data.losMinutes),
+        hospital: data.hospitalTransfers,
+      })
+    );
+
+    // Sort the table data by median LOS in descending order
+    tableData.sort((a, b) => b.medianLosMinutes - a.medianLosMinutes);
+
+    const allLosValues = Object.values(acuityData).flatMap(
+      (data) => data.losMinutes
+    );
+    const acuityMedianMinutes = calculateMedian(allLosValues);
+
+    return { tableData, acuityMedianMinutes };
+  };
+
+  // Map the calculated data to the structure expected by the component
+  return {
+    red: calculateTableDataForAcuity(groupedByAcuity.red),
+    yellow: calculateTableDataForAcuity(groupedByAcuity.yellow),
+    green: calculateTableDataForAcuity(groupedByAcuity.green),
+    white: calculateTableDataForAcuity(groupedByAcuity.white),
+  };
+}
+
+export function calculateTransportLosListData(
+  patientEncounters: PatientEncounterRow[]
+): LengthOfStayTransportItem[] {
+  const hospitalTransports = patientEncounters.filter((encounter) =>
+    encounter.departure_dest.toLowerCase().includes("hospital")
+  );
+
+  // Helper function to combine date and time in UTC
+  const combineDateAndTimeUTC = (date: Date, time: Date): Date => {
+    return new Date(
+      Date.UTC(
+        date.getUTCFullYear(),
+        date.getUTCMonth(),
+        date.getUTCDate(),
+        time.getUTCHours(),
+        time.getUTCMinutes(),
+        time.getUTCSeconds()
+      )
+    );
+  };
+
+  // Map filtered encounters to transport items
+  return hospitalTransports.map((encounter) => {
+    // If either arrival or departure date/time is missing, length of stay is unknown
+    if (
+      !encounter.departure_date ||
+      !encounter.departure_time ||
+      !encounter.arrival_date ||
+      !encounter.arrival_time
+    ) {
+      return {
+        patient_encounter_uuid: encounter.patient_encounter_uuid,
+        triage_acuity: encounter.triage_acuity.toUpperCase(), // Capitalize triage acuity
+        chief_complaint: encounter.chief_complaints.join(", "), // Joining all complaints if there are multiple
+        length_of_stay: "unknown",
+      };
+    }
+
+    // Combine arrival and departure dates and times in UTC
+    const arrivalDateTime = combineDateAndTimeUTC(
+      encounter.arrival_date,
+      encounter.arrival_time
+    );
+    const departureDateTime = combineDateAndTimeUTC(
+      encounter.departure_date,
+      encounter.departure_time
+    );
+
+    // Calculate length of stay in minutes
+    const losMinutes = Math.round(
+      (departureDateTime.getTime() - arrivalDateTime.getTime()) / (1000 * 60)
+    );
+
+    return {
+      patient_encounter_uuid: encounter.patient_encounter_uuid,
+      triage_acuity:
+        encounter.triage_acuity.charAt(0).toUpperCase() +
+        encounter.triage_acuity.slice(1),
+      chief_complaint: encounter.chief_complaints.join(", "),
+      length_of_stay: losMinutes.toString(),
+    };
+  });
 }

@@ -67,4 +67,63 @@ export interface LengthOfStayDashboardData {
 
 export interface LengthOfStayDashboardProps {
   losBoxPlotData: LengthOfStayDashboardData;
+  losMedianData: LengthOfStayMedianTableAllData;
+  transportLosListData: LengthOfStayTransportItem[];
+}
+
+export interface LengthOfStayMedianRow {
+  chiefComplaint: string;
+  medianLosMinutes: number;
+  hospital: number;
+}
+
+export interface LengthOfStayMedianTableAllData {
+  red: LengthOfStayMedianTableData;
+  yellow: LengthOfStayMedianTableData;
+  green: LengthOfStayMedianTableData;
+  white: LengthOfStayMedianTableData;
+}
+
+export interface LengthOfStayMedianTableData {
+  tableData: LengthOfStayMedianRow[];
+  acuityMedianMinutes: number;
+}
+
+export interface LengthOfStayStyle {
+  title: string;
+  titleColor: string;
+  titleBackground: string;
+  boxFill?: string;
+  boxStroke?: string;
+}
+
+export const defaultStyle: LengthOfStayStyle = {
+  title: "",
+  titleColor: "",
+  titleBackground: "",
+  boxFill: "",
+  boxStroke: "",
+};
+
+export const defaultLosMedianTableData: LengthOfStayMedianTableData = {
+  tableData: [],
+  acuityMedianMinutes: 0,
+};
+
+export const defaultLosMedianTableAllData: LengthOfStayMedianTableAllData = {
+  red: defaultLosMedianTableData,
+  yellow: defaultLosMedianTableData,
+  green: defaultLosMedianTableData,
+  white: defaultLosMedianTableData,
+};
+
+export interface LengthOfStayTransportItem {
+  patient_encounter_uuid: string;
+  triage_acuity: string;
+  chief_complaint: string;
+  length_of_stay: string;
+}
+
+export interface LengthOfStayTransportsListProps {
+  data: LengthOfStayTransportItem[];
 }
