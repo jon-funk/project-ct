@@ -475,7 +475,6 @@ export const OffsiteTransportStackedBarChart: React.FC<{ offsiteTransportsPerDay
     }
 
     const allTransportTypes = ["Ambulance", "Private Vehicle"];
-    console.log("offsiteTransportsPerDayCount: ", offsiteTransportsPerDayCount)
 
     // Convert data to an array format that can be used with visx
     const data: DayData[] = Object.keys(offsiteTransportsPerDayCount).map(date => {
