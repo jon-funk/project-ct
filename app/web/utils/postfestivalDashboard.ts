@@ -1019,7 +1019,7 @@ export function calculateTransportLosListData(
   patientEncounters: PatientEncounterRow[]
 ): LengthOfStayTransportItem[] {
   const hospitalTransports = patientEncounters.filter((encounter) =>
-    encounter.departure_dest.toLowerCase().includes("hospital")
+    encounter.departure_dest?.toLowerCase().includes("hospital")
   );
 
   // Helper function to combine date and time in UTC
