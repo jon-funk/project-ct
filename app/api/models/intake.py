@@ -32,6 +32,8 @@ class Intake(BaseSanctuary, BasicMetrics):
     discharge_date = Column(DateTime, nullable=True)
     discharge_time = Column(DateTime, nullable=True)
     discharge_method = Column(String, nullable=True)
+    document_num = Column(String, nullable=True)
+    comment = Column(String, nullable=True)
 
 def get_intake_by_uuid(
     db: Session, uuid: uuid.UUID

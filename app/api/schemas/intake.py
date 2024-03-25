@@ -9,6 +9,7 @@ class IntakeSchema(BaseModel):
     An intake for a given patient.
     """
 
+    document_num: Optional[str]
     guest_rfid: Optional[str]
     arrival_date: datetime
     arrival_time: datetime
@@ -23,6 +24,7 @@ class IntakeSchema(BaseModel):
     discharge_date: datetime
     discharge_time: datetime
     discharge_method: Optional[str]
+    comment: Optional[str]
 
     class Config:
         orm_mode = True
